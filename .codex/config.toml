@@ -1,0 +1,6 @@
+# Codex project defaults. Codex loads this file only after you trust the project.
+# Read-only sandbox + on-request approvals: Codex reads and plans freely, and asks
+# before editing files or running commands that write, use the network or touch .git.
+# Switch for one session with /permissions (Auto lets it edit the repo without asking).
+sandbox_mode = "read-only"
+approval_policy = "on-request"
