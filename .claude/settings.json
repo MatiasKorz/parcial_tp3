@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "default",
+    "ask": [
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(*trello.py* assign *)",
+      "Bash(*trello.py* move *)",
+      "Bash(*trello.py* check *)",
+      "Bash(*trello.py* comment *)",
+      "PowerShell(git commit *)",
+      "PowerShell(git push *)",
+      "PowerShell(*trello.py* assign *)",
+      "PowerShell(*trello.py* move *)",
+      "PowerShell(*trello.py* check *)",
+      "PowerShell(*trello.py* comment *)"
+    ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  }
+}

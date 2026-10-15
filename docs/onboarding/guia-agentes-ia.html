@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de agentes IA</title>
+<meta name="description" content="Introducción a los agentes de IA (Claude Code y Codex) y cómo los usamos en el parcial VORA Coach.">
+<style>
+  :root {
+    --bg: #fbfaf8;
+    --surface: #ffffff;
+    --text: #1f2328;
+    --muted: #5b6370;
+    --border: #e3e0da;
+    --accent: #3b5bdb;
+    --accent-soft: #e8edff;
+    --warn-soft: #fff4e0;
+    --warn: #9a5b00;
+    --code-bg: #f1efea;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181c;
+      --surface: #1e2126;
+      --text: #e7e9ec;
+      --muted: #a2a9b4;
+      --border: #30343b;
+      --accent: #8da2ff;
+      --accent-soft: #232a45;
+      --warn-soft: #2f2616;
+      --warn: #f0b75a;
+      --code-bg: #262a30;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 40px 16px 80px; }
+  header p { color: var(--muted); margin-top: 4px; }
+  h1 { font-size: 2rem; line-height: 1.2; margin: 0; }
+  h2 { font-size: 1.4rem; margin: 56px 0 12px; scroll-margin-top: 16px; }
+  h2 .n { color: var(--accent); margin-right: 8px; }
+  h3 { font-size: 1.05rem; margin: 24px 0 8px; }
+  a { color: var(--accent); }
+  code {
+    font: 0.88em/1.4 ui-monospace, "Cascadia Code", Consolas, "SF Mono", monospace;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  nav.toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 28px;
+  }
+  nav.toc strong { display: block; margin-bottom: 6px; }
+  nav.toc ol { margin: 0; padding-left: 20px; }
+  nav.toc a { text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px 20px;
+    margin: 16px 0;
+  }
+  .callout {
+    background: var(--accent-soft);
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin: 16px 0;
+  }
+  .callout.warn { background: var(--warn-soft); }
+  .callout.warn strong { color: var(--warn); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .grid .card { margin: 0; padding: 12px 16px; }
+  .grid h3 { margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .table-wrap { overflow-x: auto; }
+  /* Loop and flow diagrams, pure CSS */
+  .flow { list-style: none; padding: 0; margin: 20px 0; display: flex; flex-wrap: wrap; gap: 8px 0; counter-reset: step; }
+  .flow li {
+    counter-increment: step;
+    display: flex;
+    align-items: center;
+  }
+  .flow li span {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 0.92rem;
+    line-height: 1.3;
+  }
+  .flow li span::before {
+    content: counter(step);
+    display: inline-block;
+    min-width: 1.4em;
+    margin-right: 6px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .flow li span.human { border-color: var(--accent); background: var(--accent-soft); }
+  .flow li:not(:last-child)::after { content: "→"; color: var(--muted); margin: 0 8px; }
+  .legend { color: var(--muted); font-size: 0.9rem; }
+  .legend i {
+    display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px;
+    background: var(--accent-soft); border: 1px solid var(--accent); margin-right: 4px;
+  }
+  @media (max-width: 560px) {
+    body { font-size: 16px; }
+    .flow { flex-direction: column; align-items: stretch; }
+    .flow li { flex-direction: column; align-items: stretch; }
+    .flow li:not(:last-child)::after { content: "↓"; margin: 4px 0; text-align: center; }
+  }
+  footer { margin-top: 64px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 16px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Agentes de IA para el parcial</h1>
+    <p>Qué son Claude Code y Codex, cómo gastan tokens y cómo los usamos en VORA Coach. Lectura: 10 minutos.</p>
+  </header>
+
+  <nav class="toc" aria-label="Índice">
+    <strong>Índice</strong>
+    <ol>
+      <li><a href="#agente">Qué es un agente de IA</a></li>
+      <li><a href="#llm">Qué es un LLM</a></li>
+      <li><a href="#tokens">Cómo se gastan los tokens</a></li>
+      <li><a href="#flujo">Qué es un flujo agéntico</a></li>
+      <li><a href="#parcial">Cómo lo usamos en el parcial</a></li>
+      <li><a href="#practicas">Buenas prácticas y límites</a></li>
+    </ol>
+  </nav>
+
+  <section id="agente">
+    <h2><span class="n">1</span>Qué es un agente de IA</h2>
+    <p>Un agente como <strong>Claude Code</strong> (de Anthropic) o <strong>Codex</strong> (de OpenAI) es un programa que corre en tu terminal o en tu editor y combina tres cosas:</p>
+    <div class="grid">
+      <div class="card"><h3>Un modelo</h3><p>Un LLM que lee texto y decide qué hacer a continuación.</p></div>
+      <div class="card"><h3>Herramientas</h3><p>Leer y editar archivos, buscar en el código, correr comandos como <code>gradlew.bat</code>.</p></div>
+      <div class="card"><h3>Un bucle</h3><p>Usa una herramienta, mira el resultado y decide el paso siguiente, hasta terminar o necesitarte.</p></div>
+    </div>
+    <p><strong>La diferencia con el chat:</strong> en un chat vos copiás código, lo pegás en el proyecto, compilás y le contás el error. El agente hace ese ida y vuelta solo: abre los archivos del repo, edita, compila, lee el error del compilador y lo corrige. Vos dejás de ser el "copiar y pegar" y pasás a ser quien <strong>define la tarea, aprueba y revisa</strong>.</p>
+  </section>
+
+  <section id="llm">
+    <h2><span class="n">2</span>Qué es un LLM (lo mínimo)</h2>
+    <ul>
+      <li><strong>Predice texto.</strong> Un modelo de lenguaje grande genera la continuación más probable de lo que leyó, pedazo a pedazo. Aprendió de muchísimo texto y código, por eso escribe Kotlin razonable. Pero no "entiende" como una persona: puede inventar una función que no existe con total seguridad.</li>
+      <li><strong>Ventana de contexto.</strong> Es todo lo que el modelo ve en una conversación: tus mensajes, sus respuestas, los archivos que leyó y la salida de los comandos. Tiene un límite. Lo que no está en el contexto, para el modelo no existe.</li>
+      <li><strong>No conoce tu repo hasta que lo lee.</strong> No sabe qué pantallas hicieron tus compañeros ni qué dice el Figma, salvo que lo lea en esa sesión. Tampoco recuerda la conversación de ayer. Por eso existen <code>AGENTS.md</code> y <code>CLAUDE.md</code>: son instrucciones que el agente carga solo al arrancar.</li>
+    </ul>
+  </section>
+
+  <section id="tokens">
+    <h2><span class="n">3</span>Cómo se gastan los tokens</h2>
+    <p>Un <strong>token</strong> es un pedazo de texto, más o menos una sílaba o una palabra corta. El uso se mide en tokens:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Tipo</th><th>Qué incluye</th></tr>
+        <tr><td>Entrada</td><td>Todo lo que el modelo lee en cada paso: instrucciones, historial, archivos abiertos, salida de comandos.</td></tr>
+        <tr><td>Salida</td><td>Lo que el modelo escribe: respuestas, código, comandos.</td></tr>
+      </table>
+    </div>
+    <p><strong>Todo se acumula.</strong> Cada archivo que el agente lee, cada salida de <code>gradlew</code> y cada mensaje queda en el contexto, y en cada vuelta del bucle el modelo procesa la conversación entera otra vez. Por eso una conversación larga cuesta más que varias cortas. Además, con el contexto lleno, el modelo empieza a perder detalles.</p>
+    <p>Los planes de Claude y de ChatGPT incluyen un cupo de uso que se renueva por ventanas de tiempo. Cuando se agota, hay que esperar o pagar más. Para ver tu consumo: <code>/usage</code> y <code>/context</code> en Claude Code, y <code>/status</code> en Codex.</p>
+    <h3>Cómo ahorrar</h3>
+    <ul>
+      <li><strong>Una tarjeta por conversación.</strong> Al terminar, empezá de cero: <code>/clear</code> en Claude Code, <code>/new</code> en Codex.</li>
+      <li><strong>Pedidos concretos.</strong> "Hacé la pantalla 4.3 según la tarjeta PAN-4.3" gasta menos que "mirá el proyecto y fijate qué falta".</li>
+      <li><strong>Plan primero.</strong> Corregir un plan es barato. Rehacer código, no.</li>
+      <li><strong>No pegues logs enteros.</strong> Pegá solo las líneas del error.</li>
+      <li><strong>Si la conversación se alarga,</strong> <code>/compact</code> la resume y libera contexto.</li>
+    </ul>
+  </section>
+
+  <section id="flujo">
+    <h2><span class="n">4</span>Qué es un flujo agéntico</h2>
+    <p>Es la forma de trabajar con un agente: un ciclo corto, con vos en los puntos de decisión.</p>
+    <ol class="flow" aria-label="Ciclo agéntico">
+      <li><span>Planificar</span></li>
+      <li><span class="human">Aprobar el plan</span></li>
+      <li><span>Actuar con herramientas</span></li>
+      <li><span>Observar el resultado</span></li>
+      <li><span>Verificar: compilar y probar</span></li>
+      <li><span>Iterar o terminar</span></li>
+    </ol>
+    <p class="legend"><i></i>Pasos donde decide el humano.</p>
+    <h3>Permisos</h3>
+    <p>Según el modo, el agente te pide permiso o decide solo. Los dos vienen bastante sueltos de fábrica:</p>
+    <ul>
+      <li><strong>Claude Code</strong> arranca en modo <em>auto</em>: un segundo modelo aprueba las acciones por vos. El repo lo pasa a modo manual con <code>.claude/settings.json</code>, y además pide confirmación siempre para <code>git commit</code>, <code>git push</code> y las escrituras en Trello.</li>
+      <li><strong>Codex</strong> arranca en <em>Auto</em>: edita el repo sin preguntar y pide permiso para usar la red o escribir fuera del repo, incluido <code>.git</code> (o sea, commitear). El repo lo pasa a solo lectura con aprobaciones a pedido con <code>.codex/config.toml</code>, que Codex carga cuando confiás en el proyecto.</li>
+    </ul>
+    <p>Vos elegís cuánta libertad le das en cada sesión:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th></th><th>Claude Code</th><th>Codex</th></tr>
+        <tr><td>Cambiar el modo</td><td><code>Shift+Tab</code> (manual, aceptar ediciones, plan, auto) y <code>/permissions</code></td><td><code>/permissions</code>, o <code>--sandbox</code> y <code>--ask-for-approval</code> al arrancar</td></tr>
+        <tr><td>Solo mirar y planificar</td><td>Modo plan</td><td><code>/plan</code> (modo plan), o <code>/permissions</code> → Read Only</td></tr>
+        <tr><td>En Windows</td><td>Corre los comandos sin sandbox: leé lo que aprobás</td><td>Usa un sandbox de Windows sin red: Gradle y el script de Trello te piden aprobación</td></tr>
+      </table>
+    </div>
+    <div class="callout warn"><strong>Nunca</strong> uses los modos que saltean todas las aprobaciones (<code>--dangerously-skip-permissions</code>, <code>--yolo</code>). En el parcial, el humano aprueba siempre.</div>
+  </section>
+
+  <section id="parcial">
+    <h2><span class="n">5</span>Cómo lo usamos en el parcial</h2>
+    <p>Cada tarea es una <strong>tarjeta de Trello</strong> escrita como spec para el agente: descripción, criterios de aceptación y link al frame de Figma. El recorrido de una tarjeta:</p>
+    <ol class="flow" aria-label="Flujo de una tarjeta">
+      <li><span class="human">Tomar la tarjeta y asignármela</span></li>
+      <li><span class="human">Crear la rama</span></li>
+      <li><span>El agente lee la tarjeta y propone un plan</span></li>
+      <li><span>El agente implementa y compila</span></li>
+      <li><span class="human">Comparar con Figma en el emulador</span></li>
+      <li><span class="human">Abrir el PR</span></li>
+      <li><span class="human">Revisión de un compañero</span></li>
+      <li><span class="human">Merge y mover la tarjeta</span></li>
+      <li><span class="human">Declarar el uso de IA (PR y tarjeta)</span></li>
+    </ol>
+    <p class="legend"><i></i>Pasos donde decide o actúa el humano.</p>
+    <p>Los detalles están en el repo:</p>
+    <ul>
+      <li><code>docs/onboarding/README.md</code>: la instalación y el día a día.</li>
+      <li><code>docs/onboarding/PROMPT_INICIAL.md</code>: el texto que pegás para arrancar.</li>
+      <li><code>docs/onboarding/CONVENCIONES.md</code>: ramas, commits y PRs.</li>
+      <li><code>docs/onboarding/TRELLO.md</code>: el script del board.</li>
+    </ul>
+    <div class="callout"><strong>Declarar la IA</strong> es obligatorio: la consigna pide que el README de la entrega diga cómo se usó la IA generativa. Cada PR lo anota en su sección "Uso de IA", ese texto va también como comentario en la tarjeta de Trello, y con esos comentarios se arma la declaración final.</div>
+  </section>
+
+  <section id="practicas">
+    <h2><span class="n">6</span>Buenas prácticas y límites</h2>
+    <div class="grid">
+      <div class="card"><h3>Revisá todo</h3><p>Leé el diff antes de commitear. El agente escribe rápido y con seguridad, incluso cuando se equivoca.</p></div>
+      <div class="card"><h3>Probá de verdad</h3><p>Que compile no significa que funcione. Abrí la pantalla en el emulador y comparala con el Figma.</p></div>
+      <div class="card"><h3>Sin secretos</h3><p>No pegues tokens, contraseñas ni claves en el chat ni en el código. El repo es público.</p></div>
+      <div class="card"><h3>Nada inventado</h3><p>Si el agente propone una pantalla, un endpoint o un dato que no está en el Figma o el contrato, frenalo.</p></div>
+      <div class="card"><h3>Entendé el código</h3><p>En la defensa oral explicás vos, no el agente. Pedile: "explicame este ViewModel como para el oral".</p></div>
+      <div class="card"><h3>Comandos que no entendés</h3><p>Antes de aprobar un comando que no conocés, preguntale qué hace.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    Parcial VORA Coach, Taller de Programación 3. Esta guía no reemplaza la consigna: ante cualquier duda, manda la consigna y lo que diga el docente.
+  </footer>
+</main>
+</body>
+</html>
