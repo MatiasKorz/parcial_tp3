@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.examentp3.ui.navigation.AppNavigation
+import com.example.examentp3.ui.theme.ExamenTP3Theme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -18,11 +19,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+            ExamenTP3Theme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background,
+                ) {
                     AppNavigation()
                 }
             }
         }
-    }
-}
+            }
+        }
