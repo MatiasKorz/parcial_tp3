@@ -24,8 +24,8 @@ val Typography = Typography(
     displaySmall = base.displaySmall.copy(fontFamily = Manrope),
     headlineLarge = base.headlineLarge.copy(fontFamily = Manrope),
     headlineMedium = base.headlineMedium.copy(fontFamily = Manrope),
-    titleSmall = base.titleSmall.copy(fontFamily = Manrope),
-    bodyLarge = base.bodyLarge.copy(fontFamily = Manrope),
+    bodyLarge = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.Normal, fontSize = 15.sp),   // field value
+    titleSmall = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 15.sp),    // large button
 
     // Design levels (Figma name -> Material slot; the mapping is a proposal)
     headlineSmall = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 24.sp), // highlighted figure
