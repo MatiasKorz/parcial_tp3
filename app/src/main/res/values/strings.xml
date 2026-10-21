@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">ExamenTP3</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_workout">Workout</string>
+    <string name="nav_nutrition">Nutrition</string>
+    <string name="nav_progress">Progress</string>
+    <string name="nav_profile">Profile</string>
+    <string name="placeholder_note">Provisional screen</string>
+    <string name="placeholder_back">Back</string>
 </resources>
