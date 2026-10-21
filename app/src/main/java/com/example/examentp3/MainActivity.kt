@@ -11,13 +11,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.examentp3.ui.navigation.AppNavigation
 import com.example.examentp3.ui.theme.ExamenTP3Theme
+import androidx.activity.enableEdgeToEdge
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
             ExamenTP3Theme {
                 Surface(
@@ -27,6 +28,6 @@ class MainActivity : ComponentActivity() {
                     AppNavigation()
                 }
             }
+          }
         }
-            }
-        }
+    }
