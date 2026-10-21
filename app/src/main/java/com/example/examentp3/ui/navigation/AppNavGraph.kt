@@ -1,104 +1,185 @@
 package com.example.examentp3.ui.navigation
 
-import android.net.Uri
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.examentp3.ui.navigation.AppDestination.*
+import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
+import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 
-enum class BottomTab { Home, Workout, Nutrition, Progress, Profile }
+// Provisional ids until the real catalogs exist (REF-04).
+private const val DEMO_WORKOUT_ID = "demo-workout"
+private const val DEMO_EXERCISE_ID = "demo-exercise"
+private const val DEMO_MEAL_ID = "demo-meal"
 
-object NavArgs {
-    const val WORKOUT_ID = "workoutId"
-    const val EXERCISE_ID = "exerciseId"
-    const val MEAL_ID = "mealId"
+private val workoutArgs = listOf(navArgument(NavArgs.WORKOUT_ID) { type = NavType.StringType })
+private val exerciseArgs = listOf(navArgument(NavArgs.EXERCISE_ID) { type = NavType.StringType })
+private val mealArgs = listOf(navArgument(NavArgs.MEAL_ID) { type = NavType.StringType })
+
+private class Link(
+    val label: String,
+    val route: String,
+    val options: NavOptionsBuilder.() -> Unit = {},
+)
+
+// Not named "to": inside NavGraphBuilder it would clash with Kotlin's infix Pair builder.
+private fun linkTo(destination: AppDestination) = Link(destination.frame, destination.route)
+
+private fun NavBackStackEntry.isResumed() = lifecycle.currentState == Lifecycle.State.RESUMED
+
+private fun NavBackStackEntry.argument(name: String): String = arguments?.getString(name).orEmpty()
+
+private fun NavGraphBuilder.placeholder(
+    destination: AppDestination,
+    navController: NavHostController,
+    arguments: List<NamedNavArgument> = emptyList(),
+    onBack: ((NavHostController) -> Unit)? = { it.popBackStack() },
+    links: (NavBackStackEntry) -> List<Link> = { emptyList() },
+) {
+    composable(destination.route, arguments = arguments) { entry ->
+        PlaceholderScreen(
+            title = destination.frame,
+            detail = arguments.firstOrNull()?.let { "${it.name}: ${entry.argument(it.name)}" },
+            links = links(entry).map { link ->
+                PlaceholderLink(link.label) {
+                    if (entry.isResumed()) navController.navigate(link.route, link.options)
+                }
+            },
+            onBack = onBack?.let { back -> { if (entry.isResumed()) back(navController) } },
+        )
+    }
 }
 
-sealed class AppDestination(
-    val route: String,
-    val frame: String,
-    val tab: BottomTab? = null,
-) {
+internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     // Access
-    data object SignIn : AppDestination("sign_in", "Login - 01 — SignIn")
-    data object SignUp : AppDestination("sign_up", "Login - 02 — SignUp")
+    placeholder(SignIn, navController, onBack = null) {
+        listOf(
+            Link("Sign In", Home.route) {
+                popUpTo(SignIn.route) { inclusive = true }
+                launchSingleTop = true
+            },
+            Link("Sign up here", SignUp.route),
+        )
+    }
+    placeholder(SignUp, navController) {
+        listOf(
+            Link("Sign Up", Home.route) { // inferred: not drawn as a connection in Figma
+                popUpTo(SignIn.route) { inclusive = true }
+                launchSingleTop = true
+            },
+        )
+    }
 
     // Home
-    data object Home : AppDestination("home", "Home / 01 — Dashboard", BottomTab.Home)
-    data object Notifications : AppDestination("notifications", "Home / 02 — Notifications", BottomTab.Home)
+    placeholder(Home, navController, onBack = null) { listOf(linkTo(Notifications), linkTo(VoiceIdle)) }
+    placeholder(Notifications, navController)
 
-    // Coach
-    data object VoiceIdle : AppDestination("voice_idle", "Voice / 01 — Idle")
-    data object VoiceListening : AppDestination("voice_listening", "Voice / 02 — Listening")
-    data object VoiceProcessing : AppDestination("voice_processing", "Voice / 03 — Processing")
-    data object VoiceSpeaking : AppDestination("voice_speaking", "Voice / 04 — Speaking")
-    data object VoiceConversation : AppDestination("voice_conversation", "Voice / 05 — Conversation")
-    data object VoiceError : AppDestination("voice_error", "Voice / 06 — Error")
+    // Coach: closing returns to where it was opened from
+    val closeCoach: (NavHostController) -> Unit = { it.popBackStack(VoiceIdle.route, inclusive = true) }
+    placeholder(VoiceIdle, navController, onBack = closeCoach) { listOf(linkTo(VoiceListening)) }
+    placeholder(VoiceListening, navController, onBack = closeCoach) { listOf(linkTo(VoiceProcessing)) }
+    placeholder(VoiceProcessing, navController, onBack = closeCoach) {
+        listOf(linkTo(VoiceSpeaking), linkTo(VoiceError))
+    }
+    placeholder(VoiceSpeaking, navController, onBack = closeCoach) { listOf(linkTo(VoiceConversation)) }
+    placeholder(VoiceConversation, navController, onBack = closeCoach)
+    placeholder(VoiceError, navController, onBack = closeCoach)
 
     // Workout
-    data object WorkoutDashboard : AppDestination("workout", "Workout / 01 — Dashboard", BottomTab.Workout)
-    data object WeeklyPlan : AppDestination("weekly_plan", "Workout / 02 — Weekly Plan", BottomTab.Workout)
-    data object WorkoutDetails : AppDestination("workout_details/{${NavArgs.WORKOUT_ID}}", "Workout / 03 — Workout Details") {
-        fun createRoute(workoutId: String) = "workout_details/${Uri.encode(workoutId)}"
+    placeholder(WorkoutDashboard, navController, onBack = null) {
+        listOf(
+            linkTo(WeeklyPlan),
+            Link(WorkoutDetails.frame, WorkoutDetails.createRoute(DEMO_WORKOUT_ID)),
+            Link(PreWorkout.frame, PreWorkout.createRoute(DEMO_WORKOUT_ID)),
+        )
     }
-    data object PreWorkout : AppDestination("pre_workout/{${NavArgs.WORKOUT_ID}}", "Workout / 04 — Pre Workout") {
-        fun createRoute(workoutId: String) = "pre_workout/${Uri.encode(workoutId)}"
+    placeholder(WeeklyPlan, navController) {
+        listOf(Link(WorkoutDetails.frame, WorkoutDetails.createRoute(DEMO_WORKOUT_ID)))
     }
-    data object ActiveWorkout : AppDestination("active_workout/{${NavArgs.WORKOUT_ID}}", "Workout / 05 — Active Workout") {
-        fun createRoute(workoutId: String) = "active_workout/${Uri.encode(workoutId)}"
+    placeholder(WorkoutDetails, navController, workoutArgs) { entry ->
+        val id = entry.argument(NavArgs.WORKOUT_ID)
+        listOf(
+            Link(PreWorkout.frame, PreWorkout.createRoute(id)),
+            Link(ExerciseDetails.frame, ExerciseDetails.createRoute(DEMO_EXERCISE_ID)),
+        )
     }
-    data object ExerciseDetails : AppDestination("exercise_details/{${NavArgs.EXERCISE_ID}}", "Workout / 06 — Exercise Details") {
-        fun createRoute(exerciseId: String) = "exercise_details/${Uri.encode(exerciseId)}"
+    placeholder(PreWorkout, navController, workoutArgs) { entry ->
+        listOf(Link(ActiveWorkout.frame, ActiveWorkout.createRoute(entry.argument(NavArgs.WORKOUT_ID))))
     }
-    data object WorkoutComplete : AppDestination("workout_complete", "Workout / 07 — Workout Complete")
+    placeholder(ActiveWorkout, navController, workoutArgs) {
+        listOf(
+            Link(ExerciseDetails.frame, ExerciseDetails.createRoute(DEMO_EXERCISE_ID)),
+            linkTo(WorkoutComplete),
+        )
+    }
+    placeholder(ExerciseDetails, navController, exerciseArgs)
+    placeholder(WorkoutComplete, navController) {
+        listOf(
+            Link("Done", WorkoutDashboard.route) {
+                popUpTo(WorkoutDashboard.route)
+                launchSingleTop = true
+            },
+        )
+    }
 
     // Nutrition
-    data object NutritionDashboard : AppDestination("nutrition", "Nutrition / 01 — Dashboard", BottomTab.Nutrition)
-    data object TodaysMeals : AppDestination("todays_meals", "Nutrition / 02 — Today's Meals", BottomTab.Nutrition)
-    data object AddFood : AppDestination("add_food", "Nutrition / 03 — Add Food", BottomTab.Nutrition)
-    data object VoiceFoodLogging : AppDestination("voice_food_logging", "Nutrition / 04 — Voice Food Logging")
-    data object FoodAnalysis : AppDestination("food_analysis", "Nutrition / 05 — Food Analysis")
-    data object PhotoAnalysis : AppDestination("photo_analysis", "Nutrition / 06 — Photo Analysis", BottomTab.Nutrition)
-    data object FoodConfirmation : AppDestination("food_confirmation", "Nutrition / 07 — Food Confirmation", BottomTab.Nutrition)
-    data object MealDetails : AppDestination("meal_details/{${NavArgs.MEAL_ID}}", "Nutrition / 08 — Meal Details", BottomTab.Nutrition) {
-        fun createRoute(mealId: String) = "meal_details/${Uri.encode(mealId)}"
+    placeholder(NutritionDashboard, navController, onBack = null) {
+        listOf(linkTo(TodaysMeals), linkTo(AddFood))
     }
+    placeholder(TodaysMeals, navController) {
+        listOf(Link(MealDetails.frame, MealDetails.createRoute(DEMO_MEAL_ID)), linkTo(AddFood))
+    }
+    placeholder(AddFood, navController) { listOf(linkTo(VoiceFoodLogging), linkTo(PhotoAnalysis)) }
+    placeholder(VoiceFoodLogging, navController) { listOf(linkTo(FoodAnalysis)) }
+    placeholder(FoodAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
+    placeholder(PhotoAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
+    placeholder(FoodConfirmation, navController) {
+        listOf(Link("Add to meal", TodaysMeals.route) { popUpTo(NutritionDashboard.route) })
+    }
+    placeholder(MealDetails, navController, mealArgs)
 
     // Progress
-    data object TodaysOverview : AppDestination("todays_overview", "Progress / 01 — Today's Overview", BottomTab.Progress)
-    data object ProgressDashboard : AppDestination("progress", "Progress / 02 — Dashboard", BottomTab.Progress)
-    data object WorkoutProgress : AppDestination("workout_progress", "Progress / 03 — Workout Progress", BottomTab.Progress)
-    data object NutritionProgress : AppDestination("nutrition_progress", "Progress / 04 — Nutrition Progress", BottomTab.Progress)
-    data object HealthTrends : AppDestination("health_trends", "Progress / 05 — Health Trends", BottomTab.Progress)
-    data object WeeklyReview : AppDestination("weekly_review", "Progress / 06 — Weekly Review")
+    placeholder(ProgressDashboard, navController, onBack = null) {
+        listOf(
+            linkTo(TodaysOverview),
+            linkTo(WorkoutProgress),
+            linkTo(NutritionProgress),
+            linkTo(HealthTrends),
+            linkTo(WeeklyReview),
+        )
+    }
+    placeholder(TodaysOverview, navController)
+    placeholder(WorkoutProgress, navController)
+    placeholder(NutritionProgress, navController)
+    placeholder(HealthTrends, navController)
+    placeholder(WeeklyReview, navController)
 
     // Profile
-    data object ProfileDashboard : AppDestination("profile", "Profile / 01 — Dashboard", BottomTab.Profile)
-    data object EditProfile : AppDestination("edit_profile", "Profile / 02 — Edit Profile")
-    data object GoalsPreferences : AppDestination("goals_preferences", "Profile / 03 — Goals & Preferences")
-    data object NutritionPreferences : AppDestination("nutrition_preferences", "Profile / 04 — Nutrition Preferences")
-    data object VoiceAiSettings : AppDestination("voice_ai_settings", "Profile / 05 — Voice & AI Settings")
-    data object Settings : AppDestination("settings", "Profile / 06 — Settings")
-
-    companion object {
-        /** The 37 entries of the Figma inventory. */
-        val all: List<AppDestination> by lazy {
-            listOf(
-                SignIn, SignUp,
-                Home, Notifications,
-                VoiceIdle, VoiceListening, VoiceProcessing, VoiceSpeaking, VoiceConversation, VoiceError,
-                WorkoutDashboard, WeeklyPlan, WorkoutDetails, PreWorkout, ActiveWorkout, ExerciseDetails, WorkoutComplete,
-                NutritionDashboard, TodaysMeals, AddFood, VoiceFoodLogging, FoodAnalysis, PhotoAnalysis, FoodConfirmation, MealDetails,
-                TodaysOverview, ProgressDashboard, WorkoutProgress, NutritionProgress, HealthTrends, WeeklyReview,
-                ProfileDashboard, EditProfile, GoalsPreferences, NutritionPreferences, VoiceAiSettings, Settings,
-            )
-        }
-
-        fun fromRoute(route: String?): AppDestination? = all.firstOrNull { it.route == route }
-
-        /** First screen of each tab. Progress opens on its dashboard (Progress / 02): open question in REF-05. */
-        fun tabRoot(tab: BottomTab): AppDestination = when (tab) {
-            BottomTab.Home -> Home
-            BottomTab.Workout -> WorkoutDashboard
-            BottomTab.Nutrition -> NutritionDashboard
-            BottomTab.Progress -> ProgressDashboard
-            BottomTab.Profile -> ProfileDashboard
-        }
+    placeholder(ProfileDashboard, navController, onBack = null) {
+        listOf(
+            linkTo(EditProfile),
+            linkTo(GoalsPreferences),
+            linkTo(NutritionPreferences),
+            linkTo(VoiceAiSettings),
+            linkTo(Settings),
+        )
+    }
+    placeholder(EditProfile, navController)
+    placeholder(GoalsPreferences, navController)
+    placeholder(NutritionPreferences, navController)
+    placeholder(VoiceAiSettings, navController)
+    placeholder(Settings, navController) {
+        listOf(
+            Link("Log out", SignIn.route) { // inferred: not drawn as a connection in Figma
+                popUpTo(navController.graph.id) { inclusive = true }
+                launchSingleTop = true
+            },
+        )
     }
 }
