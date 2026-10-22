@@ -7,4 +7,34 @@
     <string name="nav_profile">Profile</string>
     <string name="placeholder_note">Provisional screen</string>
     <string name="placeholder_back">Back</string>
+
+    <!-- PAN-6.1 Progress / 01 — Today's Overview -->
+    <string name="todays_overview_date">TUESDAY, 8 SEPTEMBER</string>
+    <string name="todays_overview_title">Today\'s Overview</string>
+    <string name="todays_overview_daily_completion">DAILY COMPLETION</string>
+    <string name="todays_overview_daily_completion_value">72%</string>
+    <string name="todays_overview_workout_label">Workout Progress</string>
+    <string name="todays_overview_workout_value">Not started</string>
+    <string name="todays_overview_workout_percent">0%</string>
+    <string name="todays_overview_nutrition_label">Nutrition Target</string>
+    <string name="todays_overview_nutrition_value">1,420 / 2,100 kcal</string>
+    <string name="todays_overview_nutrition_percent">78%</string>
+    <string name="todays_overview_activity_label">Activity Target</string>
+    <string name="todays_overview_activity_value">7,842 steps</string>
+    <string name="todays_overview_activity_percent">84%</string>
+    <string name="todays_overview_hydration_label">Hydration Intake</string>
+    <string name="todays_overview_hydration_value">1.6 / 2.5 Litres</string>
+    <string name="todays_overview_hydration_percent">65%</string>
+    <string name="todays_overview_advice_title">VORA ADVICE</string>
+    <string name="todays_overview_advice_text">\"Completing today\'s intermediate workout and a protein-rich dinner will secure your optimal target recovery.\"</string>
+    <string name="todays_overview_category_breakdowns">Category Breakdowns</string>
+    <string name="todays_overview_workout_category">WORKOUT</string>
+    <string name="todays_overview_workout_status">NOT STARTED</string>
+    <string name="todays_overview_workout_name">Upper Body Strength</string>
+    <string name="todays_overview_workout_meta">42 min • 5 exercises • Intermediate</string>
+    <string name="todays_overview_start_workout">Start Workout</string>
+    <string name="todays_overview_current_goal">CURRENT GOAL</string>
+    <string name="todays_overview_current_goal_value">Build strength</string>
+    <string name="todays_overview_weekly_target">WEEKLY TARGET</string>
+    <string name="todays_overview_weekly_target_value">4 / 5 Workouts</string>
 </resources>

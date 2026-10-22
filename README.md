@@ -39,7 +39,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 5.6 | Nutrition / 06 — Photo Analysis | `photo_analysis` | Nutrition / 03 | demostración | Provisoria | Análisis de foto simulado; sin cámara |
 | 5.7 | Nutrition / 07 — Food Confirmation | `food_confirmation` | Nutrition / 05 y 06 | A definir (REF-05) | Provisoria | Funcional solo si el registro manual la usa para confirmar |
 | 5.8 | Nutrition / 08 — Meal Details | `meal_details/{mealId}` | Nutrition / 02 | demostración | Provisoria | Detalle de la comida elegida |
-| 6.1 | Progress / 01 — Today's Overview | `todays_overview` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
+| 6.1 | Progress / 01 — Today's Overview | `todays_overview` | Progress / 02 | demostración | Hecha | Datos de ejemplo |
 | 6.2 | Progress / 02 — Dashboard | `progress` | Pestaña Progress | demostración | Provisoria | Datos de ejemplo |
 | 6.3 | Progress / 03 — Workout Progress | `workout_progress` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
 | 6.4 | Progress / 04 — Nutrition Progress | `nutrition_progress` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
