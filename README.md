@@ -24,7 +24,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 3.4 | Voice / 04 — Speaking | `voice_speaking` | Voice / 03 | demostración | Provisoria | Respuesta simulada |
 | 3.5 | Voice / 05 — Conversation | `voice_conversation` | Voice / 04 | demostración | Provisoria | Conversación de ejemplo |
 | 3.6 | Voice / 06 — Error | `voice_error` | Voice / 03 | demostración | Provisoria | Error simulado |
-| 4.1 | Workout / 01 — Dashboard | `workout` | Pestaña Workout | A definir (REF-05) | Provisoria | Funcional solo si aloja el catálogo |
+| 4.1 | Workout / 01 — Dashboard | `workout` | Pestaña Workout | demostración | Hecha (validación visual pendiente) | Datos del Figma; catálogo en Weekly Plan según NUC-01 (confirmación docente en REF-05); rutas existentes con id de demostración |
 | 4.2 | Workout / 02 — Weekly Plan | `weekly_plan` | Workout / 01 | A definir (REF-05) | Provisoria | Funcional solo si aloja el catálogo |
 | 4.3 | Workout / 03 — Workout Details | `workout_details/{workoutId}` | Workout / 01 y 02 | funcional | Provisoria | Detalle del entrenamiento elegido (Retrofit + caché Room) |
 | 4.4 | Workout / 04 — Pre Workout | `pre_workout/{workoutId}` | Workout / 01 y 03 | demostración | Provisoria | Datos de ejemplo |

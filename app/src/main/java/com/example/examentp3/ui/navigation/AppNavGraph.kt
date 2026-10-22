@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.home.HomeSampleUiState
 import com.example.examentp3.ui.screens.home.HomeScreen
+import com.example.examentp3.ui.screens.workout.WorkoutDashboardScreen
 import com.example.examentp3.ui.screens.login.SignInScreen
 import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
@@ -23,7 +24,6 @@ import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
-import com.example.examentp3.viewmodel.WorkoutConnectionCheckViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
 private const val DEMO_WORKOUT_ID = "demo-workout"
@@ -122,16 +122,15 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
 
     // Workout
     composable(WorkoutDashboard.route) { entry ->
-        hiltViewModel<WorkoutConnectionCheckViewModel>()
-        PlaceholderScreen(
-            title = WorkoutDashboard.frame,
-            links = listOf(
-                linkTo(WeeklyPlan),
-                Link(WorkoutDetails.frame, WorkoutDetails.createRoute(DEMO_WORKOUT_ID)),
-                Link(PreWorkout.frame, PreWorkout.createRoute(DEMO_WORKOUT_ID)),
-            ).map { link ->
-                PlaceholderLink(link.label) { if (entry.isResumed()) navController.navigate(link.route, link.options) }
+        WorkoutDashboardScreen(
+            onCalendarClick = { if (entry.isResumed()) navController.navigate(WeeklyPlan.route) },
+            onStartWorkout = {
+                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
             },
+            onWorkoutDetails = {
+                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(DEMO_WORKOUT_ID))
+            },
+            onViewProgress = { if (entry.isResumed()) navController.navigate(WorkoutProgress.route) },
         )
     }
     placeholder(WeeklyPlan, navController) {
