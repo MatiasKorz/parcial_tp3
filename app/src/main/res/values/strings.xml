@@ -70,6 +70,11 @@
     <string name="sign_up_demo_apple">Sign up with Apple is not available in this demonstration.</string>
     <string name="sign_up_demo_google">Sign up with Google is not available in this demonstration.</string>
     <string name="sign_up_demo_face_id">Face ID is not available in this demonstration.</string>
+    <!-- DAT-02: provisional Room check, replaced by NUC-04/NUC-05 -->
+    <string name="nutrition_room_check_insert">Insert sample meal</string>
+    <string name="nutrition_room_check_count">Stored meals: %1$d</string>
+    <string name="nutrition_room_check_empty">No meals stored yet</string>
+    <string name="nutrition_room_check_error">The meal could not be saved</string>
     <!-- PAN-2.1 Home / 01 — Dashboard -->
     <string name="home_greeting">Good morning</string>
     <string name="home_notifications_description">Notifications</string>
