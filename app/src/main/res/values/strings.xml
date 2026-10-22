@@ -163,4 +163,17 @@
     <string name="profile_dashboard_connected_data_status">Synced</string>
     <string name="profile_dashboard_account_title">Account</string>
     <string name="profile_dashboard_account_subtitle">Subscription, notifications &amp; privacy</string>
+
+    <!-- Workout / 02 — Weekly Plan: hosts the GET /v1/workouts catalog (NUC-01) -->
+    <string name="weekly_plan_title">Your Plan</string>
+    <string name="weekly_plan_subtitle">Designed around your goals and recovery.</string>
+    <!-- 1: minutes, 2: exercise count (plural), 3: level -->
+    <string name="weekly_plan_workout_meta">%1$d min • %2$s • %3$s</string>
+    <plurals name="weekly_plan_exercise_count">
+        <item quantity="one">%d exercise</item>
+        <item quantity="other">%d exercises</item>
+    </plurals>
+    <string name="workout_level_beginner">Beginner</string>
+    <string name="workout_level_intermediate">Intermediate</string>
+    <string name="workout_level_advanced">Advanced</string>
 </resources>

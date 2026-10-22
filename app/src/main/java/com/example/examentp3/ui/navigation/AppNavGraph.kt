@@ -22,8 +22,9 @@ import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
+import com.example.examentp3.ui.screens.workout.WeeklyPlanScreen
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
-import com.example.examentp3.viewmodel.WorkoutConnectionCheckViewModel
+import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
 private const val DEMO_WORKOUT_ID = "demo-workout"
@@ -122,7 +123,6 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
 
     // Workout
     composable(WorkoutDashboard.route) { entry ->
-        hiltViewModel<WorkoutConnectionCheckViewModel>()
         PlaceholderScreen(
             title = WorkoutDashboard.frame,
             links = listOf(
@@ -134,8 +134,16 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(WeeklyPlan, navController) {
-        listOf(Link(WorkoutDetails.frame, WorkoutDetails.createRoute(DEMO_WORKOUT_ID)))
+    composable(WeeklyPlan.route) { entry ->
+        val viewModel: WorkoutCatalogViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        WeeklyPlanScreen(
+            uiState = uiState,
+            // Each workout opens its own detail (NAV04).
+            onWorkoutClick = { workoutId ->
+                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(workoutId))
+            },
+        )
     }
     placeholder(WorkoutDetails, navController, workoutArgs) { entry ->
         val id = entry.argument(NavArgs.WORKOUT_ID)
