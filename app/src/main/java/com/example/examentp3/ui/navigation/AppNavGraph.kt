@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.login.SignInScreen
+import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 
@@ -74,12 +75,9 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(SignUp, navController) {
-        listOf(
-            Link("Sign Up", Home.route) { // inferred: not drawn as a connection in Figma
-                popUpTo(SignIn.route) { inclusive = true }
-                launchSingleTop = true
-            },
+    composable(SignUp.route) { entry ->
+        SignUpScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
         )
     }
 
