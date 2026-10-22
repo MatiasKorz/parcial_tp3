@@ -23,6 +23,7 @@ import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
+import com.example.examentp3.viewmodel.WorkoutConnectionCheckViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
 private const val DEMO_WORKOUT_ID = "demo-workout"
@@ -120,11 +121,17 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     placeholder(VoiceError, navController, onBack = closeCoach)
 
     // Workout
-    placeholder(WorkoutDashboard, navController, onBack = null) {
-        listOf(
-            linkTo(WeeklyPlan),
-            Link(WorkoutDetails.frame, WorkoutDetails.createRoute(DEMO_WORKOUT_ID)),
-            Link(PreWorkout.frame, PreWorkout.createRoute(DEMO_WORKOUT_ID)),
+    composable(WorkoutDashboard.route) { entry ->
+        hiltViewModel<WorkoutConnectionCheckViewModel>()
+        PlaceholderScreen(
+            title = WorkoutDashboard.frame,
+            links = listOf(
+                linkTo(WeeklyPlan),
+                Link(WorkoutDetails.frame, WorkoutDetails.createRoute(DEMO_WORKOUT_ID)),
+                Link(PreWorkout.frame, PreWorkout.createRoute(DEMO_WORKOUT_ID)),
+            ).map { link ->
+                PlaceholderLink(link.label) { if (entry.isResumed()) navController.navigate(link.route, link.options) }
+            },
         )
     }
     placeholder(WeeklyPlan, navController) {
