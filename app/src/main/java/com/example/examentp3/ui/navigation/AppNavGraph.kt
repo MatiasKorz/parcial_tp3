@@ -1,5 +1,8 @@
 package com.example.examentp3.ui.navigation
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
@@ -13,7 +16,9 @@ import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.login.SignInScreen
 import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
+import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
+import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
 private const val DEMO_WORKOUT_ID = "demo-workout"
@@ -134,8 +139,17 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     }
 
     // Nutrition
-    placeholder(NutritionDashboard, navController, onBack = null) {
-        listOf(linkTo(TodaysMeals), linkTo(AddFood))
+    composable(NutritionDashboard.route) { entry ->
+        val viewModel: MealRoomCheckViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        PlaceholderScreen(
+            title = NutritionDashboard.frame,
+            links = listOf(TodaysMeals, AddFood).map { d ->
+                PlaceholderLink(d.frame) { if (entry.isResumed()) navController.navigate(d.route) }
+            },
+        ) {
+            MealRoomCheckSection(uiState = uiState, onInsertClick = viewModel::insertSampleMeal)
+        }
     }
     placeholder(TodaysMeals, navController) {
         listOf(Link(MealDetails.frame, MealDetails.createRoute(DEMO_MEAL_ID)), linkTo(AddFood))
