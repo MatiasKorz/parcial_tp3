@@ -7,4 +7,9 @@
     <string name="nav_profile">Profile</string>
     <string name="placeholder_note">Provisional screen</string>
     <string name="placeholder_back">Back</string>
+    <!-- DAT-02: provisional Room check, replaced by NUC-04/NUC-05 -->
+    <string name="nutrition_room_check_insert">Insert sample meal</string>
+    <string name="nutrition_room_check_count">Stored meals: %1$d</string>
+    <string name="nutrition_room_check_empty">No meals stored yet</string>
+    <string name="nutrition_room_check_error">The meal could not be saved</string>
 </resources>
