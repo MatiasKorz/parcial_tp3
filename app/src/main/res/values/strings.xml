@@ -134,4 +134,32 @@
     <string name="todays_overview_current_goal_value">Build strength</string>
     <string name="todays_overview_weekly_target">WEEKLY TARGET</string>
     <string name="todays_overview_weekly_target_value">4 / 5 Workouts</string>
+    <!-- PAN-7.1 Profile / 01 — Dashboard -->
+    <string name="profile_dashboard_title">Profile</string>
+    <string name="profile_dashboard_settings_description">Settings</string>
+    <string name="profile_dashboard_name">Alex Morgan</string>
+    <string name="profile_dashboard_tagline">Building strength &amp; improving fitness</string>
+    <string name="profile_dashboard_edit_profile">Edit profile</string>
+    <string name="profile_dashboard_snapshot_title">My Snapshot</string>
+    <string name="profile_dashboard_snapshot_goal_label">Goal</string>
+    <string name="profile_dashboard_snapshot_goal_value">Build strength &amp; improve fitness</string>
+    <string name="profile_dashboard_snapshot_experience_label">Experience</string>
+    <string name="profile_dashboard_snapshot_experience_value">Intermediate</string>
+    <string name="profile_dashboard_snapshot_training_label">Training</string>
+    <string name="profile_dashboard_snapshot_training_value">4 days/week</string>
+    <string name="profile_dashboard_snapshot_workout_label">Preferred Workout</string>
+    <string name="profile_dashboard_snapshot_workout_value">Strength training</string>
+    <string name="profile_dashboard_vora_label">VORA Personalisation</string>
+    <string name="profile_dashboard_vora_title">VORA knows your goals</string>
+    <string name="profile_dashboard_vora_body">Your coaching adapts to your training, nutrition and activity preferences.</string>
+    <string name="profile_dashboard_review_preferences">Review preferences</string>
+    <string name="profile_dashboard_goals_title">Your Goals</string>
+    <string name="profile_dashboard_goals_subtitle">Build strength &amp; improve fitness</string>
+    <string name="profile_dashboard_preferences_title">Your Preferences</string>
+    <string name="profile_dashboard_preferences_subtitle">Training, nutrition and coaching</string>
+    <string name="profile_dashboard_connected_data_title">Connected Data</string>
+    <string name="profile_dashboard_connected_data_subtitle">Health &amp; activity data</string>
+    <string name="profile_dashboard_connected_data_status">Synced</string>
+    <string name="profile_dashboard_account_title">Account</string>
+    <string name="profile_dashboard_account_subtitle">Subscription, notifications &amp; privacy</string>
 </resources>

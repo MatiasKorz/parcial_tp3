@@ -20,6 +20,7 @@ import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
+import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 
@@ -203,13 +204,15 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     placeholder(WeeklyReview, navController)
 
     // Profile
-    placeholder(ProfileDashboard, navController, onBack = null) {
-        listOf(
-            linkTo(EditProfile),
-            linkTo(GoalsPreferences),
-            linkTo(NutritionPreferences),
-            linkTo(VoiceAiSettings),
-            linkTo(Settings),
+    composable(ProfileDashboard.route) { entry ->
+        ProfileDashboardScreen(
+            onSettingsClick = { if (entry.isResumed()) navController.navigate(Settings.route) },
+            onEditProfileClick = { if (entry.isResumed()) navController.navigate(EditProfile.route) },
+            onReviewPreferencesClick = { if (entry.isResumed()) navController.navigate(VoiceAiSettings.route) },
+            onGoalsClick = { if (entry.isResumed()) navController.navigate(GoalsPreferences.route) },
+            onPreferencesClick = { if (entry.isResumed()) navController.navigate(NutritionPreferences.route) },
+            onConnectedDataClick = { if (entry.isResumed()) navController.navigate(Settings.route) },
+            onAccountClick = { if (entry.isResumed()) navController.navigate(Settings.route) },
         )
     }
     placeholder(EditProfile, navController)
