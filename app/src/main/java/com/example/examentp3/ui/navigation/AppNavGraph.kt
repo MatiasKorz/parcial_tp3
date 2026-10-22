@@ -10,6 +10,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.examentp3.ui.navigation.AppDestination.*
+import com.example.examentp3.ui.screens.login.SignInScreen
+import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
@@ -59,21 +61,24 @@ private fun NavGraphBuilder.placeholder(
 
 internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     // Access
-    placeholder(SignIn, navController, onBack = null) {
-        listOf(
-            Link("Sign In", Home.route) {
-                popUpTo(SignIn.route) { inclusive = true }
-                launchSingleTop = true
+    composable(SignIn.route) { entry ->
+        SignInScreen(
+            onSignIn = {
+                if (entry.isResumed()) {
+                    navController.navigate(Home.route) {
+                        popUpTo(SignIn.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             },
-            Link("Sign up here", SignUp.route),
+            onSignUp = {
+                if (entry.isResumed()) navController.navigate(SignUp.route)
+            },
         )
     }
-    placeholder(SignUp, navController) {
-        listOf(
-            Link("Sign Up", Home.route) { // inferred: not drawn as a connection in Figma
-                popUpTo(SignIn.route) { inclusive = true }
-                launchSingleTop = true
-            },
+    composable(SignUp.route) { entry ->
+        SignUpScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
         )
     }
 
