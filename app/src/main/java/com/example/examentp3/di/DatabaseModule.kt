@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.examentp3.data.local.AppDatabase
 import com.example.examentp3.data.local.MealDao
+import com.example.examentp3.data.local.WorkoutDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,4 +23,7 @@ object DatabaseModule {
 
     @Provides
     fun provideMealDao(db: AppDatabase): MealDao = db.mealDao()
+
+    @Provides
+    fun provideWorkoutDao(db: AppDatabase): WorkoutDao = db.workoutDao()
 }

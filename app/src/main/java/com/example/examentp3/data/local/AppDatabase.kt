@@ -8,7 +8,8 @@ import androidx.room.RoomDatabase
  * From the delivery on, every schema change bumps [version] with a Migration.
  * fallbackToDestructiveMigration is not used because it would delete the user's meals (RF04).
  */
-@Database(entities = [MealEntity::class], version = 1, exportSchema = false)
+@Database(entities = [MealEntity::class, WorkoutSummaryEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun mealDao(): MealDao
+    abstract fun workoutDao(): WorkoutDao
 }
