@@ -23,7 +23,7 @@ val Typography = Typography(
     displayMedium = base.displayMedium.copy(fontFamily = Manrope),
     displaySmall = base.displaySmall.copy(fontFamily = Manrope),
     headlineLarge = base.headlineLarge.copy(fontFamily = Manrope),
-    headlineMedium = base.headlineMedium.copy(fontFamily = Manrope),
+    headlineMedium = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 22.sp), // panel title
     bodyLarge = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.Normal, fontSize = 15.sp),   // field value
     titleSmall = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 15.sp),    // large button
 

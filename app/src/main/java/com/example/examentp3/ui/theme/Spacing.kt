@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.dp
 
 /** Spacing values observed in the VORA design (px in Figma = dp here). */
 object Spacing {
+    val s2 = 2.dp
     val s4 = 4.dp
     val s6 = 6.dp
     val s8 = 8.dp
