@@ -20,8 +20,10 @@ import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
+import com.example.examentp3.ui.screens.profile.EditProfileScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
+import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
@@ -215,7 +217,26 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onAccountClick = { if (entry.isResumed()) navController.navigate(Settings.route) },
         )
     }
-    placeholder(EditProfile, navController)
+    composable(EditProfile.route) { entry ->
+        val viewModel: EditProfileViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        EditProfileScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onFirstNameChange = viewModel::onFirstNameChange,
+            onLastNameChange = viewModel::onLastNameChange,
+            onDateOfBirthChange = viewModel::onDateOfBirthChange,
+            onHeightChange = viewModel::onHeightChange,
+            onWeightChange = viewModel::onWeightChange,
+            onGenderChange = viewModel::onGenderChange,
+            onSave = {
+                if (entry.isResumed()) {
+                    viewModel.save()
+                    navController.popBackStack()
+                }
+            },
+        )
+    }
     placeholder(GoalsPreferences, navController)
     placeholder(NutritionPreferences, navController)
     placeholder(VoiceAiSettings, navController)
