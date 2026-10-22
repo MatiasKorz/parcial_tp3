@@ -7,4 +7,33 @@
     <string name="nav_profile">Profile</string>
     <string name="placeholder_note">Provisional screen</string>
     <string name="placeholder_back">Back</string>
+    <!-- PAN-2.1 Home / 01 — Dashboard -->
+    <string name="home_greeting">Good morning</string>
+    <string name="home_notifications_description">Notifications</string>
+    <string name="home_coach_name">VORA Coach</string>
+    <string name="home_coach_status">AI ONLINE</string>
+    <string name="home_coach_question">\"How can I support your fitness targets today?\"</string>
+    <string name="home_coach_hint">Tap the mic to talk naturally. I\'ll plan or log for you.</string>
+    <string name="home_start_voice_session">Start voice session</string>
+    <string name="home_start_my_workout">Start my workout</string>
+    <string name="home_log_breakfast">Log breakfast</string>
+    <string name="home_tip">You\'re on track. A protein-rich dinner would help you reach your daily target.</string>
+    <string name="home_todays_overview">Today\'s Overview</string>
+    <string name="home_percent">%1$d%%</string>
+    <string name="home_daily_goal">Daily Goal</string>
+    <string name="home_nutrition">Nutrition</string>
+    <string name="home_kcal_goal">/ %1$s kcal</string>
+    <string name="home_protein">Protein</string>
+    <string name="home_carbs">Carbs</string>
+    <string name="home_grams_progress">%1$dg / %2$dg</string>
+    <string name="home_steps">STEPS</string>
+    <string name="home_distance">DISTANCE</string>
+    <string name="home_distance_value">%1$s km</string>
+    <string name="home_active_kcal">ACTIVE KCAL</string>
+    <string name="home_kcal_value">%1$s kcal</string>
+    <string name="home_recommended_workout">RECOMMENDED WORKOUT</string>
+    <string name="home_today">TODAY</string>
+    <string name="home_workout_summary">%1$d min • %2$d exercises • %3$s</string>
+    <string name="home_estimated_volume">Estimated Vol: %1$s kg</string>
+    <string name="home_start_workout">Start workout</string>
 </resources>

@@ -16,7 +16,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 |---|---|---|---|---|---|---|
 | 1.1 | Login - 01 — SignIn | `sign_in` | Inicio de la app | demostración | Provisoria | Acceso de demostración sin Firebase; los controles opcionales (contraseña olvidada, proveedores, biometría) informan modo demostración |
 | 1.2 | Login - 02 — SignUp | `sign_up` | SignIn ("Sign up here") | demostración | Provisoria | Alta simulada, entra a Home sin crear cuenta |
-| 2.1 | Home / 01 — Dashboard | `home` | SignIn; pestaña Home | demostración | Provisoria | Datos de ejemplo |
+| 2.1 | Home / 01 — Dashboard | `home` | SignIn; pestaña Home | demostración | Hecha | Datos de ejemplo |
 | 2.2 | Home / 02 — Notifications | `notifications` | Home | demostración | Provisoria | Notificaciones de ejemplo |
 | 3.1 | Voice / 01 — Idle | `voice_idle` | Home | demostración | Provisoria | Estado del coach simulado; sin micrófono |
 | 3.2 | Voice / 02 — Listening | `voice_listening` | Voice / 01 | demostración | Provisoria | Escucha simulada |

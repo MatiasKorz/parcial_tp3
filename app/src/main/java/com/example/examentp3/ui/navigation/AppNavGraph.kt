@@ -10,6 +10,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.examentp3.ui.navigation.AppDestination.*
+import com.example.examentp3.ui.screens.home.HomeSampleUiState
+import com.example.examentp3.ui.screens.home.HomeScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 
@@ -77,7 +79,21 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     }
 
     // Home
-    placeholder(Home, navController, onBack = null) { listOf(linkTo(Notifications), linkTo(VoiceIdle)) }
+    composable(Home.route) { entry ->
+        HomeScreen(
+            uiState = HomeSampleUiState,
+            onNotificationsClick = { if (entry.isResumed()) navController.navigate(Notifications.route) },
+            onStartVoiceSession = { if (entry.isResumed()) navController.navigate(VoiceIdle.route) },
+            onStartMyWorkout = {
+                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
+            },
+            onLogBreakfast = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            onTodaysOverviewClick = { if (entry.isResumed()) navController.navigate(TodaysOverview.route) },
+            onStartWorkout = {
+                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
+            },
+        )
+    }
     placeholder(Notifications, navController)
 
     // Coach: closing returns to where it was opened from
