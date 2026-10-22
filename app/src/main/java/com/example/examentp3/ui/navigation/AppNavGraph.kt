@@ -20,6 +20,7 @@ import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
+import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
@@ -189,7 +190,13 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             linkTo(WeeklyReview),
         )
     }
-    placeholder(TodaysOverview, navController)
+    composable(TodaysOverview.route) { entry ->
+        TodaysOverviewScreen(
+            onStartWorkout = {
+                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
+            },
+        )
+    }
     placeholder(WorkoutProgress, navController)
     placeholder(NutritionProgress, navController)
     placeholder(HealthTrends, navController)
