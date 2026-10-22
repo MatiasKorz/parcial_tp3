@@ -2,6 +2,7 @@ package com.example.examentp3.ui.screens.placeholder
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -28,6 +29,7 @@ fun PlaceholderScreen(
     modifier: Modifier = Modifier,
     detail: String? = null,
     onBack: (() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -49,6 +51,7 @@ fun PlaceholderScreen(
         links.forEach { link ->
             VoraPrimaryButton(text = link.label, onClick = link.onClick)
         }
+        content()
         if (onBack != null) {
             VoraTextAction(text = stringResource(R.string.placeholder_back), onClick = onBack)
         }
