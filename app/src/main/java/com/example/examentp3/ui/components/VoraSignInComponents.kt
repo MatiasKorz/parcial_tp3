@@ -12,6 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.VisualTransformation
@@ -35,6 +38,15 @@ internal fun VoraSignInField(
     transformation: VisualTransformation = VisualTransformation.None,
     placeholder: String = "",
     trailing: @Composable (() -> Unit)? = null,
+    minHeight: Dp = 55.dp,
+    verticalPadding: Dp = 16.dp,
+    leadingGap: Dp = 11.dp,
+    fieldShape: Shape = RoundedCornerShape(16.dp),
+    containerColor: Color = MaterialTheme.colorScheme.background,
+    valueStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    iconTint: Color = Color.Unspecified,
+    iconSize: Dp = 20.dp,
+    borderColor: Color = MaterialTheme.colorScheme.outline,
 ) {
     BasicTextField(
         value = value,
@@ -42,22 +54,24 @@ internal fun VoraSignInField(
         singleLine = true,
         keyboardOptions = keyboardOptions,
         visualTransformation = transformation,
-        textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
+        textStyle = valueStyle.copy(color = MaterialTheme.colorScheme.onSurface),
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         modifier = modifier.fillMaxWidth().semantics { contentDescription = label },
         decorationBox = { field ->
             Row(
                 modifier = Modifier
-                    .heightIn(min = 55.dp)
-                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
-                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp))
+                    .heightIn(min = minHeight)
+                    .background(containerColor, fieldShape)
+                    .border(1.dp, borderColor, fieldShape)
                     .padding(start = 14.dp, end = if (trailing == null) 16.dp else 0.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(painterResource(icon), contentDescription = null, tint = Color.Unspecified, modifier = Modifier.size(20.dp))
-                Spacer(Modifier.width(11.dp))
-                Box(Modifier.weight(1f).padding(vertical = 16.dp)) {
-                    if (value.isEmpty()) Text(placeholder, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Box(Modifier.size(20.dp), contentAlignment = Alignment.Center) {
+                    Icon(painterResource(icon), contentDescription = null, tint = iconTint, modifier = Modifier.size(iconSize))
+                }
+                Spacer(Modifier.width(leadingGap))
+                Box(Modifier.weight(1f).padding(vertical = verticalPadding)) {
+                    if (value.isEmpty()) Text(placeholder, style = valueStyle, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     field()
                 }
                 trailing?.invoke()
