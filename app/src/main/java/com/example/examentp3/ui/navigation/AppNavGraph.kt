@@ -15,14 +15,25 @@ import androidx.navigation.navArgument
 import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.home.HomeSampleUiState
 import com.example.examentp3.ui.screens.home.HomeScreen
+import com.example.examentp3.ui.screens.workout.WorkoutDashboardScreen
+import com.example.examentp3.ui.screens.workout.preworkout.PreWorkoutScreen
+import com.example.examentp3.ui.screens.workout.details.WorkoutDetailsScreen
+import com.example.examentp3.ui.screens.workout.weeklyplan.WeeklyPlanScreen
 import com.example.examentp3.ui.screens.login.SignInScreen
 import com.example.examentp3.ui.screens.login.SignUpScreen
+import com.example.examentp3.ui.screens.notifications.NotificationsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
+import com.example.examentp3.ui.screens.profile.EditProfileScreen
+import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
+import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
+import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
+import com.example.examentp3.viewmodel.EditProfileViewModel
+import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
@@ -107,11 +118,24 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(Notifications, navController)
+    composable(Notifications.route) { NotificationsScreen() }
 
     // Coach: closing returns to where it was opened from
     val closeCoach: (NavHostController) -> Unit = { it.popBackStack(VoiceIdle.route, inclusive = true) }
-    placeholder(VoiceIdle, navController, onBack = closeCoach) { listOf(linkTo(VoiceListening)) }
+    composable(VoiceIdle.route) { entry ->
+        VoiceIdleScreen(
+            onBack = { if (entry.isResumed()) closeCoach(navController) },
+            onTapToTalk = { if (entry.isResumed()) navController.navigate(VoiceListening.route) },
+            onTypeInstead = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
+            onLastConversationClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
+            onStartMyWorkoutClick = {
+                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
+            },
+            onLogMyBreakfastClick = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            onWhatToEatClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
+            onHowAmIDoingClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
+        )
+    }
     placeholder(VoiceListening, navController, onBack = closeCoach) { listOf(linkTo(VoiceProcessing)) }
     placeholder(VoiceProcessing, navController, onBack = closeCoach) {
         listOf(linkTo(VoiceSpeaking), linkTo(VoiceError))
@@ -121,25 +145,45 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     placeholder(VoiceError, navController, onBack = closeCoach)
 
     // Workout
-    placeholder(WorkoutDashboard, navController, onBack = null) {
-        listOf(
-            linkTo(WeeklyPlan),
-            Link(WorkoutDetails.frame, WorkoutDetails.createRoute(DEMO_WORKOUT_ID)),
-            Link(PreWorkout.frame, PreWorkout.createRoute(DEMO_WORKOUT_ID)),
+    composable(WorkoutDashboard.route) { entry ->
+        WorkoutDashboardScreen(
+            onCalendarClick = { if (entry.isResumed()) navController.navigate(WeeklyPlan.route) },
+            onStartWorkout = {
+                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
+            },
+            onWorkoutDetails = {
+                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(DEMO_WORKOUT_ID))
+            },
+            onViewProgress = { if (entry.isResumed()) navController.navigate(WorkoutProgress.route) },
         )
     }
-    placeholder(WeeklyPlan, navController) {
-        listOf(Link(WorkoutDetails.frame, WorkoutDetails.createRoute(DEMO_WORKOUT_ID)))
-    }
-    placeholder(WorkoutDetails, navController, workoutArgs) { entry ->
-        val id = entry.argument(NavArgs.WORKOUT_ID)
-        listOf(
-            Link(PreWorkout.frame, PreWorkout.createRoute(id)),
-            Link(ExerciseDetails.frame, ExerciseDetails.createRoute(DEMO_EXERCISE_ID)),
+    composable(WeeklyPlan.route) { entry ->
+        WeeklyPlanScreen(
+            onWorkoutDetails = {
+                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(DEMO_WORKOUT_ID))
+            },
         )
     }
-    placeholder(PreWorkout, navController, workoutArgs) { entry ->
-        listOf(Link(ActiveWorkout.frame, ActiveWorkout.createRoute(entry.argument(NavArgs.WORKOUT_ID))))
+    composable(WorkoutDetails.route, workoutArgs) { entry ->
+        val workoutId = entry.argument(NavArgs.WORKOUT_ID)
+        WorkoutDetailsScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onStartWorkout = {
+                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(workoutId))
+            },
+            onExerciseClick = {
+                if (entry.isResumed()) navController.navigate(ExerciseDetails.createRoute(DEMO_EXERCISE_ID))
+            },
+        )
+    }
+    composable(PreWorkout.route, workoutArgs) { entry ->
+        val workoutId = entry.argument(NavArgs.WORKOUT_ID)
+        PreWorkoutScreen(
+            onClose = { if (entry.isResumed()) navController.popBackStack() },
+            onStartWorkout = {
+                if (entry.isResumed()) navController.navigate(ActiveWorkout.createRoute(workoutId))
+            },
+        )
     }
     placeholder(ActiveWorkout, navController, workoutArgs) {
         listOf(
@@ -183,13 +227,12 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     placeholder(MealDetails, navController, mealArgs)
 
     // Progress
-    placeholder(ProgressDashboard, navController, onBack = null) {
-        listOf(
-            linkTo(TodaysOverview),
-            linkTo(WorkoutProgress),
-            linkTo(NutritionProgress),
-            linkTo(HealthTrends),
-            linkTo(WeeklyReview),
+    composable(ProgressDashboard.route) { entry ->
+        ProgressDashboardScreen(
+            onSeeWeeklyReview = { if (entry.isResumed()) navController.navigate(WeeklyReview.route) },
+            onWorkoutClick = { if (entry.isResumed()) navController.navigate(WorkoutProgress.route) },
+            onNutritionClick = { if (entry.isResumed()) navController.navigate(NutritionProgress.route) },
+            onActivityClick = { if (entry.isResumed()) navController.navigate(HealthTrends.route) },
         )
     }
     composable(TodaysOverview.route) { entry ->
@@ -220,8 +263,43 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onAccountClick = { if (entry.isResumed()) navController.navigate(Settings.route) },
         )
     }
-    placeholder(EditProfile, navController)
-    placeholder(GoalsPreferences, navController)
+    composable(EditProfile.route) { entry ->
+        val viewModel: EditProfileViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        EditProfileScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onFirstNameChange = viewModel::onFirstNameChange,
+            onLastNameChange = viewModel::onLastNameChange,
+            onDateOfBirthChange = viewModel::onDateOfBirthChange,
+            onHeightChange = viewModel::onHeightChange,
+            onWeightChange = viewModel::onWeightChange,
+            onGenderChange = viewModel::onGenderChange,
+            onSave = {
+                if (entry.isResumed()) {
+                    viewModel.save()
+                    navController.popBackStack()
+                }
+            },
+        )
+    }
+    composable(GoalsPreferences.route) { entry ->
+        val viewModel: GoalsPreferencesViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        GoalsPreferencesScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onGoalToggle = viewModel::onGoalToggle,
+            onFrequencySelect = viewModel::onFrequencySelect,
+            onWorkoutSelect = viewModel::onWorkoutSelect,
+            onSave = {
+                if (entry.isResumed()) {
+                    viewModel.save()
+                    navController.popBackStack()
+                }
+            },
+        )
+    }
     placeholder(NutritionPreferences, navController)
     placeholder(VoiceAiSettings, navController)
     placeholder(Settings, navController) {
