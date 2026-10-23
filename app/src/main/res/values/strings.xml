@@ -263,4 +263,26 @@
     <string name="workout_details_menu_notice">Additional workout options are not available in this demonstration.</string>
     <string name="workout_details_ok">OK</string>
 
+
+    <!-- PAN-4.4: Pre Workout demonstration -->
+    <string name="pre_workout_get_ready">GET READY</string>
+    <string name="pre_workout_close">Close</string>
+    <string name="pre_workout_title">Upper Body Strength</string>
+    <string name="pre_workout_summary">42 min • 5 exercises</string>
+    <string name="pre_workout_focus_label">TODAY\'S FOCUS</string>
+    <string name="pre_workout_focus_title">Controlled Repetitions</string>
+    <string name="pre_workout_focus_body">Keep concentric lifts explosive and focus on a slow, 2-second eccentric return for maximal hypertrophy stimulus.</string>
+    <string name="pre_workout_session_label">YOUR LAST SESSION</string>
+    <string name="pre_workout_session_title">Bench Press Volume</string>
+    <string name="pre_workout_session_sets">Set 1: 40 kg × 10 • Set 2: 40 kg × 9 • Set 3: 37.5 kg × 10</string>
+    <string name="pre_workout_tip_label">VORA\'S COACH TIP</string>
+    <string name="pre_workout_tip_body">\"Start slightly lighter on your first set. If your form feels exceptionally robust, increase the load.\"</string>
+    <string name="pre_workout_need_anything">Need anything?</string>
+    <string name="pre_workout_recommendation">\"Recommend a chest warm-up\"</string>
+    <string name="pre_workout_microphone">Recommend a chest warm-up using voice</string>
+    <string name="pre_workout_start">Start Workout</string>
+    <string name="pre_workout_demo_title">Demonstration</string>
+    <string name="pre_workout_demo_notice">Warm-up recommendations and voice coaching are not available in this demonstration.</string>
+    <string name="pre_workout_ok">OK</string>
+
 </resources>

@@ -16,6 +16,7 @@ import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.home.HomeSampleUiState
 import com.example.examentp3.ui.screens.home.HomeScreen
 import com.example.examentp3.ui.screens.workout.WorkoutDashboardScreen
+import com.example.examentp3.ui.screens.workout.preworkout.PreWorkoutScreen
 import com.example.examentp3.ui.screens.workout.details.WorkoutDetailsScreen
 import com.example.examentp3.ui.screens.workout.weeklyplan.WeeklyPlanScreen
 import com.example.examentp3.ui.screens.login.SignInScreen
@@ -154,8 +155,14 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(PreWorkout, navController, workoutArgs) { entry ->
-        listOf(Link(ActiveWorkout.frame, ActiveWorkout.createRoute(entry.argument(NavArgs.WORKOUT_ID))))
+    composable(PreWorkout.route, workoutArgs) { entry ->
+        val workoutId = entry.argument(NavArgs.WORKOUT_ID)
+        PreWorkoutScreen(
+            onClose = { if (entry.isResumed()) navController.popBackStack() },
+            onStartWorkout = {
+                if (entry.isResumed()) navController.navigate(ActiveWorkout.createRoute(workoutId))
+            },
+        )
     }
     placeholder(ActiveWorkout, navController, workoutArgs) {
         listOf(
