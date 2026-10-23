@@ -1,17 +1,12 @@
-package com.example.examentp3.ui.screens.workout
+package com.example.examentp3.ui.screens.workout.weeklyplan
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,56 +22,10 @@ import com.example.examentp3.model.WorkoutSummary
 import com.example.examentp3.ui.theme.ExamenTP3Theme
 import com.example.examentp3.ui.theme.Spacing
 import com.example.examentp3.ui.theme.voraColors
-import com.example.examentp3.viewmodel.WorkoutCatalogUiState
 
-/**
- * Workout / 02 — Weekly Plan hosting the catalog of GET /v1/workouts (NUC-01).
- * The day strip, the "TODAY'S WORKOUT" highlight and the "Need to adjust your week?" card are PAN-4.2.
- */
-@Composable
-fun WeeklyPlanScreen(
-    uiState: WorkoutCatalogUiState,
-    onWorkoutClick: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .statusBarsPadding(),
-        contentPadding = PaddingValues(
-            start = Spacing.screenMargin,
-            end = Spacing.screenMargin,
-            top = Spacing.s12,
-            bottom = Spacing.s24,
-        ),
-        verticalArrangement = Arrangement.spacedBy(Spacing.s12),
-    ) {
-        item { Header(modifier = Modifier.padding(bottom = Spacing.s8)) }
-        items(uiState.workouts, key = { it.id }) { workout ->
-            WorkoutCard(workout = workout, onClick = { onWorkoutClick(workout.id) })
-        }
-    }
-}
 
 @Composable
-private fun Header(modifier: Modifier = Modifier) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Spacing.s4)) {
-        Text(
-            text = stringResource(R.string.weekly_plan_title),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        Text(
-            text = stringResource(R.string.weekly_plan_subtitle),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.voraColors.textSecondary,
-        )
-    }
-}
-
-@Composable
-private fun WorkoutCard(
+internal fun WorkoutCatalogCard(
     workout: WorkoutSummary,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -127,11 +76,6 @@ private val PreviewWorkouts = listOf(
 
 @Preview(showBackground = true)
 @Composable
-private fun WeeklyPlanScreenPreview() {
-    ExamenTP3Theme {
-        WeeklyPlanScreen(
-            uiState = WorkoutCatalogUiState(workouts = PreviewWorkouts),
-            onWorkoutClick = {},
-        )
-    }
+private fun WorkoutCatalogCardPreview() {
+    ExamenTP3Theme { WorkoutCatalogCard(workout = PreviewWorkouts.first(), onClick = {}) }
 }
