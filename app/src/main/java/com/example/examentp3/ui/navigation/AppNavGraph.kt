@@ -16,6 +16,7 @@ import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.home.HomeSampleUiState
 import com.example.examentp3.ui.screens.home.HomeScreen
 import com.example.examentp3.ui.screens.workout.WorkoutDashboardScreen
+import com.example.examentp3.ui.screens.workout.active.ActiveWorkoutScreen
 import com.example.examentp3.ui.screens.workout.preworkout.PreWorkoutScreen
 import com.example.examentp3.ui.screens.workout.details.WorkoutDetailsScreen
 import com.example.examentp3.ui.screens.workout.weeklyplan.WeeklyPlanScreen
@@ -195,10 +196,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(ActiveWorkout, navController, workoutArgs) {
-        listOf(
-            Link(ExerciseDetails.frame, ExerciseDetails.createRoute(DEMO_EXERCISE_ID)),
-            linkTo(WorkoutComplete),
+    composable(ActiveWorkout.route, workoutArgs) { entry ->
+        ActiveWorkoutScreen(
+            onFinishWorkout = {
+                if (entry.isResumed()) navController.navigate(WorkoutComplete.route)
+            },
         )
     }
     placeholder(ExerciseDetails, navController, exerciseArgs)
