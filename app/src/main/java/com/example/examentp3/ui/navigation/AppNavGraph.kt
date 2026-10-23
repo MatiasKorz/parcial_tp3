@@ -21,6 +21,7 @@ import com.example.examentp3.ui.screens.workout.details.WorkoutDetailsScreen
 import com.example.examentp3.ui.screens.workout.weeklyplan.WeeklyPlanScreen
 import com.example.examentp3.ui.screens.login.SignInScreen
 import com.example.examentp3.ui.screens.login.SignUpScreen
+import com.example.examentp3.ui.screens.notifications.NotificationsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
@@ -114,7 +115,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(Notifications, navController)
+    composable(Notifications.route) { NotificationsScreen() }
 
     // Coach: closing returns to where it was opened from
     val closeCoach: (NavHostController) -> Unit = { it.popBackStack(VoiceIdle.route, inclusive = true) }
