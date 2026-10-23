@@ -16,6 +16,7 @@ import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.home.HomeSampleUiState
 import com.example.examentp3.ui.screens.home.HomeScreen
 import com.example.examentp3.ui.screens.workout.WorkoutDashboardScreen
+import com.example.examentp3.ui.screens.workout.complete.WorkoutCompleteScreen
 import com.example.examentp3.ui.screens.workout.exercise.ExerciseDetailsScreen
 import com.example.examentp3.ui.screens.workout.active.ActiveWorkoutScreen
 import com.example.examentp3.ui.screens.workout.preworkout.PreWorkoutScreen
@@ -200,7 +201,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     composable(ActiveWorkout.route, workoutArgs) { entry ->
         ActiveWorkoutScreen(
             onFinishWorkout = {
-                if (entry.isResumed()) navController.navigate(WorkoutComplete.route)
+                if (entry.isResumed()) {
+                    navController.navigate(WorkoutComplete.route) {
+                        popUpTo(entry.destination.id) { inclusive = true }
+                    }
+                }
             },
         )
     }
@@ -209,11 +214,18 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onBack = { if (entry.isResumed()) navController.popBackStack() },
         )
     }
-    placeholder(WorkoutComplete, navController) {
-        listOf(
-            Link("Done", WorkoutDashboard.route) {
-                popUpTo(WorkoutDashboard.route)
-                launchSingleTop = true
+    composable(WorkoutComplete.route) { entry ->
+        WorkoutCompleteScreen(
+            onDone = {
+                if (entry.isResumed() &&
+                    !navController.popBackStack(WorkoutDashboard.route, inclusive = false)
+                ) {
+                    // Home-origin sessions may not have a Workout Dashboard entry yet.
+                    navController.navigate(WorkoutDashboard.route) {
+                        popUpTo(Home.route)
+                        launchSingleTop = true
+                    }
+                }
             },
         )
     }

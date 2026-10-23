@@ -587,4 +587,24 @@
     <string name="exercise_details_coach_notice">Vora coaching is not available in this demonstration. No microphone is used.</string>
     <string name="exercise_details_ok">OK</string>
 
+
+    <!-- PAN-4.7: fixed Figma metrics and local, non-persisted rating -->
+    <string name="workout_complete_completed">COMPLETED</string>
+    <string name="workout_complete_title">You did well!</string>
+    <string name="workout_complete_message">Strong session. Your consistency is improving.</string>
+    <string name="workout_complete_duration_value">42 min</string>
+    <string name="workout_complete_duration">DURATION</string>
+    <string name="workout_complete_exercises_value">5/5</string>
+    <string name="workout_complete_exercises">EXERCISES</string>
+    <string name="workout_complete_volume_value">2,340 kg</string>
+    <string name="workout_complete_volume">VOLUME</string>
+    <string name="workout_complete_insight">VORA INSIGHT</string>
+    <string name="workout_complete_insight_body">You increased your Seated Cable Row volume by 8% compared with your previous session. Keep this controlled tempo next time.</string>
+    <string name="workout_complete_rate">Rate this workout difficulty</string>
+    <string name="workout_complete_great">Great</string>
+    <string name="workout_complete_good">Good</string>
+    <string name="workout_complete_tough">Tough</string>
+    <string name="workout_complete_too_easy">Too Easy</string>
+    <string name="workout_complete_done">Done</string>
+
 </resources>
