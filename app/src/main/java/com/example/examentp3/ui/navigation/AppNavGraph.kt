@@ -28,6 +28,7 @@ import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.EditProfileScreen
 import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
+import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
@@ -225,13 +226,12 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     placeholder(MealDetails, navController, mealArgs)
 
     // Progress
-    placeholder(ProgressDashboard, navController, onBack = null) {
-        listOf(
-            linkTo(TodaysOverview),
-            linkTo(WorkoutProgress),
-            linkTo(NutritionProgress),
-            linkTo(HealthTrends),
-            linkTo(WeeklyReview),
+    composable(ProgressDashboard.route) { entry ->
+        ProgressDashboardScreen(
+            onSeeWeeklyReview = { if (entry.isResumed()) navController.navigate(WeeklyReview.route) },
+            onWorkoutClick = { if (entry.isResumed()) navController.navigate(WorkoutProgress.route) },
+            onNutritionClick = { if (entry.isResumed()) navController.navigate(NutritionProgress.route) },
+            onActivityClick = { if (entry.isResumed()) navController.navigate(HealthTrends.route) },
         )
     }
     composable(TodaysOverview.route) { entry ->
