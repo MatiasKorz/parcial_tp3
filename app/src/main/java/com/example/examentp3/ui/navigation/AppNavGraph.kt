@@ -21,6 +21,7 @@ import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
+import com.example.examentp3.ui.screens.progress.NutritionProgressScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 
@@ -199,7 +200,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
         )
     }
     placeholder(WorkoutProgress, navController)
-    placeholder(NutritionProgress, navController)
+    composable(NutritionProgress.route) { entry ->
+        NutritionProgressScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+        )
+    }
     placeholder(HealthTrends, navController)
     placeholder(WeeklyReview, navController)
 

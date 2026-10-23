@@ -42,7 +42,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 6.1 | Progress / 01 — Today's Overview | `todays_overview` | Progress / 02 | demostración | Hecha | Datos de ejemplo |
 | 6.2 | Progress / 02 — Dashboard | `progress` | Pestaña Progress | demostración | Provisoria | Datos de ejemplo |
 | 6.3 | Progress / 03 — Workout Progress | `workout_progress` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
-| 6.4 | Progress / 04 — Nutrition Progress | `nutrition_progress` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
+| 6.4 | Progress / 04 — Nutrition Progress | `nutrition_progress` | Progress / 02 | demostración | Hecha | Datos de ejemplo |
 | 6.5 | Progress / 05 — Health Trends | `health_trends` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
 | 6.6 | Progress / 06 — Weekly Review | `weekly_review` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
 | 7.1 | Profile / 01 — Dashboard | `profile` | Pestaña Profile | demostración | Hecha | Datos de ejemplo |
