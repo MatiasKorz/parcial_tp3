@@ -43,8 +43,13 @@ sealed class AppDestination(
     data object ActiveWorkout : AppDestination("active_workout/{${NavArgs.WORKOUT_ID}}", "Workout / 05 — Active Workout") {
         fun createRoute(workoutId: String) = "active_workout/${Uri.encode(workoutId)}"
     }
-    data object ExerciseDetails : AppDestination("exercise_details/{${NavArgs.EXERCISE_ID}}", "Workout / 06 — Exercise Details") {
-        fun createRoute(exerciseId: String) = "exercise_details/${Uri.encode(exerciseId)}"
+    // Exercise ids repeat across workouts, so the route carries both ids (REF-04).
+    data object ExerciseDetails : AppDestination(
+        "exercise_details/{${NavArgs.WORKOUT_ID}}/{${NavArgs.EXERCISE_ID}}",
+        "Workout / 06 — Exercise Details",
+    ) {
+        fun createRoute(workoutId: String, exerciseId: String) =
+            "exercise_details/${Uri.encode(workoutId)}/${Uri.encode(exerciseId)}"
     }
     data object WorkoutComplete : AppDestination("workout_complete", "Workout / 07 — Workout Complete")
 

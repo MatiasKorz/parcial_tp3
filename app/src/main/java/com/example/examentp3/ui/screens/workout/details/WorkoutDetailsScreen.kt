@@ -1,6 +1,5 @@
 package com.example.examentp3.ui.screens.workout.details
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,32 +13,34 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.examentp3.R
+import com.example.examentp3.model.Exercise
+import com.example.examentp3.model.WorkoutDetail
 import com.example.examentp3.ui.components.VoraPrimaryButton
+import com.example.examentp3.ui.screens.workout.weeklyplan.levelLabel
 import com.example.examentp3.ui.theme.*
+import com.example.examentp3.viewmodel.DetailUnavailable
+import com.example.examentp3.viewmodel.WorkoutDetailsUiState
 
-private data class DemoExercise(@param:StringRes val name: Int, @param:StringRes val prescription: Int)
-private val demoExercises = listOf(
-    DemoExercise(R.string.workout_details_bench, R.string.workout_details_bench_sets),
-    DemoExercise(R.string.workout_details_row, R.string.workout_details_row_sets),
-    DemoExercise(R.string.workout_details_shoulder, R.string.workout_details_shoulder_sets),
-    DemoExercise(R.string.workout_details_raise, R.string.workout_details_raise_sets),
-    DemoExercise(R.string.workout_details_tricep, R.string.workout_details_tricep_sets),
-)
-
-/** Figma-only demonstration; real detail models and state belong to NUC-02/NUC-03. */
+/**
+ * Workout / 03 — Workout Details with the data of GET /v1/workouts/{workoutId}, cached in Room (NUC-02).
+ * The coach note, "Edit workout" and the menu stay as PAN-4.3 demonstrations; loading and retry belong to NUC-03.
+ */
 @Composable
 fun WorkoutDetailsScreen(
+    uiState: WorkoutDetailsUiState,
     onBack: () -> Unit,
     onStartWorkout: () -> Unit,
-    onExerciseClick: () -> Unit,
+    onExerciseClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var notice by rememberSaveable { mutableStateOf<Int?>(null) }
+    val workout = uiState.workout
     LazyColumn(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
             .statusBarsPadding().navigationBarsPadding(),
@@ -49,19 +50,27 @@ fun WorkoutDetailsScreen(
         ),
         verticalArrangement = Arrangement.spacedBy(Spacing.s10),
     ) {
+        item(key = "header") {
+            OverviewHeader(onBack) { notice = R.string.workout_details_menu_notice }
+        }
+        if (workout == null) {
+            uiState.unavailable?.let { reason ->
+                item(key = "unavailable") { UnavailableMessage(reason, Modifier.padding(top = Spacing.s6)) }
+            }
+            return@LazyColumn
+        }
         item(key = "overview") {
             // Combined with the lazy list gap, preserves 16 dp before exercises.
             Column(
-                Modifier.padding(bottom = Spacing.s6),
+                Modifier.padding(top = Spacing.s6, bottom = Spacing.s6),
                 verticalArrangement = Arrangement.spacedBy(Spacing.s16),
             ) {
-                OverviewHeader(onBack) { notice = R.string.workout_details_menu_notice }
-                WorkoutOverview()
+                WorkoutOverview(workout)
                 CoachNote()
             }
         }
-        itemsIndexed(demoExercises, key = { _, exercise -> exercise.name }) { index, exercise ->
-            ExerciseRow(index + 1, exercise, onExerciseClick)
+        itemsIndexed(workout.exercises, key = { _, exercise -> exercise.id }) { index, exercise ->
+            ExerciseRow(index + 1, exercise) { onExerciseClick(exercise.id) }
         }
         item(key = "actions") {
             Column(
@@ -127,20 +136,27 @@ private fun OverviewHeader(onBack: () -> Unit, onMenu: () -> Unit) {
 }
 
 @Composable
-private fun WorkoutOverview() {
+private fun WorkoutOverview(workout: WorkoutDetail) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.s8)) {
-        Text(stringResource(R.string.workout_details_title), style = MaterialTheme.typography.workoutDetailsTitle)
+        Text(workout.name, style = MaterialTheme.typography.workoutDetailsTitle)
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(Spacing.s12),
             verticalArrangement = Arrangement.spacedBy(Spacing.s4),
         ) {
-            Text(stringResource(R.string.workout_details_duration), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
+            val count = workout.exercises.size
+            Text(stringResource(R.string.workout_details_duration, workout.durationMinutes), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
             Text(stringResource(R.string.workout_details_bullet), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textMuted)
-            Text(stringResource(R.string.workout_details_level), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
+            Text(levelLabel(workout.level), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
             Text(stringResource(R.string.workout_details_bullet), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textMuted)
-            Text(stringResource(R.string.workout_details_count), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
+            Text(pluralStringResource(R.plurals.weekly_plan_exercise_count, count, count), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
         }
-        Text(stringResource(R.string.workout_details_focus), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
+        val focus = workout.exercises.map { it.muscleGroup }.filter { it.isNotBlank() }.distinct()
+        if (focus.isNotEmpty()) {
+            Text(
+                stringResource(R.string.workout_details_focus, focus.joinToString(" • ")),
+                style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary,
+            )
+        }
     }
 }
 
@@ -158,8 +174,21 @@ private fun CoachNote() {
     }
 }
 
+/** Not designed in Figma: a state inside the detail, styled like the frame's coach note (RF02). */
 @Composable
-private fun ExerciseRow(number: Int, exercise: DemoExercise, onClick: () -> Unit) {
+private fun UnavailableMessage(reason: DetailUnavailable, modifier: Modifier = Modifier) {
+    Text(
+        stringResource(reason.message),
+        style = MaterialTheme.typography.workoutDetailsNoteBody,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier.fillMaxWidth()
+            .background(MaterialTheme.voraColors.mintSoft, MaterialTheme.shapes.small)
+            .padding(Spacing.s12),
+    )
+}
+
+@Composable
+private fun ExerciseRow(number: Int, exercise: Exercise, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         shape = MaterialTheme.shapes.small,
@@ -182,8 +211,11 @@ private fun ExerciseRow(number: Int, exercise: DemoExercise, onClick: () -> Unit
                 )
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.s2)) {
-                Text(stringResource(exercise.name), style = MaterialTheme.typography.workoutDetailsExercise)
-                Text(stringResource(exercise.prescription), style = MaterialTheme.typography.workoutDetailsPrescription, color = MaterialTheme.voraColors.textSecondary)
+                Text(exercise.name, style = MaterialTheme.typography.workoutDetailsExercise)
+                Text(
+                    stringResource(R.string.workout_details_prescription, exercise.sets, exercise.reps, exercise.restSeconds),
+                    style = MaterialTheme.typography.workoutDetailsPrescription, color = MaterialTheme.voraColors.textSecondary,
+                )
             }
             Icon(
                 painterResource(R.drawable.ic_workout_details_chevron), contentDescription = null,
@@ -193,14 +225,40 @@ private fun ExerciseRow(number: Int, exercise: DemoExercise, onClick: () -> Unit
     }
 }
 
+// Sample data shaped like the mock fixture w01.
+private val PreviewWorkout = WorkoutDetail(
+    id = "w01", name = "Fuerza inicial", level = "beginner", durationMinutes = 25,
+    description = "Rutina de ejemplo para el trabajo práctico.",
+    exercises = listOf(
+        Exercise("e01", "Sentadilla", "Piernas", 3, 10, 60, "Separá los pies y flexioná las rodillas con control.", "Usá una carga que puedas controlar."),
+        Exercise("e02", "Remo con mancuerna", "Espalda", 3, 10, 60, "Apoyá una mano y llevá la mancuerna hacia el torso.", "Usá una carga que puedas controlar."),
+        Exercise("e03", "Press con mancuernas", "Pecho", 3, 10, 60, "Empujá las mancuernas con un movimiento controlado.", "Usá una carga que puedas controlar."),
+    ),
+)
+
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun WorkoutDetailsPreview() {
-    ExamenTP3Theme { WorkoutDetailsScreen({}, {}, {}) }
+    ExamenTP3Theme {
+        WorkoutDetailsScreen(WorkoutDetailsUiState(workout = PreviewWorkout, isLoading = false), {}, {}, {})
+    }
 }
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 640, fontScale = 1.3f)
 @Composable
 private fun WorkoutDetailsCompactPreview() {
-    ExamenTP3Theme { WorkoutDetailsScreen({}, {}, {}) }
+    ExamenTP3Theme {
+        WorkoutDetailsScreen(WorkoutDetailsUiState(workout = PreviewWorkout, isLoading = false), {}, {}, {})
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun WorkoutDetailsOfflinePreview() {
+    ExamenTP3Theme {
+        WorkoutDetailsScreen(
+            WorkoutDetailsUiState(isLoading = false, unavailable = DetailUnavailable.NotAvailableOffline),
+            {}, {}, {},
+        )
+    }
 }
