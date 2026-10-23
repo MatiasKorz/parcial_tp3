@@ -1,0 +1,63 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="140dp"
+    android:height="140dp"
+    android:viewportWidth="140"
+    android:viewportHeight="140">
+  <!-- Figma "vora-orb" (Voice / 01): orb-glow (140), orb-ring (126) and orb-core (105), all centered.
+       The core's soft drop shadow (an SVG filter) has no VectorDrawable equivalent and is left out. -->
+  <path
+      android:pathData="M0,70A70,70 0,1 1,140 70A70,70 0,1 1,0 70Z"
+      android:fillAlpha="0.25">
+    <aapt:attr name="android:fillColor">
+      <gradient
+          android:type="radial"
+          android:centerX="70"
+          android:centerY="70"
+          android:gradientRadius="70">
+        <item android:offset="0" android:color="#65D6B0"/>
+        <item android:offset="1" android:color="#123D35"/>
+      </gradient>
+    </aapt:attr>
+  </path>
+  <!-- The ring asset is a 126x126 export: shift it to the center of the 140 orb. -->
+  <group
+      android:translateX="7"
+      android:translateY="7">
+    <path
+        android:pathData="M126,63C126,97.7939 97.7939,126 63,126C28.2061,126 0,97.7939 0,63C0,28.2061 28.2061,0 63,0C97.7939,0 126,28.2061 126,63ZM7.56,63C7.56,93.6187 32.3813,118.44 63,118.44C93.6187,118.44 118.44,93.6187 118.44,63C118.44,32.3813 93.6187,7.56 63,7.56C32.3813,7.56 7.56,32.3813 7.56,63Z"
+        android:fillAlpha="0.8">
+      <aapt:attr name="android:fillColor">
+        <gradient
+            android:type="linear"
+            android:startX="0"
+            android:startY="0"
+            android:endX="126"
+            android:endY="0">
+          <item android:offset="0" android:color="#C9E86A"/>
+          <item android:offset="0.5" android:color="#65D6B0"/>
+          <item android:offset="1" android:color="#123D35"/>
+        </gradient>
+      </aapt:attr>
+    </path>
+  </group>
+  <!-- The core asset is a 153x153 export (room for the shadow) centered at 76.5,68.5: move that center to 70,70. -->
+  <group
+      android:translateX="-6.5"
+      android:translateY="1.5">
+    <path
+        android:pathData="M24,68.5A52.5,52.5 0,1 1,129 68.5A52.5,52.5 0,1 1,24 68.5Z">
+      <aapt:attr name="android:fillColor">
+        <gradient
+            android:type="linear"
+            android:startX="45"
+            android:startY="16"
+            android:endX="125.769"
+            android:endY="32.1538">
+          <item android:offset="0" android:color="#65D6B0"/>
+          <item android:offset="1" android:color="#123D35"/>
+        </gradient>
+      </aapt:attr>
+    </path>
+  </group>
+</vector>
