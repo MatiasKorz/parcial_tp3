@@ -30,6 +30,7 @@ import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
+import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
@@ -241,7 +242,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(WorkoutProgress, navController)
+    composable(WorkoutProgress.route) { entry ->
+        WorkoutProgressScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+        )
+    }
     placeholder(NutritionProgress, navController)
     placeholder(HealthTrends, navController)
     placeholder(WeeklyReview, navController)
