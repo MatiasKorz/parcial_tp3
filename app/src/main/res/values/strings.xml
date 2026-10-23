@@ -527,6 +527,21 @@
     <string name="weekly_plan_demo_section">Demonstration plan</string>
     <string name="weekly_plan_catalog_title">Workout catalog</string>
     <string name="weekly_plan_catalog_description">Workouts from the catalog. The details screen currently displays demonstration content.</string>
+    <!-- NUC-03: catalog states (RF05). Not designed in Figma; in English like the rest of the frame (REF-05) -->
+    <string name="weekly_plan_catalog_loading">Loading workouts…</string>
+    <string name="weekly_plan_catalog_empty_title">No workouts yet</string>
+    <string name="weekly_plan_catalog_empty_message">There are no workouts available right now.</string>
+    <string name="weekly_plan_catalog_error_title">Couldn\'t load workouts</string>
+    <!-- 1: error message -->
+    <string name="weekly_plan_catalog_cached">%1$s Showing saved workouts.</string>
+
+    <!-- NUC-03: shared messages for failed remote queries (RF05) -->
+    <string name="state_retry">Retry</string>
+    <string name="error_no_connection">Can\'t reach the server. Check your connection and try again.</string>
+    <string name="error_timeout">The server took too long to respond.</string>
+    <string name="error_server">The service isn\'t available right now.</string>
+    <string name="error_invalid_response">The server sent a response that couldn\'t be read.</string>
+    <string name="error_unknown">Something went wrong.</string>
 
     <!-- PAN-4.5: Active Workout demonstration -->
     <string name="active_workout_exercise_position">EXERCISE 2 OF 5</string>
