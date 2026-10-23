@@ -17,17 +17,17 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 1.1 | Login - 01 — SignIn | `sign_in` | Inicio de la app | demostración | Hecha (validación visual pendiente) | Acceso de demostración sin Firebase; los controles opcionales (contraseña olvidada, proveedores, biometría) informan modo demostración |
 | 1.2 | Login - 02 — SignUp | `sign_up` | SignIn ("Sign up here") | demostración | Hecha (validación visual pendiente) | Aviso de registro de demostración sin crear cuenta; permanece en SignUp; regreso a SignIn |
 | 2.1 | Home / 01 — Dashboard | `home` | SignIn; pestaña Home | demostración | Hecha | Datos de ejemplo |
-| 2.2 | Home / 02 — Notifications | `notifications` | Home | demostración | Provisoria | Notificaciones de ejemplo |
+| 2.2 | Home / 02 — Notifications | `notifications` | Home | demostración | Hecha | Notificaciones de ejemplo |
 | 3.1 | Voice / 01 — Idle | `voice_idle` | Home ("Start voice session") | demostración | Hecha | Estado del coach simulado; sin micrófono; los chips y "LAST CONVERSATION" llevan a destinos de ejemplo |
 | 3.2 | Voice / 02 — Listening | `voice_listening` | Voice / 01 | demostración | Provisoria | Escucha simulada |
 | 3.3 | Voice / 03 — Processing | `voice_processing` | Voice / 02 | demostración | Provisoria | Procesamiento simulado |
 | 3.4 | Voice / 04 — Speaking | `voice_speaking` | Voice / 03 | demostración | Provisoria | Respuesta simulada |
 | 3.5 | Voice / 05 — Conversation | `voice_conversation` | Voice / 04 | demostración | Provisoria | Conversación de ejemplo |
 | 3.6 | Voice / 06 — Error | `voice_error` | Voice / 03 | demostración | Provisoria | Error simulado |
-| 4.1 | Workout / 01 — Dashboard | `workout` | Pestaña Workout | A definir (REF-05) | Provisoria | Funcional solo si aloja el catálogo |
-| 4.2 | Workout / 02 — Weekly Plan | `weekly_plan` | Workout / 01 | A definir (REF-05) | Provisoria | Funcional solo si aloja el catálogo |
-| 4.3 | Workout / 03 — Workout Details | `workout_details/{workoutId}` | Workout / 01 y 02 | funcional | Provisoria | Detalle del entrenamiento elegido (Retrofit + caché Room) |
-| 4.4 | Workout / 04 — Pre Workout | `pre_workout/{workoutId}` | Workout / 01 y 03 | demostración | Provisoria | Datos de ejemplo |
+| 4.1 | Workout / 01 — Dashboard | `workout` | Pestaña Workout | demostración | Hecha (validación visual pendiente) | Datos del Figma; catálogo en Weekly Plan según NUC-01 (confirmación docente en REF-05); rutas existentes con id de demostración |
+| 4.2 | Workout / 02 — Weekly Plan | `weekly_plan` | Workout / 01 | demostración | Hecha (validación manual pendiente) | Datos del Figma; tarjetas con id de demostración; catálogo real y estados pendientes de NUC-01 |
+| 4.3 | Workout / 03 — Workout Details | `workout_details/{workoutId}` | Workout / 01 y 02 | demostración | Hecha (validación manual pendiente) | Datos del Figma; conserva workoutId hacia Pre Workout; guía con id de demostración; detalle real y estados pendientes de NUC-02/NUC-03 |
+| 4.4 | Workout / 04 — Pre Workout | `pre_workout/{workoutId}` | Workout / 01 y 03 | demostración | Hecha (validación manual pendiente) | Preparación con textos del Figma; conserva workoutId hacia Active Workout; recomendación y micrófono con avisos; sin historial real |
 | 4.5 | Workout / 05 — Active Workout | `active_workout/{workoutId}` | Workout / 04 | demostración | Provisoria | Sesión simulada; el descanso es un estado dentro de esta pantalla |
 | 4.6 | Workout / 06 — Exercise Details | `exercise_details/{exerciseId}` | Workout / 03 y 05 | demostración | Provisoria | Datos de ejemplo |
 | 4.7 | Workout / 07 — Workout Complete | `workout_complete` | Workout / 05 | demostración | Provisoria | Resumen de ejemplo |
@@ -46,8 +46,8 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 6.5 | Progress / 05 — Health Trends | `health_trends` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
 | 6.6 | Progress / 06 — Weekly Review | `weekly_review` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
 | 7.1 | Profile / 01 — Dashboard | `profile` | Pestaña Profile | demostración | Hecha | Datos de ejemplo |
-| 7.2 | Profile / 02 — Edit Profile | `edit_profile` | Profile / 01 | demostración | Provisoria | Edición simulada |
-| 7.3 | Profile / 03 — Goals & Preferences | `goals_preferences` | Profile / 01 | demostración | Provisoria | Datos de ejemplo |
+| 7.2 | Profile / 02 — Edit Profile | `edit_profile` | Profile / 01 ("Edit profile") | demostración (datos locales) | Hecha | Edición local de los seis campos; los valores guardados se mantienen durante la sesión; "Change photo" informa modo demostración sin cámara |
+| 7.3 | Profile / 03 — Goals & Preferences | `goals_preferences` | Profile / 01 ("Your Goals") | demostración (datos locales) | Hecha | Selección local de objetivos (varios), frecuencia y tipo de entrenamiento; "Balanced" fija; lo guardado se mantiene durante la sesión y volver sin guardar lo descarta |
 | 7.4 | Profile / 04 — Nutrition Preferences | `nutrition_preferences` | Profile / 01 | demostración | Provisoria | Datos de ejemplo |
 | 7.5 | Profile / 05 — Voice & AI Settings | `voice_ai_settings` | Profile / 01 | demostración | Provisoria | Ajustes de ejemplo |
 | 7.6 | Profile / 06 — Settings | `settings` | Profile / 01 | demostración | Provisoria | "Log out" vuelve a SignIn |
