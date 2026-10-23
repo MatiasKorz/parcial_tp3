@@ -15,6 +15,10 @@ import androidx.navigation.navArgument
 import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.home.HomeSampleUiState
 import com.example.examentp3.ui.screens.home.HomeScreen
+import com.example.examentp3.ui.screens.workout.WorkoutDashboardScreen
+import com.example.examentp3.ui.screens.workout.preworkout.PreWorkoutScreen
+import com.example.examentp3.ui.screens.workout.details.WorkoutDetailsScreen
+import com.example.examentp3.ui.screens.workout.weeklyplan.WeeklyPlanScreen
 import com.example.examentp3.ui.screens.login.SignInScreen
 import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
@@ -124,25 +128,45 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     placeholder(VoiceError, navController, onBack = closeCoach)
 
     // Workout
-    placeholder(WorkoutDashboard, navController, onBack = null) {
-        listOf(
-            linkTo(WeeklyPlan),
-            Link(WorkoutDetails.frame, WorkoutDetails.createRoute(DEMO_WORKOUT_ID)),
-            Link(PreWorkout.frame, PreWorkout.createRoute(DEMO_WORKOUT_ID)),
+    composable(WorkoutDashboard.route) { entry ->
+        WorkoutDashboardScreen(
+            onCalendarClick = { if (entry.isResumed()) navController.navigate(WeeklyPlan.route) },
+            onStartWorkout = {
+                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
+            },
+            onWorkoutDetails = {
+                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(DEMO_WORKOUT_ID))
+            },
+            onViewProgress = { if (entry.isResumed()) navController.navigate(WorkoutProgress.route) },
         )
     }
-    placeholder(WeeklyPlan, navController) {
-        listOf(Link(WorkoutDetails.frame, WorkoutDetails.createRoute(DEMO_WORKOUT_ID)))
-    }
-    placeholder(WorkoutDetails, navController, workoutArgs) { entry ->
-        val id = entry.argument(NavArgs.WORKOUT_ID)
-        listOf(
-            Link(PreWorkout.frame, PreWorkout.createRoute(id)),
-            Link(ExerciseDetails.frame, ExerciseDetails.createRoute(DEMO_EXERCISE_ID)),
+    composable(WeeklyPlan.route) { entry ->
+        WeeklyPlanScreen(
+            onWorkoutDetails = {
+                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(DEMO_WORKOUT_ID))
+            },
         )
     }
-    placeholder(PreWorkout, navController, workoutArgs) { entry ->
-        listOf(Link(ActiveWorkout.frame, ActiveWorkout.createRoute(entry.argument(NavArgs.WORKOUT_ID))))
+    composable(WorkoutDetails.route, workoutArgs) { entry ->
+        val workoutId = entry.argument(NavArgs.WORKOUT_ID)
+        WorkoutDetailsScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onStartWorkout = {
+                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(workoutId))
+            },
+            onExerciseClick = {
+                if (entry.isResumed()) navController.navigate(ExerciseDetails.createRoute(DEMO_EXERCISE_ID))
+            },
+        )
+    }
+    composable(PreWorkout.route, workoutArgs) { entry ->
+        val workoutId = entry.argument(NavArgs.WORKOUT_ID)
+        PreWorkoutScreen(
+            onClose = { if (entry.isResumed()) navController.popBackStack() },
+            onStartWorkout = {
+                if (entry.isResumed()) navController.navigate(ActiveWorkout.createRoute(workoutId))
+            },
+        )
     }
     placeholder(ActiveWorkout, navController, workoutArgs) {
         listOf(
