@@ -163,6 +163,23 @@
     <string name="profile_dashboard_connected_data_status">Synced</string>
     <string name="profile_dashboard_account_title">Account</string>
     <string name="profile_dashboard_account_subtitle">Subscription, notifications &amp; privacy</string>
+    <!-- PAN-7.2 Profile / 02 — Edit Profile (the sample values live in model/UserProfile.kt) -->
+    <string name="edit_profile_title">Edit profile</string>
+    <string name="edit_profile_back_description">Back</string>
+    <string name="edit_profile_change_photo">Change photo</string>
+    <string name="edit_profile_first_name_label">First Name</string>
+    <string name="edit_profile_last_name_label">Last Name</string>
+    <string name="edit_profile_date_of_birth_label">Date of Birth</string>
+    <string name="edit_profile_height_label">Height</string>
+    <string name="edit_profile_weight_label">Weight</string>
+    <string name="edit_profile_gender_label">Gender</string>
+    <string name="edit_profile_gender_help">Used to personalise your recommendations.</string>
+    <string name="edit_profile_save">Save changes</string>
+    <string name="edit_profile_footer">Your information is used to personalise your VORA experience.</string>
+    <!-- Not in Figma: demo notice for "Change photo" (NAV03, NAV05) -->
+    <string name="edit_profile_demo_title">Demonstration</string>
+    <string name="edit_profile_demo_change_photo">Changing the photo is not available in this demonstration.</string>
+    <string name="edit_profile_demo_ok">OK</string>
     <string name="workout_dashboard_goal">Workout Goal</string>
     <string name="workout_dashboard_title">Workouts</string>
     <string name="workout_dashboard_calendar">Open weekly plan</string>
