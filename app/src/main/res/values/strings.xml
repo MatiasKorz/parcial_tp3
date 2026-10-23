@@ -162,4 +162,43 @@
     <string name="profile_dashboard_connected_data_status">Synced</string>
     <string name="profile_dashboard_account_title">Account</string>
     <string name="profile_dashboard_account_subtitle">Subscription, notifications &amp; privacy</string>
+
+    <!-- PAN-6.3 Progress / 03 — Workout Progress (demo data from Figma) -->
+    <string name="workout_progress_title">Workout progress</string>
+    <string name="workout_progress_back">Back</string>
+    <string name="workout_progress_period_week">Week</string>
+    <string name="workout_progress_period_month">Month</string>
+    <string name="workout_progress_period_three_months">3 Months</string>
+    <string name="workout_progress_sessions_label">Sessions</string>
+    <string name="workout_progress_sessions_value">4</string>
+    <string name="workout_progress_volume_label">Volume</string>
+    <string name="workout_progress_volume_value">8,420 kg</string>
+    <string name="workout_progress_avg_time_label">Avg Time</string>
+    <string name="workout_progress_avg_time_value">41 min</string>
+    <string name="workout_progress_chart_title">Training Volume</string>
+    <string name="workout_progress_chart_subtitle">KILOGRAMS LIFTED PER SESSION</string>
+    <string name="workout_progress_chart_change">+8% vs last week</string>
+    <string name="workout_progress_day_mon">M</string>
+    <string name="workout_progress_day_tue">T</string>
+    <string name="workout_progress_day_wed">W</string>
+    <string name="workout_progress_day_thu">T</string>
+    <string name="workout_progress_day_fri">F</string>
+    <string name="workout_progress_best_label">Personal Best</string>
+    <string name="workout_progress_best_exercise">Seated Cable Row</string>
+    <string name="workout_progress_best_value">45 kg × 12 reps</string>
+    <string name="workout_progress_best_change">(+5 kg vs prev best)</string>
+    <string name="workout_progress_insight">\"Your training volume increased without adding workout duration. That\'s efficiency improving.\"</string>
+    <string name="workout_progress_exercises_title">Exercise Progress</string>
+    <string name="workout_progress_exercise_bench_press_name">Bench Press</string>
+    <string name="workout_progress_exercise_bench_press_detail">40 kg × 10 reps</string>
+    <string name="workout_progress_exercise_bench_press_change">↑ 2.5 kg</string>
+    <string name="workout_progress_exercise_cable_row_name">Cable Row</string>
+    <string name="workout_progress_exercise_cable_row_detail">45 kg × 12 reps</string>
+    <string name="workout_progress_exercise_cable_row_change">↑ 5.0 kg</string>
+    <string name="workout_progress_exercise_shoulder_press_name">Shoulder Press</string>
+    <string name="workout_progress_exercise_shoulder_press_detail">20 kg × 10 reps</string>
+    <string name="workout_progress_exercise_shoulder_press_change">→ Stable</string>
+    <string name="workout_progress_exercise_lateral_raise_name">Lateral Raise</string>
+    <string name="workout_progress_exercise_lateral_raise_detail">8 kg × 12 reps</string>
+    <string name="workout_progress_exercise_lateral_raise_change">↑ 1.0 kg</string>
 </resources>
