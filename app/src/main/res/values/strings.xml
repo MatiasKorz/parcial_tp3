@@ -232,4 +232,35 @@
     <string name="weekly_plan_demo_notice">This is a demonstration. Your weekly plan has not been changed.</string>
     <string name="weekly_plan_dismiss">OK</string>
 
+
+    <!-- PAN-4.3: Workout Details demonstration -->
+    <string name="workout_details_overview">Workout Overview</string>
+    <string name="workout_details_back">Back</string>
+    <string name="workout_details_menu">More options</string>
+    <string name="workout_details_title">Upper Body Strength</string>
+    <string name="workout_details_duration">42 min</string>
+    <string name="workout_details_bullet">•</string>
+    <string name="workout_details_level">Moderate</string>
+    <string name="workout_details_count">5 exercises</string>
+    <string name="workout_details_focus">Focus: Chest • Back • Shoulders • Arms</string>
+    <string name="workout_details_coach_title">VORA COACH NOTE</string>
+    <string name="workout_details_coach_body">Based on your last session, VORA suggests keeping the same weights and focusing on controlled repetitions today.</string>
+    <string name="workout_details_bench">Bench Press</string>
+    <string name="workout_details_bench_sets">3 × 10 • Rest 90s</string>
+    <string name="workout_details_row">Seated Cable Row</string>
+    <string name="workout_details_row_sets">3 × 12 • Rest 75s</string>
+    <string name="workout_details_shoulder">Shoulder Press</string>
+    <string name="workout_details_shoulder_sets">3 × 10 • Rest 75s</string>
+    <string name="workout_details_raise">Dumbbell Lateral Raise</string>
+    <string name="workout_details_raise_sets">3 × 12 • Rest 60s</string>
+    <string name="workout_details_tricep">Tricep Pushdown</string>
+    <string name="workout_details_tricep_sets">3 × 12 • Rest 60s</string>
+    <string name="workout_details_number">%1$02d</string>
+    <string name="workout_details_start">Start Workout</string>
+    <string name="workout_details_edit">Edit workout</string>
+    <string name="workout_details_demo_title">Demonstration</string>
+    <string name="workout_details_edit_notice">Workout editing is not available in this demonstration.</string>
+    <string name="workout_details_menu_notice">Additional workout options are not available in this demonstration.</string>
+    <string name="workout_details_ok">OK</string>
+
 </resources>
