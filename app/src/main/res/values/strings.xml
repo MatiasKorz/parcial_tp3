@@ -302,4 +302,30 @@
     <string name="pre_workout_demo_notice">Warm-up recommendations and voice coaching are not available in this demonstration.</string>
     <string name="pre_workout_ok">OK</string>
 
+    <!-- PAN-7.3 Profile / 03 — Goals & Preferences (the sample selection lives in model/GoalsSelection.kt) -->
+    <string name="goals_preferences_title">Your goals</string>
+    <string name="goals_preferences_back_description">Back</string>
+    <string name="goals_preferences_intro">Tell VORA what you\'re working towards. Your coaching adapts around this.</string>
+    <string name="goals_preferences_primary_goal_label">Primary Goal — What\'s your main goal?</string>
+    <string name="goals_preferences_goal_build_strength">Build strength</string>
+    <string name="goals_preferences_goal_build_strength_description">Focus on weight training &amp; mechanical load</string>
+    <string name="goals_preferences_goal_improve_fitness">Improve fitness</string>
+    <string name="goals_preferences_goal_improve_fitness_description">Condition cardiovascular &amp; energy systems</string>
+    <string name="goals_preferences_goal_lose_body_fat">Lose body fat</string>
+    <string name="goals_preferences_goal_healthy_habits">Build healthy habits</string>
+    <string name="goals_preferences_frequency_label">Training Frequency</string>
+    <string name="goals_preferences_frequency_3">3 days</string>
+    <string name="goals_preferences_frequency_4">4 days</string>
+    <string name="goals_preferences_frequency_5">5 days</string>
+    <string name="goals_preferences_frequency_6_plus">6+ days</string>
+    <string name="goals_preferences_workout_label">Workout Preference</string>
+    <string name="goals_preferences_workout_strength">Strength</string>
+    <string name="goals_preferences_workout_cardio">Cardio</string>
+    <string name="goals_preferences_workout_hiit">HIIT</string>
+    <string name="goals_preferences_workout_mobility">Mobility</string>
+    <string name="goals_preferences_workout_mixed">Mixed</string>
+    <string name="goals_preferences_coaching_label">Coaching Style — How should Vora Coach you?</string>
+    <string name="goals_preferences_coaching_balanced">Balanced</string>
+    <string name="goals_preferences_coaching_balanced_description">Practical guidance with gentle motivation</string>
+    <string name="goals_preferences_save">Save preferences</string>
 </resources>

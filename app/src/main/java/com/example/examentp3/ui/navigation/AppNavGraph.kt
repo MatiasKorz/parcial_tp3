@@ -25,9 +25,11 @@ import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.EditProfileScreen
+import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
+import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
@@ -261,7 +263,23 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(GoalsPreferences, navController)
+    composable(GoalsPreferences.route) { entry ->
+        val viewModel: GoalsPreferencesViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        GoalsPreferencesScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onGoalToggle = viewModel::onGoalToggle,
+            onFrequencySelect = viewModel::onFrequencySelect,
+            onWorkoutSelect = viewModel::onWorkoutSelect,
+            onSave = {
+                if (entry.isResumed()) {
+                    viewModel.save()
+                    navController.popBackStack()
+                }
+            },
+        )
+    }
     placeholder(NutritionPreferences, navController)
     placeholder(VoiceAiSettings, navController)
     placeholder(Settings, navController) {
