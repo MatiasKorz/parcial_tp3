@@ -203,4 +203,33 @@
     <string name="workout_dashboard_rest">Zzz</string>
     <string name="workout_dashboard_fit">FIT</string>
     <string name="workout_dashboard_day_description">%1$s: %2$s</string>
+
+    <!-- PAN-4.2: Figma Weekly Plan demonstration -->
+    <string name="weekly_plan_title">Your Plan</string>
+    <string name="weekly_plan_subtitle">Designed around your goals and recovery.</string>
+    <string name="weekly_plan_mon">MON</string>
+    <string name="weekly_plan_tue">TUE</string>
+    <string name="weekly_plan_wed">WED</string>
+    <string name="weekly_plan_thu">THU</string>
+    <string name="weekly_plan_fri">FRI</string>
+    <string name="weekly_plan_sat">SAT</string>
+    <string name="weekly_plan_sun">SUN</string>
+    <string name="weekly_plan_day_number">%1$d</string>
+    <string name="weekly_plan_today">TODAY\'S WORKOUT</string>
+    <string name="weekly_plan_ready">READY</string>
+    <string name="weekly_plan_upper_body">Upper Body Strength</string>
+    <string name="weekly_plan_upper_body_summary">42 min • 5 exercises • Intermediate</string>
+    <string name="weekly_plan_wednesday">WEDNESDAY</string>
+    <string name="weekly_plan_recovery">Active Recovery</string>
+    <string name="weekly_plan_recovery_summary">25 min • Mobility + Walk</string>
+    <string name="weekly_plan_thursday">THURSDAY</string>
+    <string name="weekly_plan_lower_body">Lower Body Strength</string>
+    <string name="weekly_plan_lower_body_summary">45 min • 6 exercises</string>
+    <string name="weekly_plan_coach_title">NEED TO ADJUST YOUR WEEK?</string>
+    <string name="weekly_plan_coach_body">Tell VORA what changed (e.g., sleep, muscle soreness, or schedule cuts) and your coach will realign the week dynamically.</string>
+    <string name="weekly_plan_tired">I\'m tired today</string>
+    <string name="weekly_plan_move_workout">Move Wed workout to Fri</string>
+    <string name="weekly_plan_demo_notice">This is a demonstration. Your weekly plan has not been changed.</string>
+    <string name="weekly_plan_dismiss">OK</string>
+
 </resources>
