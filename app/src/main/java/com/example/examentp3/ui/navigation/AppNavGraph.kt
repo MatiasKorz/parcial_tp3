@@ -22,6 +22,7 @@ import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
+import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
@@ -110,7 +111,20 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
 
     // Coach: closing returns to where it was opened from
     val closeCoach: (NavHostController) -> Unit = { it.popBackStack(VoiceIdle.route, inclusive = true) }
-    placeholder(VoiceIdle, navController, onBack = closeCoach) { listOf(linkTo(VoiceListening)) }
+    composable(VoiceIdle.route) { entry ->
+        VoiceIdleScreen(
+            onBack = { if (entry.isResumed()) closeCoach(navController) },
+            onTapToTalk = { if (entry.isResumed()) navController.navigate(VoiceListening.route) },
+            onTypeInstead = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
+            onLastConversationClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
+            onStartMyWorkoutClick = {
+                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
+            },
+            onLogMyBreakfastClick = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            onWhatToEatClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
+            onHowAmIDoingClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
+        )
+    }
     placeholder(VoiceListening, navController, onBack = closeCoach) { listOf(linkTo(VoiceProcessing)) }
     placeholder(VoiceProcessing, navController, onBack = closeCoach) {
         listOf(linkTo(VoiceSpeaking), linkTo(VoiceError))

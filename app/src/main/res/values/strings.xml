@@ -162,4 +162,20 @@
     <string name="profile_dashboard_connected_data_status">Synced</string>
     <string name="profile_dashboard_account_title">Account</string>
     <string name="profile_dashboard_account_subtitle">Subscription, notifications &amp; privacy</string>
+    <!-- PAN-3.1 Voice / 01 — Idle -->
+    <string name="voice_idle_back_description">Back</string>
+    <string name="voice_idle_title">VORA Coach</string>
+    <string name="voice_idle_status">ONLINE</string>
+    <string name="voice_idle_heading">How can I help?</string>
+    <string name="voice_idle_subtitle">Talk naturally about your workout, nutrition or progress.</string>
+    <string name="voice_idle_suggestions_title">Suggested Questions</string>
+    <string name="voice_idle_suggestion_start_workout">Start my workout</string>
+    <string name="voice_idle_suggestion_log_breakfast">Log my breakfast</string>
+    <string name="voice_idle_suggestion_what_to_eat">What should I eat tonight?</string>
+    <string name="voice_idle_suggestion_how_am_i_doing">How am I doing?</string>
+    <string name="voice_idle_last_conversation_label">LAST CONVERSATION</string>
+    <string name="voice_idle_last_conversation_time">2 hours ago</string>
+    <string name="voice_idle_last_conversation_text">“Create a 30-minute workout for me.”</string>
+    <string name="voice_idle_tap_to_talk">TAP TO TALK</string>
+    <string name="voice_idle_type_instead">Type instead</string>
 </resources>
