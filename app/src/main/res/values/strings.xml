@@ -162,4 +162,25 @@
     <string name="profile_dashboard_connected_data_status">Synced</string>
     <string name="profile_dashboard_account_title">Account</string>
     <string name="profile_dashboard_account_subtitle">Subscription, notifications &amp; privacy</string>
+    <!-- PAN-2.2 Home / 02 — Notifications -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_mark_all_as_read">Mark all as read</string>
+    <string name="notifications_section_today">TODAY</string>
+    <string name="notifications_section_yesterday">YESTERDAY</string>
+    <string name="notifications_coach_source">VORA Coach</string>
+    <string name="notifications_coach_time">2h ago</string>
+    <string name="notifications_coach_title">Your weekly health review is ready.</string>
+    <string name="notifications_coach_message" formatted="false">We noticed your training consistency improved by 14% over the last week.</string>
+    <string name="notifications_workout_source">Workout Plan</string>
+    <string name="notifications_workout_time">4h ago</string>
+    <string name="notifications_workout_title">Upper Body Strength is ready.</string>
+    <string name="notifications_workout_message">Equipped for home/gym. Approx. 42 minutes.</string>
+    <string name="notifications_nutrition_source">Nutrition Goal</string>
+    <string name="notifications_nutrition_time">6h ago</string>
+    <string name="notifications_nutrition_title">Protein target milestone alert.</string>
+    <string name="notifications_nutrition_message">You require 36g more of protein to hit today\'s UK performance baseline.</string>
+    <string name="notifications_milestone_source">Milestone Reached</string>
+    <string name="notifications_milestone_time">1d ago</string>
+    <string name="notifications_milestone_title">4-day workout streak logged!</string>
+    <string name="notifications_milestone_message">Outstanding work, Alex. Let\'s make it 5 today.</string>
 </resources>
