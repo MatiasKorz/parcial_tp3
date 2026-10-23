@@ -1,5 +1,6 @@
 package com.example.examentp3.ui.navigation
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,6 +27,7 @@ import com.example.examentp3.ui.screens.login.SignInScreen
 import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.notifications.NotificationsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
+import com.example.examentp3.ui.screens.nutrition.MealDetailsScreen
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.EditProfileScreen
@@ -40,6 +42,8 @@ import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
+import com.example.examentp3.viewmodel.MealDetailsUiState
+import com.example.examentp3.viewmodel.MealDetailsViewModel
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
 
@@ -262,7 +266,21 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     placeholder(FoodConfirmation, navController) {
         listOf(Link("Add to meal", TodaysMeals.createRoute()) { popUpTo(NutritionDashboard.route) })
     }
-    placeholder(MealDetails, navController, mealArgs)
+    composable(MealDetails.route, mealArgs) { entry ->
+        val viewModel: MealDetailsViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        val lifecycleState by entry.lifecycle.currentStateFlow.collectAsState()
+        // Leave only after Room confirmed the delete: popping first would cancel viewModelScope.
+        // Keyed on the lifecycle too, so a delete that ends while paused still pops on resume.
+        LaunchedEffect(uiState, lifecycleState) {
+            if (uiState is MealDetailsUiState.Deleted && entry.isResumed()) navController.popBackStack()
+        }
+        MealDetailsScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onDeleteConfirmed = viewModel::deleteMeal,
+        )
+    }
 
     // Progress
     composable(ProgressDashboard.route) { entry ->
