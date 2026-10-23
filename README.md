@@ -37,7 +37,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 5.4 | Nutrition / 04 — Voice Food Logging | `voice_food_logging` | Nutrition / 03 | demostración | Provisoria | Registro por voz simulado; sin micrófono |
 | 5.5 | Nutrition / 05 — Food Analysis | `food_analysis` | Nutrition / 04 | demostración | Provisoria | Análisis simulado |
 | 5.6 | Nutrition / 06 — Photo Analysis | `photo_analysis` | Nutrition / 03 | demostración | Provisoria | Análisis de foto simulado; sin cámara |
-| 5.7 | Nutrition / 07 — Food Confirmation | `food_confirmation` | Nutrition / 05 y 06 | A definir (REF-05) | Provisoria | Funcional solo si el registro manual la usa para confirmar |
+| 5.7 | Nutrition / 07 — Food Confirmation | `food_confirmation` | Nutrition / 05 y 06 | demostración | UI hecha (validación visual pendiente) | Estimación fija del Figma (3 ingredientes, 520 kcal); "Add to Lunch" vuelve al listado sin guardar hasta NUC-04; `-`, `+`, "Remove", "+ Add Ingredient" y "Save without logging" informan modo demostración |
 | 5.8 | Nutrition / 08 — Meal Details | `meal_details/{mealId}` | Nutrition / 02 | demostración | Provisoria | Detalle de la comida elegida |
 | 6.1 | Progress / 01 — Today's Overview | `todays_overview` | Home / 01 | demostración | Hecha | Datos de ejemplo |
 | 6.2 | Progress / 02 — Dashboard | `progress` | Pestaña Progress | demostración | Hecha | Datos de ejemplo |
