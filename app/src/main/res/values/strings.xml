@@ -607,4 +607,37 @@
     <string name="workout_complete_too_easy">Too Easy</string>
     <string name="workout_complete_done">Done</string>
 
+    <!-- PAN-7.5 Profile / 05 — Voice & AI Settings -->
+    <string name="voice_ai_settings_title">VORA Coach</string>
+    <string name="voice_ai_settings_back_description">Back</string>
+    <string name="voice_ai_settings_intro">Choose how VORA communicates and coaches you.</string>
+    <string name="voice_ai_settings_coaching_style">Coaching Style</string>
+    <string name="voice_ai_settings_coaching_supportive">Supportive</string>
+    <string name="voice_ai_settings_coaching_balanced">Balanced</string>
+    <string name="voice_ai_settings_coaching_direct">Direct</string>
+    <string name="voice_ai_settings_active_voice">Active Voice</string>
+    <string name="voice_ai_settings_voice_name">VORA Voice 01</string>
+    <string name="voice_ai_settings_preview">Preview</string>
+    <string name="voice_ai_settings_speaking_behaviour">Speaking Behaviour</string>
+    <string name="voice_ai_settings_speak_aloud">Speak responses aloud</string>
+    <string name="voice_ai_settings_auto_play">Auto-play coaching</string>
+    <string name="voice_ai_settings_allow_interruptions">Allow interruptions</string>
+    <string name="voice_ai_settings_interruptions_hint">Interrupt VORA anytime while it\'s speaking.</string>
+    <string name="voice_ai_settings_response_style">Response Style</string>
+    <string name="voice_ai_settings_response_concise">Concise</string>
+    <string name="voice_ai_settings_response_concise_description">Quick answers</string>
+    <string name="voice_ai_settings_response_balanced">Balanced</string>
+    <string name="voice_ai_settings_response_balanced_description">Useful detail without overwhelming</string>
+    <string name="voice_ai_settings_response_detailed">Detailed</string>
+    <string name="voice_ai_settings_response_detailed_description">More explanation and context</string>
+    <string name="voice_ai_settings_voice_feedback">Voice feedback</string>
+    <string name="voice_ai_settings_haptic_feedback">Haptic feedback</string>
+    <string name="voice_ai_settings_control_title">Your control matters</string>
+    <string name="voice_ai_settings_control_body">Manage microphone permissions and connected data from Settings.</string>
+    <string name="voice_ai_settings_privacy_link">Privacy &amp; permissions</string>
+    <!-- Not in Figma: demo notice for "Preview" (NAV03/NAV05), pending approval in REF-05 -->
+    <string name="voice_ai_settings_demo_title">Demonstration</string>
+    <string name="voice_ai_settings_preview_notice">Voice preview is not available in this demonstration. No audio is played and the microphone is not used.</string>
+    <string name="voice_ai_settings_ok">OK</string>
+
 </resources>
