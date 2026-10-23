@@ -13,6 +13,7 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.examentp3.model.DemoMealEstimate
 import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.home.HomeSampleUiState
 import com.example.examentp3.ui.screens.home.HomeScreen
@@ -30,6 +31,7 @@ import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.AddFoodScreen
 import com.example.examentp3.ui.screens.nutrition.FoodConfirmationScreen
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
+import com.example.examentp3.ui.screens.nutrition.PhotoAnalysisScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.EditProfileScreen
 import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
@@ -278,7 +280,17 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     // The route has an argument: linkTo(FoodConfirmation) would navigate to the literal pattern.
     val reviewEstimate = Link(FoodConfirmation.frame, FoodConfirmation.createRoute(FoodConfirmationMode.Estimate))
     placeholder(FoodAnalysis, navController) { listOf(reviewEstimate) }
-    placeholder(PhotoAnalysis, navController) { listOf(reviewEstimate) }
+    composable(PhotoAnalysis.route) { entry ->
+        PhotoAnalysisScreen(
+            estimate = DemoMealEstimate, // simulated analysis (SPEC p.10), same data that 5.7 reviews
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onReviewAndAdd = {
+                if (entry.isResumed()) {
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate))
+                }
+            },
+        )
+    }
     composable(FoodConfirmation.route, foodConfirmationArgs) { entry ->
         val viewModel: FoodConfirmationViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()

@@ -671,4 +671,23 @@
     <!-- NUC-04: macro totals with up to one decimal ("38g", "12.5g") -->
     <string name="food_confirmation_macro_grams">%1$sg</string>
 
+    <!-- PAN-5.6 Nutrition / 06 — Photo Analysis -->
+    <string name="photo_analysis_title">Analyse Meal</string>
+    <string name="photo_analysis_back_description">Back</string>
+    <string name="photo_analysis_tag_chicken">Grilled Chicken (~180g)</string>
+    <string name="photo_analysis_tag_rice">Basmati Rice (~150g)</string>
+    <string name="photo_analysis_estimate_title">VORA ESTIMATE</string>
+    <string name="photo_analysis_estimate_hint">Portions are estimated</string>
+    <string name="photo_analysis_kcal">%1$d kcal</string>
+    <string name="photo_analysis_protein">P: %1$sg</string>
+    <string name="photo_analysis_carbs">C: %1$sg</string>
+    <string name="photo_analysis_fat">F: %1$sg</string>
+    <string name="photo_analysis_note">\"Portions and quantities can be refined in the next step before saving.\"</string>
+    <string name="photo_analysis_review">Review &amp; Add</string>
+    <string name="photo_analysis_retake">Retake Photo</string>
+    <!-- PAN-5.6: not in Figma, demo notice for "Retake Photo" (NAV03, NAV05) -->
+    <string name="photo_analysis_demo_title">Demonstration</string>
+    <string name="photo_analysis_demo_retake">Taking a photo is not available in this demonstration.</string>
+    <string name="photo_analysis_demo_ok">OK</string>
+
 </resources>
