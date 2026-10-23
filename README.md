@@ -52,3 +52,32 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 7.5 | Profile / 05 — Voice & AI Settings | `voice_ai_settings` | Profile / 01 | demostración | Provisoria | Ajustes de ejemplo |
 | 7.6 | Profile / 06 — Settings | `settings` | Profile / 01 (engranaje, "Connected Data", "Account") | demostración (datos locales) | Hecha | Notifications on/off se mantiene durante la sesión; Units, Appearance y el resto de las opciones informan modo demostración; "Alex Morgan" abre Edit Profile; "Log out" vuelve a SignIn y vacía la pila |
 
+## Estados de las consultas remotas y escenarios del mock (RF05)
+
+El catálogo de entrenamientos (sección "Workout catalog" de Workout / 02 — Weekly Plan) muestra cuatro estados dentro del mismo frame, sin pantallas nuevas. Los mismos estados se suman a Workout / 03 — Workout Details cuando se integre su consulta real (NUC-02).
+
+| Estado | Cuándo | Qué se ve |
+|---|---|---|
+| Carga | mientras dura `GET /v1/workouts` | indicador "Loading workouts…"; si ya hay catálogo guardado, el indicador aparece encima de la lista |
+| Contenido | la consulta trae entrenamientos | la lista del catálogo |
+| Vacío | el servidor responde una lista vacía | "No workouts yet" |
+| Error con reintento | 503, JSON inválido, timeout o servidor detenido | si no hay catálogo guardado, un error con el botón "Retry"; si lo hay, la lista guardada con un aviso y "Retry" |
+
+**Política de caché:** el catálogo vive en Room y ninguna respuesta lo borra. Una respuesta vacía muestra el estado vacío pero no vacía la caché, así que si después se detiene el servidor vuelve a verse el catálogo guardado junto con el error. Un error nunca toca Room: el catálogo y las comidas registradas siguen disponibles.
+
+### Cómo provocar los escenarios en la demo
+
+El mock solo cambia de escenario con los headers `X-Mock-Scenario` y `X-Mock-Delay-Ms`. En los builds **debug** la app los agrega desde un interceptor de OkHttp, y se cambian en vivo desde una terminal con `adb` (incluido en el SDK de Android, en `platform-tools`), sin recompilar. Los builds release no envían esos headers.
+
+```bash
+# Escenario: empty, error o malformed. delay en milisegundos (0 a 10000)
+adb shell am broadcast -n com.example.examentp3/.debug.MockScenarioReceiver --es scenario error
+adb shell am broadcast -n com.example.examentp3/.debug.MockScenarioReceiver --es scenario empty
+adb shell am broadcast -n com.example.examentp3/.debug.MockScenarioReceiver --es scenario malformed
+adb shell am broadcast -n com.example.examentp3/.debug.MockScenarioReceiver --ei delay 3000
+# Volver al escenario normal
+adb shell am broadcast -n com.example.examentp3/.debug.MockScenarioReceiver
+```
+
+Después de cambiar el escenario, tocá "Retry" o volvé a abrir Weekly Plan. El escenario se mantiene hasta que se cambia o se cierra la app. Para el paso 4 (sin conexión), detené el mock con Ctrl+C y levantalo de nuevo antes de tocar "Retry".
+
