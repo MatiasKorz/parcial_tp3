@@ -32,6 +32,7 @@ import com.example.examentp3.ui.screens.profile.EditProfileScreen
 import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.profile.SettingsScreen
+import com.example.examentp3.ui.screens.progress.HealthTrendsScreen
 import com.example.examentp3.ui.screens.progress.NutritionProgressScreen
 import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
@@ -281,7 +282,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onBack = { if (entry.isResumed()) navController.popBackStack() },
         )
     }
-    placeholder(HealthTrends, navController)
+    composable(HealthTrends.route) { entry ->
+        HealthTrendsScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+        )
+    }
     placeholder(WeeklyReview, navController)
 
     // Profile
