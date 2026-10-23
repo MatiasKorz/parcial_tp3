@@ -563,4 +563,28 @@
     <string name="active_workout_sets_complete">All three sets in this demonstration are complete. Use Finish Workout to continue.</string>
     <string name="active_workout_ok">OK</string>
 
+
+    <!-- PAN-4.6: Figma-only Seated Cable Row demonstration; NUC-02 pending -->
+    <string name="exercise_details_guide">Exercise Guide</string>
+    <string name="exercise_details_back">Back</string>
+    <string name="exercise_details_help">Exercise help</string>
+    <string name="exercise_details_title">Seated Cable Row</string>
+    <string name="exercise_details_target">Target: Lats, Mid-Back, Rhomboids</string>
+    <string name="exercise_details_image_description">Original Figma demonstration image for the exercise guide</string>
+    <string name="exercise_details_steps">Performance Steps</string>
+    <string name="exercise_details_step_one">1. Sit upright with your chest lifted.</string>
+    <string name="exercise_details_step_two">2. Pull the handle toward your lower torso.</string>
+    <string name="exercise_details_step_three">3. Keep your elbows tucked close to your ribs.</string>
+    <string name="exercise_details_step_four">4. Pause briefly during peak contraction.</string>
+    <string name="exercise_details_step_five">5. Return the weight slowly to start.</string>
+    <string name="exercise_details_cues">PRO FORM CUES</string>
+    <string name="exercise_details_cue_one">• Keep your shoulders rolled down and back.</string>
+    <string name="exercise_details_cue_two">• Do not lean backward to swing the load.</string>
+    <string name="exercise_details_ask">Ask Vora: \"Explain grip variations\"</string>
+    <string name="exercise_details_back_to_workout">Back to Workout</string>
+    <string name="exercise_details_demo_title">Demonstration</string>
+    <string name="exercise_details_help_notice">This is the Seated Cable Row demonstration guide. Exercise-specific guides are not available yet.</string>
+    <string name="exercise_details_coach_notice">Vora coaching is not available in this demonstration. No microphone is used.</string>
+    <string name="exercise_details_ok">OK</string>
+
 </resources>

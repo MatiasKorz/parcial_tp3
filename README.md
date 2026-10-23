@@ -29,7 +29,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 4.3 | Workout / 03 — Workout Details | `workout_details/{workoutId}` | Workout / 01 y 02 | demostración | Hecha (validación manual pendiente) | Datos del Figma; conserva workoutId hacia Pre Workout; guía con id de demostración; detalle real y estados pendientes de NUC-02/NUC-03 |
 | 4.4 | Workout / 04 — Pre Workout | `pre_workout/{workoutId}` | Workout / 01 y 03 | demostración | Hecha (validación manual pendiente) | Preparación con textos del Figma; conserva workoutId hacia Active Workout; recomendación y micrófono con avisos; sin historial real |
 | 4.5 | Workout / 05 — Active Workout | `active_workout/{workoutId}` | Workout / 04 | demostración | Hecha (validación manual pendiente) | Series, carga y descanso simulados en Compose; sin cronómetro real ni persistencia; Finish Workout abre el destino existente PAN-4.7 |
-| 4.6 | Workout / 06 — Exercise Details | `exercise_details/{exerciseId}` | Workout / 03 y 05 | demostración | Provisoria | Datos de ejemplo |
+| 4.6 | Workout / 06 — Exercise Details | `exercise_details/{exerciseId}` | Workout / 03 | demostración | UI hecha (validación manual pendiente) | Guía Figma fija de Seated Cable Row con imagen original; filas actuales usan demo-exercise; identificación e instrucciones reales pendientes de NUC-02; NAV04/RF01 incompletos |
 | 4.7 | Workout / 07 — Workout Complete | `workout_complete` | Workout / 05 | demostración | Provisoria | Resumen de ejemplo |
 | 5.1 | Nutrition / 01 — Dashboard | `nutrition` | Pestaña Nutrition | funcional | Provisoria | Muestra el total diario desde Room |
 | 5.2 | Nutrition / 02 — Today's Meals | `todays_meals` | Nutrition / 01 | funcional | Provisoria | Listado por fecha desde Room |
