@@ -254,25 +254,19 @@
     <string name="workout_details_overview">Workout Overview</string>
     <string name="workout_details_back">Back</string>
     <string name="workout_details_menu">More options</string>
-    <string name="workout_details_title">Upper Body Strength</string>
-    <string name="workout_details_duration">42 min</string>
+    <!-- NUC-02: name, level, duration and exercises come from GET /v1/workouts/{workoutId} -->
+    <string name="workout_details_duration">%1$d min</string>
     <string name="workout_details_bullet">•</string>
-    <string name="workout_details_level">Moderate</string>
-    <string name="workout_details_count">5 exercises</string>
-    <string name="workout_details_focus">Focus: Chest • Back • Shoulders • Arms</string>
+    <!-- 1: distinct muscle groups of the exercises, joined with " • " -->
+    <string name="workout_details_focus">Focus: %1$s</string>
     <string name="workout_details_coach_title">VORA COACH NOTE</string>
     <string name="workout_details_coach_body">Based on your last session, VORA suggests keeping the same weights and focusing on controlled repetitions today.</string>
-    <string name="workout_details_bench">Bench Press</string>
-    <string name="workout_details_bench_sets">3 × 10 • Rest 90s</string>
-    <string name="workout_details_row">Seated Cable Row</string>
-    <string name="workout_details_row_sets">3 × 12 • Rest 75s</string>
-    <string name="workout_details_shoulder">Shoulder Press</string>
-    <string name="workout_details_shoulder_sets">3 × 10 • Rest 75s</string>
-    <string name="workout_details_raise">Dumbbell Lateral Raise</string>
-    <string name="workout_details_raise_sets">3 × 12 • Rest 60s</string>
-    <string name="workout_details_tricep">Tricep Pushdown</string>
-    <string name="workout_details_tricep_sets">3 × 12 • Rest 60s</string>
+    <!-- 1: sets, 2: reps, 3: rest seconds -->
+    <string name="workout_details_prescription">%1$d × %2$d • Rest %3$ds</string>
     <string name="workout_details_number">%1$02d</string>
+    <!-- Not designed in Figma; language agreed with the team (REF-05) -->
+    <string name="workout_details_offline">This workout isn\'t available offline yet. Open it again once you\'re connected.</string>
+    <string name="workout_details_not_found">This workout could not be found.</string>
     <string name="workout_details_start">Start Workout</string>
     <string name="workout_details_edit">Edit workout</string>
     <string name="workout_details_demo_title">Demonstration</string>
@@ -568,22 +562,18 @@
     <string name="exercise_details_guide">Exercise Guide</string>
     <string name="exercise_details_back">Back</string>
     <string name="exercise_details_help">Exercise help</string>
-    <string name="exercise_details_title">Seated Cable Row</string>
-    <string name="exercise_details_target">Target: Lats, Mid-Back, Rhomboids</string>
+    <!-- NUC-02: 1: muscleGroup of the exercise -->
+    <string name="exercise_details_target">Target: %1$s</string>
     <string name="exercise_details_image_description">Original Figma demonstration image for the exercise guide</string>
     <string name="exercise_details_steps">Performance Steps</string>
-    <string name="exercise_details_step_one">1. Sit upright with your chest lifted.</string>
-    <string name="exercise_details_step_two">2. Pull the handle toward your lower torso.</string>
-    <string name="exercise_details_step_three">3. Keep your elbows tucked close to your ribs.</string>
-    <string name="exercise_details_step_four">4. Pause briefly during peak contraction.</string>
-    <string name="exercise_details_step_five">5. Return the weight slowly to start.</string>
     <string name="exercise_details_cues">PRO FORM CUES</string>
-    <string name="exercise_details_cue_one">• Keep your shoulders rolled down and back.</string>
-    <string name="exercise_details_cue_two">• Do not lean backward to swing the load.</string>
+    <!-- 1: tip of the exercise -->
+    <string name="exercise_details_cue">• %1$s</string>
+    <string name="exercise_details_unavailable">This exercise isn\'t available offline yet. Open its workout once you\'re connected.</string>
     <string name="exercise_details_ask">Ask Vora: \"Explain grip variations\"</string>
     <string name="exercise_details_back_to_workout">Back to Workout</string>
     <string name="exercise_details_demo_title">Demonstration</string>
-    <string name="exercise_details_help_notice">This is the Seated Cable Row demonstration guide. Exercise-specific guides are not available yet.</string>
+    <string name="exercise_details_help_notice">Additional exercise help is not available in this demonstration.</string>
     <string name="exercise_details_coach_notice">Vora coaching is not available in this demonstration. No microphone is used.</string>
     <string name="exercise_details_ok">OK</string>
 

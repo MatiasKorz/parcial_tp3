@@ -19,13 +19,23 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.examentp3.R
+import com.example.examentp3.model.Exercise
 import com.example.examentp3.ui.components.VoraPrimaryButton
 import com.example.examentp3.ui.theme.*
+import com.example.examentp3.viewmodel.ExerciseDetailsUiState
 
-/** Figma-only Seated Cable Row guide. Exercise-specific data/identity remains pending NUC-02. */
+/**
+ * Workout / 06 — Exercise Details showing the cached exercise of GET /v1/workouts/{workoutId} (NUC-02):
+ * instructions go in "Performance Steps" and the tip in "PRO FORM CUES". The image and "Ask Vora" stay as PAN-4.6.
+ */
 @Composable
-fun ExerciseDetailsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun ExerciseDetailsScreen(
+    uiState: ExerciseDetailsUiState,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var notice by rememberSaveable { mutableStateOf<Int?>(null) }
+    val exercise = uiState.exercise
     LazyColumn(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
             .statusBarsPadding().navigationBarsPadding(),
@@ -38,11 +48,18 @@ fun ExerciseDetailsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         item(key = "header") {
             GuideHeader(onBack) { notice = R.string.exercise_details_help_notice }
         }
+        if (exercise == null) {
+            if (!uiState.isLoading) {
+                item(key = "unavailable") { UnavailableMessage() }
+                item(key = "back") { BackToWorkout(onBack) }
+            }
+            return@LazyColumn
+        }
         item(key = "exercise") {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.s4)) {
-                Text(stringResource(R.string.exercise_details_title), style = MaterialTheme.typography.exerciseDetailsTitle)
+                Text(exercise.name, style = MaterialTheme.typography.exerciseDetailsTitle)
                 Text(
-                    stringResource(R.string.exercise_details_target),
+                    stringResource(R.string.exercise_details_target, exercise.muscleGroup),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.voraColors.textSecondary,
                 )
@@ -56,20 +73,10 @@ fun ExerciseDetailsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 contentScale = ContentScale.Fit,
             )
         }
-        item(key = "steps") { PerformanceSteps() }
-        item(key = "cues") { FormCues() }
+        item(key = "steps") { PerformanceSteps(exercise.instructions) }
+        item(key = "cues") { FormCues(exercise.tip) }
         item(key = "ask_vora") { AskVora { notice = R.string.exercise_details_coach_notice } }
-        item(key = "back") {
-            MaterialTheme(
-                typography = MaterialTheme.typography.copy(labelMedium = MaterialTheme.typography.exerciseDetailsAction),
-            ) {
-                VoraPrimaryButton(
-                    stringResource(R.string.exercise_details_back_to_workout),
-                    onBack,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp),
-                )
-            }
-        }
+        item(key = "back") { BackToWorkout(onBack) }
     }
     notice?.let { message ->
         AlertDialog(
@@ -108,25 +115,16 @@ private fun GuideHeader(onBack: () -> Unit, onHelp: () -> Unit) {
 }
 
 @Composable
-private fun PerformanceSteps() {
+private fun PerformanceSteps(instructions: String) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.s10)) {
         Text(stringResource(R.string.exercise_details_steps), style = MaterialTheme.typography.exerciseDetailsSectionTitle)
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.s6)) {
-            listOf(
-                R.string.exercise_details_step_one,
-                R.string.exercise_details_step_two,
-                R.string.exercise_details_step_three,
-                R.string.exercise_details_step_four,
-                R.string.exercise_details_step_five,
-            ).forEach { step ->
-                Text(stringResource(step), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
-            }
-        }
+        // The API sends the instructions as a single text, not as numbered steps.
+        Text(instructions, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
     }
 }
 
 @Composable
-private fun FormCues() {
+private fun FormCues(tip: String) {
     Column(
         modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.small)
             .background(MaterialTheme.colorScheme.surface)
@@ -138,8 +136,10 @@ private fun FormCues() {
             stringResource(R.string.exercise_details_cues),
             style = MaterialTheme.typography.exerciseDetailsCueLabel, color = MaterialTheme.colorScheme.primary,
         )
-        Text(stringResource(R.string.exercise_details_cue_one), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
-        Text(stringResource(R.string.exercise_details_cue_two), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary)
+        Text(
+            stringResource(R.string.exercise_details_cue, tip),
+            style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.voraColors.textSecondary,
+        )
     }
 }
 
@@ -165,14 +165,53 @@ private fun AskVora(onClick: () -> Unit) {
     }
 }
 
+/** Not designed in Figma: shown when the exercise's workout was never downloaded (RF02). */
+@Composable
+private fun UnavailableMessage() {
+    Text(
+        stringResource(R.string.exercise_details_unavailable),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.small)
+            .background(MaterialTheme.voraColors.mintSoft)
+            .padding(Spacing.s12),
+    )
+}
+
+@Composable
+private fun BackToWorkout(onBack: () -> Unit) {
+    MaterialTheme(
+        typography = MaterialTheme.typography.copy(labelMedium = MaterialTheme.typography.exerciseDetailsAction),
+    ) {
+        VoraPrimaryButton(
+            stringResource(R.string.exercise_details_back_to_workout),
+            onBack,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp),
+        )
+    }
+}
+
+// Sample data shaped like the mock fixture e02.
+private val PreviewExercise = Exercise(
+    id = "e02", name = "Remo con mancuerna", muscleGroup = "Espalda", sets = 3, reps = 10, restSeconds = 60,
+    instructions = "Apoyá una mano y llevá la mancuerna hacia el torso.",
+    tip = "Usá una carga que puedas controlar.",
+)
+
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun ExerciseDetailsPreview() {
-    ExamenTP3Theme { ExerciseDetailsScreen({}) }
+    ExamenTP3Theme { ExerciseDetailsScreen(ExerciseDetailsUiState(PreviewExercise, isLoading = false), {}) }
 }
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 640, fontScale = 1.3f)
 @Composable
 private fun ExerciseDetailsCompactPreview() {
-    ExamenTP3Theme { ExerciseDetailsScreen({}) }
+    ExamenTP3Theme { ExerciseDetailsScreen(ExerciseDetailsUiState(PreviewExercise, isLoading = false), {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun ExerciseDetailsUnavailablePreview() {
+    ExamenTP3Theme { ExerciseDetailsScreen(ExerciseDetailsUiState(isLoading = false), {}) }
 }

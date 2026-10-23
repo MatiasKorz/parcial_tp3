@@ -38,6 +38,8 @@ import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
+import com.example.examentp3.viewmodel.ExerciseDetailsViewModel
+import com.example.examentp3.viewmodel.WorkoutDetailsViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
@@ -45,11 +47,10 @@ import com.example.examentp3.viewmodel.SettingsViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
 private const val DEMO_WORKOUT_ID = "demo-workout"
-private const val DEMO_EXERCISE_ID = "demo-exercise"
 private const val DEMO_MEAL_ID = "demo-meal"
 
 private val workoutArgs = listOf(navArgument(NavArgs.WORKOUT_ID) { type = NavType.StringType })
-private val exerciseArgs = listOf(navArgument(NavArgs.EXERCISE_ID) { type = NavType.StringType })
+private val exerciseArgs = workoutArgs + navArgument(NavArgs.EXERCISE_ID) { type = NavType.StringType }
 private val mealArgs = listOf(navArgument(NavArgs.MEAL_ID) { type = NavType.StringType })
 
 private class Link(
@@ -179,13 +180,16 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     }
     composable(WorkoutDetails.route, workoutArgs) { entry ->
         val workoutId = entry.argument(NavArgs.WORKOUT_ID)
+        val viewModel: WorkoutDetailsViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
         WorkoutDetailsScreen(
+            uiState = uiState,
             onBack = { if (entry.isResumed()) navController.popBackStack() },
             onStartWorkout = {
                 if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(workoutId))
             },
-            onExerciseClick = {
-                if (entry.isResumed()) navController.navigate(ExerciseDetails.createRoute(DEMO_EXERCISE_ID))
+            onExerciseClick = { exerciseId ->
+                if (entry.isResumed()) navController.navigate(ExerciseDetails.createRoute(workoutId, exerciseId))
             },
         )
     }
@@ -210,7 +214,10 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
         )
     }
     composable(ExerciseDetails.route, exerciseArgs) { entry ->
+        val viewModel: ExerciseDetailsViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
         ExerciseDetailsScreen(
+            uiState = uiState,
             onBack = { if (entry.isResumed()) navController.popBackStack() },
         )
     }
