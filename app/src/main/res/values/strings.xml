@@ -527,4 +527,40 @@
     <string name="weekly_plan_demo_section">Demonstration plan</string>
     <string name="weekly_plan_catalog_title">Workout catalog</string>
     <string name="weekly_plan_catalog_description">Workouts from the catalog. The details screen currently displays demonstration content.</string>
+
+    <!-- PAN-4.5: Active Workout demonstration -->
+    <string name="active_workout_exercise_position">EXERCISE 2 OF 5</string>
+    <string name="active_workout_exercise">Seated Cable Row</string>
+    <string name="active_workout_finish">Finish Workout</string>
+    <string name="active_workout_volume">CURRENT VOLUME WORK</string>
+    <string name="active_workout_reps_value">10</string>
+    <string name="active_workout_reps">REPS TARGET</string>
+    <string name="active_workout_matrix_value">3 × 12</string>
+    <string name="active_workout_matrix">SET MATRIX</string>
+    <string name="active_workout_last_session">LAST SESSION</string>
+    <string name="active_workout_last_volume">45 kg × 12 reps</string>
+    <string name="active_workout_weight">%1$s kg</string>
+    <string name="active_workout_minus">−</string>
+    <string name="active_workout_plus">+</string>
+    <string name="active_workout_decrease">Decrease weight by 2.5 kg</string>
+    <string name="active_workout_increase">Increase weight by 2.5 kg</string>
+    <string name="active_workout_number">%1$d</string>
+    <string name="active_workout_set">Set %1$d</string>
+    <string name="active_workout_set_description">Set %1$d: %2$s</string>
+    <string name="active_workout_status_complete">completed</string>
+    <string name="active_workout_status_current">current</string>
+    <string name="active_workout_status_pending">pending</string>
+    <string name="active_workout_rest_time">Resting • %1$02d:%2$02d</string>
+    <string name="active_workout_rest_finished">Rest complete</string>
+    <string name="active_workout_add_rest">+30s</string>
+    <string name="active_workout_skip">Skip</string>
+    <string name="active_workout_coach">VORA COACH</string>
+    <string name="active_workout_voice">Voice On</string>
+    <string name="active_workout_advice">\"Two more reps. Keep your chest elevated, brace your core, and control the bar\'s return.\"</string>
+    <string name="active_workout_complete_set">Complete Set</string>
+    <string name="active_workout_demo_title">Demonstration</string>
+    <string name="active_workout_voice_notice">Voice coaching is a demonstration. No microphone is used.</string>
+    <string name="active_workout_sets_complete">All three sets in this demonstration are complete. Use Finish Workout to continue.</string>
+    <string name="active_workout_ok">OK</string>
+
 </resources>
