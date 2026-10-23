@@ -514,4 +514,17 @@
     <string name="settings_demo_permissions">This app does not use the microphone or the camera, so it asks for no permissions.</string>
     <string name="settings_demo_help_centre">The help centre is not available in this demonstration.</string>
     <string name="settings_demo_contact_support">Contacting support is not available in this demonstration.</string>
+
+    <string name="weekly_plan_workout_meta">%1$d min • %2$s • %3$s</string>
+    <plurals name="weekly_plan_exercise_count">
+        <item quantity="one">%d exercise</item>
+        <item quantity="other">%d exercises</item>
+    </plurals>
+    <string name="workout_level_beginner">Beginner</string>
+    <string name="workout_level_intermediate">Intermediate</string>
+    <string name="workout_level_advanced">Advanced</string>
+    <!-- NUC-01 catalog integrated with the PAN-4.2 demonstration plan -->
+    <string name="weekly_plan_demo_section">Demonstration plan</string>
+    <string name="weekly_plan_catalog_title">Workout catalog</string>
+    <string name="weekly_plan_catalog_description">Workouts from the catalog. The details screen currently displays demonstration content.</string>
 </resources>

@@ -36,6 +36,7 @@ import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
+import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
 
@@ -161,9 +162,15 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
         )
     }
     composable(WeeklyPlan.route) { entry ->
+        val viewModel: WorkoutCatalogViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
         WeeklyPlanScreen(
+            uiState = uiState,
             onWorkoutDetails = {
                 if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(DEMO_WORKOUT_ID))
+            },
+            onWorkoutClick = { workoutId ->
+                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(workoutId))
             },
         )
     }

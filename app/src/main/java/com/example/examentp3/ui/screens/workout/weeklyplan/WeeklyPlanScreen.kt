@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,13 +23,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.examentp3.R
+import com.example.examentp3.viewmodel.WorkoutCatalogUiState
 import com.example.examentp3.ui.components.VoraCard
 import com.example.examentp3.ui.theme.*
 
-/** Static Figma plan. Catalog ownership and business state remain with NUC-01. */
+/** Keeps the Figma demonstration plan separate from the Room-backed NUC-01 catalog. */
 @Composable
 fun WeeklyPlanScreen(
+    uiState: WorkoutCatalogUiState,
     onWorkoutDetails: () -> Unit,
+    onWorkoutClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedDay by rememberSaveable { mutableIntStateOf(1) }
@@ -57,6 +61,11 @@ fun WeeklyPlanScreen(
         }
         item(key = "workouts") {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.s12)) {
+                Text(
+                    stringResource(R.string.weekly_plan_demo_section),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.voraColors.textSecondary,
+                )
                 TodayCard(onWorkoutDetails)
                 PlannedWorkoutCard(
                     R.string.weekly_plan_wednesday, R.string.weekly_plan_recovery,
@@ -70,6 +79,19 @@ fun WeeklyPlanScreen(
         }
         item(key = "coach") {
             CoachPanel { coachPrompt = it }
+        }
+        item(key = "catalog_header") {
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.s4)) {
+                Text(stringResource(R.string.weekly_plan_catalog_title), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.weekly_plan_catalog_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.voraColors.textSecondary,
+                )
+            }
+        }
+        items(uiState.workouts, key = { "catalog:${it.id}" }) { workout ->
+            WorkoutCatalogCard(workout = workout, onClick = { onWorkoutClick(workout.id) })
         }
     }
     coachPrompt?.let { prompt ->
@@ -221,11 +243,11 @@ private fun CoachChip(@StringRes label: Int, onPrompt: (Int) -> Unit) {
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun WeeklyPlanPreview() {
-    ExamenTP3Theme { WeeklyPlanScreen({}) }
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(), {}, {}) }
 }
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 640, fontScale = 1.3f)
 @Composable
 private fun WeeklyPlanCompactPreview() {
-    ExamenTP3Theme { WeeklyPlanScreen({}) }
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(), {}, {}) }
 }
