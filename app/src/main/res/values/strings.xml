@@ -613,4 +613,17 @@
     <string name="meal_type_snack">Snack</string>
     <string name="meal_type_dinner">Dinner</string>
 
+    <!-- PAN-5.2 Nutrition / 02 — Today's Meals -->
+    <string name="todays_meals_title">Today\'s Meals</string>
+    <string name="todays_meals_kcal">%1$s kcal</string>
+    <string name="todays_meals_not_logged">%1$s is not logged yet</string>
+    <string name="todays_meals_add">+ Add %1$s</string>
+    <!-- Not in Figma: date navigation (decision of 23/10), pending REF-05 -->
+    <string name="todays_meals_timeline_date">TIMELINE · %1$s</string>
+    <string name="todays_meals_previous_day">Previous day</string>
+    <string name="todays_meals_next_day">Next day</string>
+    <string name="todays_meals_pick_date">Choose date</string>
+    <string name="todays_meals_date_picker_ok">OK</string>
+    <string name="todays_meals_date_picker_cancel">Cancel</string>
+
 </resources>
