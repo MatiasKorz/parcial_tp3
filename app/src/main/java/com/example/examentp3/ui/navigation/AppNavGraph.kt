@@ -28,6 +28,7 @@ import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.EditProfileScreen
 import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
+import com.example.examentp3.ui.screens.profile.SettingsScreen
 import com.example.examentp3.ui.screens.progress.NutritionProgressScreen
 import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
@@ -36,6 +37,7 @@ import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
+import com.example.examentp3.viewmodel.SettingsViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
 private const val DEMO_WORKOUT_ID = "demo-workout"
@@ -307,11 +309,22 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     }
     placeholder(NutritionPreferences, navController)
     placeholder(VoiceAiSettings, navController)
-    placeholder(Settings, navController) {
-        listOf(
-            Link("Log out", SignIn.route) { // inferred: not drawn as a connection in Figma
-                popUpTo(navController.graph.id) { inclusive = true }
-                launchSingleTop = true
+    composable(Settings.route) { entry ->
+        val viewModel: SettingsViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        SettingsScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onAccountClick = { if (entry.isResumed()) navController.navigate(EditProfile.route) },
+            onNotificationsChange = viewModel::onNotificationsChange,
+            onLogOut = {
+                // Inferred: not drawn as a connection in Figma. Clears the back stack.
+                if (entry.isResumed()) {
+                    navController.navigate(SignIn.route) {
+                        popUpTo(navController.graph.id) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             },
         )
     }

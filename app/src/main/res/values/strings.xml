@@ -475,4 +475,43 @@
     <string name="nutrition_progress_habit_breakfast_value">420 kcal</string>
     <string name="nutrition_progress_habit_dinner_label">Avg dinner</string>
     <string name="nutrition_progress_habit_dinner_value">610 kcal</string>
+    <!-- PAN-7.6 Profile / 06 — Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_back_description">Back</string>
+    <string name="settings_section_account">Account</string>
+    <string name="settings_section_app_preferences">App Preferences</string>
+    <string name="settings_section_connected_data">Connected Data</string>
+    <string name="settings_section_privacy_security">Privacy &amp; Security</string>
+    <string name="settings_section_support">Support</string>
+    <string name="settings_account_name">Alex Morgan</string>
+    <string name="settings_account_email">alex@morgan.com</string>
+    <string name="settings_premium_title">VORA Premium</string>
+    <string name="settings_premium_subtitle">Renews 14 June 2026</string>
+    <string name="settings_manage_account">Manage account</string>
+    <string name="settings_notifications_title">Notifications</string>
+    <string name="settings_notifications_subtitle">Workout and meal reminders</string>
+    <string name="settings_units_title">Units</string>
+    <string name="settings_units_metric">Metric (kg, cm, km)</string>
+    <string name="settings_appearance_title">Appearance</string>
+    <string name="settings_appearance_system_default">System default</string>
+    <string name="settings_health_activity_title">Health &amp; Activity</string>
+    <string name="settings_health_activity_subtitle">Apple Watch &amp; Health connected</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+    <string name="settings_permissions">Permissions &amp; Data Controls</string>
+    <string name="settings_help_centre">Help Centre</string>
+    <string name="settings_contact_support">Contact Support</string>
+    <string name="settings_log_out">Log out</string>
+    <string name="settings_version">VORA v1.0.0</string>
+    <!-- PAN-7.6: not in Figma, demo notices (NAV03/NAV05) -->
+    <string name="settings_demo_title">Demonstration</string>
+    <string name="settings_ok">OK</string>
+    <string name="settings_demo_premium">Subscriptions and payments are not available in this demonstration.</string>
+    <string name="settings_demo_manage_account">Account management is not available in this demonstration.</string>
+    <string name="settings_demo_units">Only metric units are available in this demonstration.</string>
+    <string name="settings_demo_appearance">Only the system default appearance is available in this demonstration.</string>
+    <string name="settings_demo_health_activity">Apple Watch and Apple Health are not connected in this demonstration.</string>
+    <string name="settings_demo_privacy_policy">The privacy policy is not available in this demonstration.</string>
+    <string name="settings_demo_permissions">This app does not use the microphone or the camera, so it asks for no permissions.</string>
+    <string name="settings_demo_help_centre">The help centre is not available in this demonstration.</string>
+    <string name="settings_demo_contact_support">Contacting support is not available in this demonstration.</string>
 </resources>

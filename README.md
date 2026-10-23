@@ -50,5 +50,5 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 7.3 | Profile / 03 — Goals & Preferences | `goals_preferences` | Profile / 01 ("Your Goals") | demostración (datos locales) | Hecha | Selección local de objetivos (varios), frecuencia y tipo de entrenamiento; "Balanced" fija; lo guardado se mantiene durante la sesión y volver sin guardar lo descarta |
 | 7.4 | Profile / 04 — Nutrition Preferences | `nutrition_preferences` | Profile / 01 | demostración | Provisoria | Datos de ejemplo |
 | 7.5 | Profile / 05 — Voice & AI Settings | `voice_ai_settings` | Profile / 01 | demostración | Provisoria | Ajustes de ejemplo |
-| 7.6 | Profile / 06 — Settings | `settings` | Profile / 01 | demostración | Provisoria | "Log out" vuelve a SignIn |
+| 7.6 | Profile / 06 — Settings | `settings` | Profile / 01 (engranaje, "Connected Data", "Account") | demostración (datos locales) | Hecha | Notifications on/off se mantiene durante la sesión; Units, Appearance y el resto de las opciones informan modo demostración; "Alex Morgan" abre Edit Profile; "Log out" vuelve a SignIn y vacía la pila |
 
