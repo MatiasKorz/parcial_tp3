@@ -607,4 +607,38 @@
     <string name="workout_complete_too_easy">Too Easy</string>
     <string name="workout_complete_done">Done</string>
 
+    <!-- PAN-6.6 Progress / 06 — Weekly Review (demo data from Figma) -->
+    <string name="weekly_review_title">Your weekly review</string>
+    <string name="weekly_review_subtitle">Here\'s what changed this week.</string>
+    <string name="weekly_review_back">Back</string>
+    <string name="weekly_review_summary_quote">\"You had a strong week.\"</string>
+    <string name="weekly_review_workouts_label">WORKOUTS</string>
+    <string name="weekly_review_workouts_value">4 sessions</string>
+    <string name="weekly_review_steps_label">AVG STEPS</string>
+    <string name="weekly_review_steps_value">7,842 steps</string>
+    <string name="weekly_review_protein_label">PROTEIN</string>
+    <string name="weekly_review_protein_value">132g daily</string>
+    <string name="weekly_review_went_well_title">What went well</string>
+    <string name="weekly_review_consistent_title">You stayed consistent</string>
+    <string name="weekly_review_consistent_text">Four completed workouts helped you maintain your weekly training rhythm.</string>
+    <string name="weekly_review_protein_improved_title">Your protein improved</string>
+    <string name="weekly_review_protein_improved_text">You reached your protein target on 5 of 7 days.</string>
+    <string name="weekly_review_volume_title">Your training volume increased</string>
+    <string name="weekly_review_volume_text" formatted="false">You completed 8% more volume than last week.</string>
+    <string name="weekly_review_improve_title">What to improve</string>
+    <string name="weekly_review_dinner_title">Dinner consistency</string>
+    <string name="weekly_review_dinner_text">Your protein intake tends to drop at dinner. Try planning a protein-rich dinner before the evening.</string>
+    <string name="weekly_review_get_dinner_ideas">Get dinner ideas</string>
+    <string name="weekly_review_recommendations_title">Next week\'s recommendations</string>
+    <string name="weekly_review_recommendation_schedule">Keep your current workout schedule.</string>
+    <string name="weekly_review_recommendation_protein">Try to reach 140g protein on at least 6 days.</string>
+    <string name="weekly_review_recommendation_steps">Aim for 8,000+ steps on non-training days.</string>
+    <string name="weekly_review_view_next_week_plan">View next week\'s plan</string>
+    <string name="weekly_review_ask_vora">Ask VORA</string>
+    <string name="weekly_review_done">Done</string>
+    <!-- Not in Figma: demonstration notice for "Get dinner ideas" (NAV03) -->
+    <string name="weekly_review_demo_title">Demonstration</string>
+    <string name="weekly_review_dinner_ideas_notice">Dinner ideas are not available in this demonstration.</string>
+    <string name="weekly_review_ok">OK</string>
+
 </resources>
