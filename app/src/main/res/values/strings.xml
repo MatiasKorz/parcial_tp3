@@ -671,4 +671,14 @@
     <!-- NUC-04: macro totals with up to one decimal ("38g", "12.5g") -->
     <string name="food_confirmation_macro_grams">%1$sg</string>
 
+    <!-- PAN-5.5 Nutrition / 05 — Food Analysis -->
+    <string name="food_analysis_brand">VORA AI</string>
+    <string name="food_analysis_title">Analyzing Meal...</string>
+    <string name="food_analysis_captured_input_label">CAPTURED INPUT</string>
+    <string name="food_analysis_captured_input">\"Grilled chicken, rice and mixed vegetables\"</string>
+    <string name="food_analysis_step_identifying">Identifying foods...</string>
+    <string name="food_analysis_step_estimating">Estimating portions...</string>
+    <string name="food_analysis_step_calculating">Calculating nutrition...</string>
+    <string name="food_analysis_cancel">Cancel analysis</string>
+
 </resources>

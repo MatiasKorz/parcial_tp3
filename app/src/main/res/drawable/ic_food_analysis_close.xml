@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="36"
+    android:viewportHeight="36">
+  <!-- Figma header button of Nutrition / 05: white 12 % circle with an 8x8 close mark. -->
+  <path
+      android:pathData="M0,18A18,18 0,1 1,36 18A18,18 0,1 1,0 18Z"
+      android:fillColor="#FFFFFF"
+      android:fillAlpha="0.121569"/>
+  <path
+      android:pathData="M22,14L18,18M18,18L14,22M18,18L14,14M18,18L22,22"
+      android:strokeColor="#FFFFFF"
+      android:strokeWidth="2"
+      android:strokeLineCap="round"/>
+</vector>
