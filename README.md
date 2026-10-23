@@ -18,7 +18,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 1.2 | Login - 02 — SignUp | `sign_up` | SignIn ("Sign up here") | demostración | Hecha (validación visual pendiente) | Aviso de registro de demostración sin crear cuenta; permanece en SignUp; regreso a SignIn |
 | 2.1 | Home / 01 — Dashboard | `home` | SignIn; pestaña Home | demostración | Hecha | Datos de ejemplo |
 | 2.2 | Home / 02 — Notifications | `notifications` | Home | demostración | Hecha | Notificaciones de ejemplo |
-| 3.1 | Voice / 01 — Idle | `voice_idle` | Home | demostración | Provisoria | Estado del coach simulado; sin micrófono |
+| 3.1 | Voice / 01 — Idle | `voice_idle` | Home ("Start voice session") | demostración | Hecha | Estado del coach simulado; sin micrófono; los chips y "LAST CONVERSATION" llevan a destinos de ejemplo |
 | 3.2 | Voice / 02 — Listening | `voice_listening` | Voice / 01 | demostración | Provisoria | Escucha simulada |
 | 3.3 | Voice / 03 — Processing | `voice_processing` | Voice / 02 | demostración | Provisoria | Procesamiento simulado |
 | 3.4 | Voice / 04 — Speaking | `voice_speaking` | Voice / 03 | demostración | Provisoria | Respuesta simulada |
