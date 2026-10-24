@@ -22,12 +22,16 @@ class WorkoutRepository @Inject constructor(
     fun observeWorkouts(): Flow<List<WorkoutSummary>> =
         workoutDao.observeAll().map { list -> list.map { it.toModel() } }
 
-    /** Downloads the catalog and caches it. Failure covers HTTP errors, no connection, timeouts and malformed JSON. */
-    suspend fun refreshWorkouts(): Result<Unit> = try {
+    /**
+     * Downloads the catalog and caches it; success carries how many workouts the server sent, so an
+     * empty answer can be shown as empty without deleting the cache (RF05). Failure covers HTTP errors,
+     * no connection, timeouts and malformed JSON.
+     */
+    suspend fun refreshWorkouts(): Result<Int> = try {
         val items = api.getWorkouts().data
             ?: throw JsonParseException("Response without data")
         workoutDao.upsertAll(items.mapNotNull { it.toModel()?.toEntity() })
-        Result.success(Unit)
+        Result.success(items.size)
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
