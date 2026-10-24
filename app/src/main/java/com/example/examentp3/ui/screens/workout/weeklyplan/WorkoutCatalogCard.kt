@@ -60,7 +60,7 @@ internal fun WorkoutCatalogCard(
 
 /** The API sends the level in lowercase English; the Figma shows it capitalized ("Intermediate"). */
 @Composable
-private fun levelLabel(level: String): String = when (level) {
+internal fun levelLabel(level: String): String = when (level) {
     "beginner" -> stringResource(R.string.workout_level_beginner)
     "intermediate" -> stringResource(R.string.workout_level_intermediate)
     "advanced" -> stringResource(R.string.workout_level_advanced)
