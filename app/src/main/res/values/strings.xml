@@ -635,4 +635,159 @@
     <string name="health_trends_trend_improving">Improving</string>
     <string name="health_trends_trend_consistent">Consistent</string>
 
+    <!-- PAN-7.5 Profile / 05 — Voice & AI Settings -->
+    <string name="voice_ai_settings_title">VORA Coach</string>
+    <string name="voice_ai_settings_back_description">Back</string>
+    <string name="voice_ai_settings_intro">Choose how VORA communicates and coaches you.</string>
+    <string name="voice_ai_settings_coaching_style">Coaching Style</string>
+    <string name="voice_ai_settings_coaching_supportive">Supportive</string>
+    <string name="voice_ai_settings_coaching_balanced">Balanced</string>
+    <string name="voice_ai_settings_coaching_direct">Direct</string>
+    <string name="voice_ai_settings_active_voice">Active Voice</string>
+    <string name="voice_ai_settings_voice_name">VORA Voice 01</string>
+    <string name="voice_ai_settings_preview">Preview</string>
+    <string name="voice_ai_settings_speaking_behaviour">Speaking Behaviour</string>
+    <string name="voice_ai_settings_speak_aloud">Speak responses aloud</string>
+    <string name="voice_ai_settings_auto_play">Auto-play coaching</string>
+    <string name="voice_ai_settings_allow_interruptions">Allow interruptions</string>
+    <string name="voice_ai_settings_interruptions_hint">Interrupt VORA anytime while it\'s speaking.</string>
+    <string name="voice_ai_settings_response_style">Response Style</string>
+    <string name="voice_ai_settings_response_concise">Concise</string>
+    <string name="voice_ai_settings_response_concise_description">Quick answers</string>
+    <string name="voice_ai_settings_response_balanced">Balanced</string>
+    <string name="voice_ai_settings_response_balanced_description">Useful detail without overwhelming</string>
+    <string name="voice_ai_settings_response_detailed">Detailed</string>
+    <string name="voice_ai_settings_response_detailed_description">More explanation and context</string>
+    <string name="voice_ai_settings_voice_feedback">Voice feedback</string>
+    <string name="voice_ai_settings_haptic_feedback">Haptic feedback</string>
+    <string name="voice_ai_settings_control_title">Your control matters</string>
+    <string name="voice_ai_settings_control_body">Manage microphone permissions and connected data from Settings.</string>
+    <string name="voice_ai_settings_privacy_link">Privacy &amp; permissions</string>
+    <!-- Not in Figma: demo notice for "Preview" (NAV03/NAV05), pending approval in REF-05 -->
+    <string name="voice_ai_settings_demo_title">Demonstration</string>
+    <string name="voice_ai_settings_preview_notice">Voice preview is not available in this demonstration. No audio is played and the microphone is not used.</string>
+    <string name="voice_ai_settings_ok">OK</string>
+    <!-- NUC-05 Meal types (shared with NUC-04, PAN-5.1, PAN-5.2, PAN-5.7 and PAN-5.8) -->
+    <string name="meal_type_breakfast">Breakfast</string>
+    <string name="meal_type_lunch">Lunch</string>
+    <string name="meal_type_snack">Snack</string>
+    <string name="meal_type_dinner">Dinner</string>
+    <!-- PAN-5.7 Nutrition / 07 — Food Confirmation -->
+    <string name="food_confirmation_title">Review Meal</string>
+    <string name="food_confirmation_back_description">Back</string>
+    <string name="food_confirmation_kcal">%1$d kcal</string>
+    <string name="food_confirmation_grams">%1$dg</string>
+    <string name="food_confirmation_decrease">-</string>
+    <string name="food_confirmation_increase">+</string>
+    <string name="food_confirmation_remove">Remove</string>
+    <string name="food_confirmation_add_ingredient">+ Add Ingredient</string>
+    <string name="food_confirmation_totals">MEAL TOTALS</string>
+    <string name="food_confirmation_protein">PROTEIN</string>
+    <string name="food_confirmation_carbs">CARBS</string>
+    <string name="food_confirmation_fat">FAT</string>
+    <string name="food_confirmation_add_to">Add to %1$s</string>
+    <string name="food_confirmation_save_without_logging">Save without logging</string>
+    <!-- PAN-5.7: not in Figma, demo notices (NAV03), pending approval -->
+    <string name="food_confirmation_demo_title">Demonstration</string>
+    <string name="food_confirmation_demo_adjust">Adjusting ingredients is not available in this demonstration.</string>
+    <string name="food_confirmation_demo_save_without_logging">Saving without logging is not available in this demonstration.</string>
+    <string name="food_confirmation_demo_ok">OK</string>
+    <!-- PAN-5.3 Nutrition / 03 — Add Food -->
+    <string name="add_food_title">Add Food</string>
+    <string name="add_food_back_description">Back</string>
+    <string name="add_food_talk_title">Talk to VORA</string>
+    <string name="add_food_talk_example">\"I had grilled chicken breast with basmati rice.\"</string>
+    <string name="add_food_start_voice">Start Voice Logging</string>
+    <string name="add_food_photo_title">Snap a Photo</string>
+    <string name="add_food_photo_description">Vora estimates sizes and nutrition info.</string>
+    <string name="add_food_search_title">Search Database</string>
+    <string name="add_food_search_description">Search millions of local &amp; global food items.</string>
+    <string name="add_food_manual_title">Log Manually</string>
+    <string name="add_food_manual_description">Input weight, calories and macros yourself.</string>
+    <!-- PAN-5.3: not in Figma, demo notice for "Search Database" (NAV03; the search is EXT-05) -->
+    <string name="add_food_demo_title">Demonstration</string>
+    <string name="add_food_demo_search">Food search is not available in this demonstration.</string>
+    <string name="add_food_demo_ok">OK</string>
+    <!-- NUC-04: RF03 manual form in Food Confirmation; labels and messages are not in Figma, pending approval -->
+    <string name="food_confirmation_name_label">Meal name</string>
+    <string name="food_confirmation_date_label">Date</string>
+    <string name="food_confirmation_type_label">Meal type</string>
+    <string name="food_confirmation_calories_label">Calories</string>
+    <string name="food_confirmation_protein_label">Protein</string>
+    <string name="food_confirmation_carbs_label">Carbs</string>
+    <string name="food_confirmation_fat_label">Fat</string>
+    <string name="food_confirmation_date_description">Choose date</string>
+    <string name="food_confirmation_date_confirm">OK</string>
+    <string name="food_confirmation_date_cancel">Cancel</string>
+    <string name="food_confirmation_error_name_required">Enter the meal name.</string>
+    <string name="food_confirmation_error_required">Enter a value.</string>
+    <string name="food_confirmation_error_not_a_number">Enter a valid number.</string>
+    <string name="food_confirmation_error_whole_number">Enter a whole number.</string>
+    <string name="food_confirmation_error_negative">The value can\'t be negative.</string>
+    <string name="food_confirmation_save_error">The meal could not be saved. Try again.</string>
+    <!-- NUC-04: macro totals with up to one decimal ("38g", "12.5g") -->
+    <string name="food_confirmation_macro_grams">%1$sg</string>
+    <!-- PAN-5.4 Nutrition / 04 — Voice Food Logging (demo: fixed sample transcript) -->
+    <string name="voice_food_logging_title">Voice Logging</string>
+    <!-- Not in Figma: accessibility label of the close button -->
+    <string name="voice_food_logging_close_description">Close</string>
+    <string name="voice_food_logging_listening">Listening...</string>
+    <string name="voice_food_logging_hint">\"Keep talking. I\'m listening.\"</string>
+    <string name="voice_food_logging_transcript">\"I had grilled chicken with rice and some mixed vegetables for lunch.\"</string>
+    <string name="voice_food_logging_done">Done Speaking</string>
+    <string name="voice_food_logging_type_instead">Type instead</string>
+    <!-- PAN-5.6 Nutrition / 06 — Photo Analysis -->
+    <string name="photo_analysis_title">Analyse Meal</string>
+    <string name="photo_analysis_back_description">Back</string>
+    <string name="photo_analysis_tag_chicken">Grilled Chicken (~180g)</string>
+    <string name="photo_analysis_tag_rice">Basmati Rice (~150g)</string>
+    <string name="photo_analysis_estimate_title">VORA ESTIMATE</string>
+    <string name="photo_analysis_estimate_hint">Portions are estimated</string>
+    <string name="photo_analysis_kcal">%1$d kcal</string>
+    <string name="photo_analysis_protein">P: %1$sg</string>
+    <string name="photo_analysis_carbs">C: %1$sg</string>
+    <string name="photo_analysis_fat">F: %1$sg</string>
+    <string name="photo_analysis_note">\"Portions and quantities can be refined in the next step before saving.\"</string>
+    <string name="photo_analysis_review">Review &amp; Add</string>
+    <string name="photo_analysis_retake">Retake Photo</string>
+    <!-- PAN-5.6: not in Figma, demo notice for "Retake Photo" (NAV03, NAV05) -->
+    <string name="photo_analysis_demo_title">Demonstration</string>
+    <string name="photo_analysis_demo_retake">Taking a photo is not available in this demonstration.</string>
+    <string name="photo_analysis_demo_ok">OK</string>
+    <!-- PAN-5.8 Nutrition / 08 — Meal Details -->
+    <string name="meal_details_back">Back</string>
+    <string name="meal_details_total_calories">Total Calories</string>
+    <string name="meal_details_kcal">%1$s kcal</string>
+    <string name="meal_details_protein">PROTEIN</string>
+    <string name="meal_details_carbs">CARBS</string>
+    <string name="meal_details_fat">FAT</string>
+    <string name="meal_details_grams">%1$sg</string>
+    <string name="meal_details_tip">Great protein choice. You\'re now 36g away from your daily protein target.</string>
+    <string name="meal_details_ingredients">Ingredients</string>
+    <string name="meal_details_edit">Edit Meal</string>
+    <string name="meal_details_duplicate">Duplicate Meal</string>
+    <!-- Not in Figma: delete with confirmation (RF04) and demo notices (NAV03) -->
+    <string name="meal_details_delete">Delete Meal</string>
+    <string name="meal_details_delete_title">Delete this meal?</string>
+    <string name="meal_details_delete_message">%1$s will be removed from your meals. This can\'t be undone.</string>
+    <string name="meal_details_delete_confirm">Delete</string>
+    <string name="meal_details_delete_cancel">Cancel</string>
+    <string name="meal_details_delete_error">The meal could not be deleted. Try again.</string>
+    <string name="meal_details_not_found">This meal is no longer available.</string>
+    <string name="meal_details_demo_title">Demonstration</string>
+    <string name="meal_details_edit_demo">Editing meals is not available in this demonstration.</string>
+    <string name="meal_details_duplicate_demo">Duplicating meals is not available in this demonstration.</string>
+    <string name="meal_details_demo_ok">OK</string>
+    <!-- PAN-5.2 Nutrition / 02 — Today's Meals -->
+    <string name="todays_meals_title">Today\'s Meals</string>
+    <string name="todays_meals_kcal">%1$s kcal</string>
+    <string name="todays_meals_not_logged">%1$s is not logged yet</string>
+    <string name="todays_meals_add">+ Add %1$s</string>
+    <!-- Not in Figma: date navigation (decision of 23/10), pending REF-05 -->
+    <string name="todays_meals_timeline_date">TIMELINE · %1$s</string>
+    <string name="todays_meals_previous_day">Previous day</string>
+    <string name="todays_meals_next_day">Next day</string>
+    <string name="todays_meals_pick_date">Choose date</string>
+    <string name="todays_meals_date_picker_ok">OK</string>
+    <string name="todays_meals_date_picker_cancel">Cancel</string>
 </resources>
