@@ -47,6 +47,7 @@ import com.example.examentp3.ui.screens.progress.NutritionProgressScreen
 import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
+import com.example.examentp3.ui.screens.progress.WeeklyReviewScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.FoodConfirmationViewModel
@@ -398,7 +399,13 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onBack = { if (entry.isResumed()) navController.popBackStack() },
         )
     }
-    placeholder(WeeklyReview, navController)
+    composable(WeeklyReview.route) { entry ->
+        WeeklyReviewScreen(
+            onClose = { if (entry.isResumed()) navController.popBackStack() },
+            onViewNextWeekPlan = { if (entry.isResumed()) navController.navigate(WeeklyPlan.route) },
+            onAskVora = { if (entry.isResumed()) navController.navigate(VoiceIdle.route) },
+        )
+    }
 
     // Profile
     composable(ProfileDashboard.route) { entry ->
