@@ -1,6 +1,7 @@
 package com.example.examentp3.ui.navigation
 
 import android.net.Uri
+import java.time.LocalDate
 
 enum class BottomTab { Home, Workout, Nutrition, Progress, Profile }
 
@@ -8,6 +9,27 @@ object NavArgs {
     const val WORKOUT_ID = "workoutId"
     const val EXERCISE_ID = "exerciseId"
     const val MEAL_ID = "mealId"
+
+    /** Optional date of Today's Meals as epoch day; missing means today. */
+    const val DATE_EPOCH_DAY = "dateEpochDay"
+
+    /** Mode of Food Confirmation, see [FoodConfirmationMode]. */
+    const val FOOD_CONFIRMATION_MODE = "mode"
+}
+
+/**
+ * Food Confirmation serves two flows on one route: the RF03 manual form ("Log Manually") and the
+ * review of the simulated estimate (Food Analysis / Photo Analysis).
+ */
+enum class FoodConfirmationMode(val routeValue: String) {
+    Manual("manual"),
+    Estimate("estimate");
+
+    companion object {
+        /** Unknown or missing values fall back to [Estimate], the screen as drawn in Figma. */
+        fun fromRouteValue(value: String?): FoodConfirmationMode =
+            entries.firstOrNull { it.routeValue == value } ?: Estimate
+    }
 }
 
 sealed class AppDestination(
@@ -55,12 +77,26 @@ sealed class AppDestination(
 
     // Nutrition
     data object NutritionDashboard : AppDestination("nutrition", "Nutrition / 01 — Dashboard", BottomTab.Nutrition)
-    data object TodaysMeals : AppDestination("todays_meals", "Nutrition / 02 — Today's Meals", BottomTab.Nutrition)
+    data object TodaysMeals : AppDestination(
+        "todays_meals?${NavArgs.DATE_EPOCH_DAY}={${NavArgs.DATE_EPOCH_DAY}}",
+        "Nutrition / 02 — Today's Meals",
+        BottomTab.Nutrition,
+    ) {
+        /** Without [date] the list opens on today. */
+        fun createRoute(date: LocalDate? = null) =
+            if (date == null) "todays_meals" else "todays_meals?${NavArgs.DATE_EPOCH_DAY}=${date.toEpochDay()}"
+    }
     data object AddFood : AppDestination("add_food", "Nutrition / 03 — Add Food", BottomTab.Nutrition)
     data object VoiceFoodLogging : AppDestination("voice_food_logging", "Nutrition / 04 — Voice Food Logging")
     data object FoodAnalysis : AppDestination("food_analysis", "Nutrition / 05 — Food Analysis")
     data object PhotoAnalysis : AppDestination("photo_analysis", "Nutrition / 06 — Photo Analysis", BottomTab.Nutrition)
-    data object FoodConfirmation : AppDestination("food_confirmation", "Nutrition / 07 — Food Confirmation", BottomTab.Nutrition)
+    data object FoodConfirmation : AppDestination(
+        "food_confirmation/{${NavArgs.FOOD_CONFIRMATION_MODE}}",
+        "Nutrition / 07 — Food Confirmation",
+        BottomTab.Nutrition,
+    ) {
+        fun createRoute(mode: FoodConfirmationMode) = "food_confirmation/${mode.routeValue}"
+    }
     data object MealDetails : AppDestination("meal_details/{${NavArgs.MEAL_ID}}", "Nutrition / 08 — Meal Details", BottomTab.Nutrition) {
         fun createRoute(mealId: String) = "meal_details/${Uri.encode(mealId)}"
     }

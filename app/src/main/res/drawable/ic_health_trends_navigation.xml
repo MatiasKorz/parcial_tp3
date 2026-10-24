@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Figma "navigation" (Progress / 05 — Health Trends). Tinted in code. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="18dp"
+    android:height="18dp"
+    android:viewportWidth="18"
+    android:viewportHeight="18">
+  <path
+      android:pathData="M2.25 8.2494L16.5 1.4994L9.75 15.7494L8.25 9.7494L2.25 8.2494Z"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#123D35"
+      android:strokeLineCap="round"/>
+</vector>
