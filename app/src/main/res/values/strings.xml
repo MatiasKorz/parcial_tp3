@@ -631,6 +631,27 @@
     <string name="meal_type_snack">Snack</string>
     <string name="meal_type_dinner">Dinner</string>
 
+    <!-- PAN-5.7 Nutrition / 07 — Food Confirmation -->
+    <string name="food_confirmation_title">Review Meal</string>
+    <string name="food_confirmation_back_description">Back</string>
+    <string name="food_confirmation_kcal">%1$d kcal</string>
+    <string name="food_confirmation_grams">%1$dg</string>
+    <string name="food_confirmation_decrease">-</string>
+    <string name="food_confirmation_increase">+</string>
+    <string name="food_confirmation_remove">Remove</string>
+    <string name="food_confirmation_add_ingredient">+ Add Ingredient</string>
+    <string name="food_confirmation_totals">MEAL TOTALS</string>
+    <string name="food_confirmation_protein">PROTEIN</string>
+    <string name="food_confirmation_carbs">CARBS</string>
+    <string name="food_confirmation_fat">FAT</string>
+    <string name="food_confirmation_add_to">Add to %1$s</string>
+    <string name="food_confirmation_save_without_logging">Save without logging</string>
+    <!-- PAN-5.7: not in Figma, demo notices (NAV03), pending approval -->
+    <string name="food_confirmation_demo_title">Demonstration</string>
+    <string name="food_confirmation_demo_adjust">Adjusting ingredients is not available in this demonstration.</string>
+    <string name="food_confirmation_demo_save_without_logging">Saving without logging is not available in this demonstration.</string>
+    <string name="food_confirmation_demo_ok">OK</string>
+
     <!-- PAN-5.8 Nutrition / 08 — Meal Details -->
     <string name="meal_details_back">Back</string>
     <string name="meal_details_total_calories">Total Calories</string>
@@ -655,7 +676,6 @@
     <string name="meal_details_edit_demo">Editing meals is not available in this demonstration.</string>
     <string name="meal_details_duplicate_demo">Duplicating meals is not available in this demonstration.</string>
     <string name="meal_details_demo_ok">OK</string>
-
     <!-- PAN-5.2 Nutrition / 02 — Today's Meals -->
     <string name="todays_meals_title">Today\'s Meals</string>
     <string name="todays_meals_kcal">%1$s kcal</string>

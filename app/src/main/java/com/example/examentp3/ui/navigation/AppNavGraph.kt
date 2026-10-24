@@ -27,6 +27,7 @@ import com.example.examentp3.ui.screens.login.SignInScreen
 import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.notifications.NotificationsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
+import com.example.examentp3.ui.screens.nutrition.FoodConfirmationScreen
 import com.example.examentp3.ui.screens.nutrition.MealDetailsScreen
 import com.example.examentp3.ui.screens.nutrition.AddFoodScreen
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
@@ -42,6 +43,7 @@ import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
+import com.example.examentp3.viewmodel.FoodConfirmationViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
 import com.example.examentp3.viewmodel.MealDetailsUiState
@@ -286,8 +288,19 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     placeholder(VoiceFoodLogging, navController) { listOf(linkTo(FoodAnalysis)) }
     placeholder(FoodAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
     placeholder(PhotoAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
-    placeholder(FoodConfirmation, navController) {
-        listOf(Link("Add to meal", TodaysMeals.createRoute()) { popUpTo(NutritionDashboard.route) })
+    composable(FoodConfirmation.route) { entry ->
+        val viewModel: FoodConfirmationViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        FoodConfirmationScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onAddToMeal = {
+                // Simulated until NUC-04 saves the meal in Room: goes to the list like the old placeholder.
+                if (entry.isResumed()) {
+                    navController.navigate(TodaysMeals.createRoute()) { popUpTo(NutritionDashboard.route) }
+                }
+            },
+        )
     }
     composable(MealDetails.route, mealArgs) { entry ->
         val viewModel: MealDetailsViewModel = hiltViewModel()
