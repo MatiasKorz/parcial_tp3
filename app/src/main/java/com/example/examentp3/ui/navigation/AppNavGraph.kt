@@ -48,6 +48,7 @@ import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
 import com.example.examentp3.ui.screens.progress.WeeklyReviewScreen
+import com.example.examentp3.ui.screens.voice.VoiceListeningScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.FoodConfirmationViewModel
@@ -173,7 +174,14 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onHowAmIDoingClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
         )
     }
-    placeholder(VoiceListening, navController, onBack = closeCoach) { listOf(linkTo(VoiceProcessing)) }
+    composable(VoiceListening.route) { entry ->
+        VoiceListeningScreen(
+            onBack = {
+                if (entry.isResumed()) navController.popBackStack(VoiceIdle.route, inclusive = false)
+            },
+            onProcess = { if (entry.isResumed()) navController.navigate(VoiceProcessing.route) },
+        )
+    }
     placeholder(VoiceProcessing, navController, onBack = closeCoach) {
         listOf(linkTo(VoiceSpeaking), linkTo(VoiceError))
     }

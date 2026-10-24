@@ -861,4 +861,13 @@
     <string name="todays_meals_pick_date">Choose date</string>
     <string name="todays_meals_date_picker_ok">OK</string>
     <string name="todays_meals_date_picker_cancel">Cancel</string>
+    <!-- PAN-3.2 Voice / 02 — Listening: simulated, fixed transcript. -->
+    <string name="voice_listening_back">Back</string>
+    <string name="voice_listening_title">Listening</string>
+    <string name="voice_listening_live_audio">LIVE AUDIO</string>
+    <string name="voice_listening_transcript_label">LIVE TRANSCRIPT</string>
+    <string name="voice_listening_transcript">\"I had chicken, rice and some vegetables for lunch...\"</string>
+    <string name="voice_listening_hint">Speak naturally. I\'m listening.</string>
+    <string name="voice_listening_process">Finish simulated listening</string>
+    <string name="voice_listening_cancel">Cancel</string>
 </resources>

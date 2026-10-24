@@ -19,7 +19,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 2.1 | Home / 01 — Dashboard | `home` | SignIn; pestaña Home | demostración | Hecha | Datos de ejemplo |
 | 2.2 | Home / 02 — Notifications | `notifications` | Home | demostración | Hecha | Notificaciones de ejemplo |
 | 3.1 | Voice / 01 — Idle | `voice_idle` | Home ("Start voice session") | demostración | Hecha | Estado del coach simulado; sin micrófono; los chips y "LAST CONVERSATION" llevan a destinos de ejemplo |
-| 3.2 | Voice / 02 — Listening | `voice_listening` | Voice / 01 | demostración | Provisoria | Escucha simulada |
+| 3.2 | Voice / 02 — Listening | `voice_listening` | Voice / 01 ("TAP TO TALK") | demostración / simulado | Hecha | Transcripción fija del Figma; sin micrófono real; micrófono activo abre Processing; Cancel y Atrás vuelven a Idle. [Recursos y navegación](docs/design/PAN-3.2-recursos.md) |
 | 3.3 | Voice / 03 — Processing | `voice_processing` | Voice / 02 | demostración | Provisoria | Procesamiento simulado |
 | 3.4 | Voice / 04 — Speaking | `voice_speaking` | Voice / 03 | demostración | Provisoria | Respuesta simulada |
 | 3.5 | Voice / 05 — Conversation | `voice_conversation` | Voice / 04 | demostración | Provisoria | Conversación de ejemplo |
