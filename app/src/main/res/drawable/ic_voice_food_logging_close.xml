@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="36"
+    android:viewportHeight="36">
+  <!-- Figma close button (Nutrition / 04): only the 8x8 cross; the translucent circle is drawn in Compose. -->
+  <path
+      android:pathData="M22,14L18,18M18,18L14,22M18,18L14,14M18,18L22,22"
+      android:fillColor="#00000000"
+      android:strokeColor="#FFFFFF"
+      android:strokeWidth="2"
+      android:strokeLineCap="round"/>
+</vector>
