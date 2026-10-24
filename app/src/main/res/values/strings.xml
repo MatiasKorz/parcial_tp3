@@ -870,4 +870,11 @@
     <string name="voice_listening_hint">Speak naturally. I\'m listening.</string>
     <string name="voice_listening_process">Finish simulated listening</string>
     <string name="voice_listening_cancel">Cancel</string>
+    <!-- PAN-3.3 Voice / 03 — Processing: fixed transcript and simulated progress. -->
+    <string name="voice_processing_back">Back</string>
+    <string name="voice_processing_title">Processing</string>
+    <string name="voice_processing_thinking">THINKING...</string>
+    <string name="voice_processing_transcript">\"I had chicken, rice and some vegetables for lunch.\"</string>
+    <string name="voice_processing_checking">Checking your nutrition target...</string>
+    <string name="voice_processing_cancel">Cancel</string>
 </resources>

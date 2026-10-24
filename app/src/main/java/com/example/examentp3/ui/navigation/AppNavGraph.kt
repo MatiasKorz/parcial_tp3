@@ -3,8 +3,12 @@ package com.example.examentp3.ui.navigation
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
@@ -48,6 +52,7 @@ import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
 import com.example.examentp3.ui.screens.progress.WeeklyReviewScreen
+import com.example.examentp3.ui.screens.voice.VoiceProcessingScreen
 import com.example.examentp3.ui.screens.voice.VoiceListeningScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
@@ -61,6 +66,8 @@ import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
 import com.example.examentp3.viewmodel.VoiceAiSettingsViewModel
 import com.example.examentp3.viewmodel.TodaysMealsViewModel
+
+import kotlinx.coroutines.delay
 
 // Provisional ids until the real catalogs exist (REF-04).
 private const val DEMO_WORKOUT_ID = "demo-workout"
@@ -182,8 +189,30 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onProcess = { if (entry.isResumed()) navController.navigate(VoiceProcessing.route) },
         )
     }
-    placeholder(VoiceProcessing, navController, onBack = closeCoach) {
-        listOf(linkTo(VoiceSpeaking), linkTo(VoiceError))
+    composable(VoiceProcessing.route) { entry ->
+        var exitHandled by remember(entry) { mutableStateOf(false) }
+        val exitOnce: (() -> Unit) -> Unit = { action ->
+            if (!exitHandled && entry.isResumed() && navController.currentBackStackEntry == entry) {
+                exitHandled = true
+                action()
+            }
+        }
+        LaunchedEffect(entry) {
+            // Losing RESUMED cancels the wait; returning starts a fresh demo interval.
+            entry.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                delay(3_000)
+                exitOnce {
+                    navController.navigate(VoiceSpeaking.route) {
+                        popUpTo(VoiceProcessing.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            }
+        }
+        VoiceProcessingScreen(
+            onBack = { exitOnce { navController.popBackStack(VoiceListening.route, inclusive = false) } },
+            onCancel = { exitOnce { navController.popBackStack(VoiceIdle.route, inclusive = false) } },
+        )
     }
     placeholder(VoiceSpeaking, navController, onBack = closeCoach) { listOf(linkTo(VoiceConversation)) }
     placeholder(VoiceConversation, navController, onBack = closeCoach)
