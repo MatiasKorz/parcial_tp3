@@ -672,6 +672,15 @@
     <string name="food_confirmation_save_error">The meal could not be saved. Try again.</string>
     <!-- NUC-04: macro totals with up to one decimal ("38g", "12.5g") -->
     <string name="food_confirmation_macro_grams">%1$sg</string>
+    <!-- PAN-5.4 Nutrition / 04 — Voice Food Logging (demo: fixed sample transcript) -->
+    <string name="voice_food_logging_title">Voice Logging</string>
+    <!-- Not in Figma: accessibility label of the close button -->
+    <string name="voice_food_logging_close_description">Close</string>
+    <string name="voice_food_logging_listening">Listening...</string>
+    <string name="voice_food_logging_hint">\"Keep talking. I\'m listening.\"</string>
+    <string name="voice_food_logging_transcript">\"I had grilled chicken with rice and some mixed vegetables for lunch.\"</string>
+    <string name="voice_food_logging_done">Done Speaking</string>
+    <string name="voice_food_logging_type_instead">Type instead</string>
 
     <!-- PAN-5.6 Nutrition / 06 — Photo Analysis -->
     <string name="photo_analysis_title">Analyse Meal</string>
