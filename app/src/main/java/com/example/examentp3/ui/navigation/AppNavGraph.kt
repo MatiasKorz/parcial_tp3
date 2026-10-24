@@ -3,8 +3,12 @@ package com.example.examentp3.ui.navigation
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
@@ -30,32 +34,43 @@ import com.example.examentp3.ui.screens.notifications.NotificationsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.FoodAnalysisScreen
 import com.example.examentp3.ui.screens.nutrition.FoodConfirmationScreen
+import com.example.examentp3.ui.screens.nutrition.NutritionDashboardScreen
 import com.example.examentp3.ui.screens.nutrition.MealDetailsScreen
 import com.example.examentp3.ui.screens.nutrition.AddFoodScreen
-import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.nutrition.VoiceFoodLoggingScreen
 import com.example.examentp3.ui.screens.nutrition.PhotoAnalysisScreen
 import com.example.examentp3.ui.screens.nutrition.TodaysMealsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.EditProfileScreen
 import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
+import com.example.examentp3.ui.screens.profile.NutritionPreferencesScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.profile.SettingsScreen
+import com.example.examentp3.ui.screens.progress.HealthTrendsScreen
+import com.example.examentp3.ui.screens.profile.VoiceAiSettingsScreen
 import com.example.examentp3.ui.screens.progress.NutritionProgressScreen
 import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
+import com.example.examentp3.ui.screens.progress.WeeklyReviewScreen
+import com.example.examentp3.ui.screens.voice.VoiceSpeakingScreen
+import com.example.examentp3.ui.screens.voice.VoiceProcessingScreen
+import com.example.examentp3.ui.screens.voice.VoiceListeningScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.FoodAnalysisViewModel
 import com.example.examentp3.viewmodel.FoodConfirmationViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
+import com.example.examentp3.viewmodel.NutritionPreferencesViewModel
 import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
+import com.example.examentp3.viewmodel.NutritionDashboardViewModel
 import com.example.examentp3.viewmodel.MealDetailsUiState
 import com.example.examentp3.viewmodel.MealDetailsViewModel
-import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
+import com.example.examentp3.viewmodel.VoiceAiSettingsViewModel
 import com.example.examentp3.viewmodel.TodaysMealsViewModel
+
+import kotlinx.coroutines.delay
 
 // Provisional ids until the real catalogs exist (REF-04).
 private const val DEMO_WORKOUT_ID = "demo-workout"
@@ -169,11 +184,52 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onHowAmIDoingClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
         )
     }
-    placeholder(VoiceListening, navController, onBack = closeCoach) { listOf(linkTo(VoiceProcessing)) }
-    placeholder(VoiceProcessing, navController, onBack = closeCoach) {
-        listOf(linkTo(VoiceSpeaking), linkTo(VoiceError))
+    composable(VoiceListening.route) { entry ->
+        VoiceListeningScreen(
+            onBack = {
+                if (entry.isResumed()) navController.popBackStack(VoiceIdle.route, inclusive = false)
+            },
+            onProcess = { if (entry.isResumed()) navController.navigate(VoiceProcessing.route) },
+        )
     }
-    placeholder(VoiceSpeaking, navController, onBack = closeCoach) { listOf(linkTo(VoiceConversation)) }
+    composable(VoiceProcessing.route) { entry ->
+        var exitHandled by remember(entry) { mutableStateOf(false) }
+        val exitOnce: (() -> Unit) -> Unit = { action ->
+            if (!exitHandled && entry.isResumed() && navController.currentBackStackEntry == entry) {
+                exitHandled = true
+                action()
+            }
+        }
+        LaunchedEffect(entry) {
+            // Losing RESUMED cancels the wait; returning starts a fresh demo interval.
+            entry.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                delay(3_000)
+                exitOnce {
+                    navController.navigate(VoiceSpeaking.route) {
+                        popUpTo(VoiceProcessing.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            }
+        }
+        VoiceProcessingScreen(
+            onBack = { exitOnce { navController.popBackStack(VoiceListening.route, inclusive = false) } },
+            onCancel = { exitOnce { navController.popBackStack(VoiceIdle.route, inclusive = false) } },
+        )
+    }
+    composable(VoiceSpeaking.route) { entry ->
+        var exitHandled by remember(entry) { mutableStateOf(false) }
+        val returnTo: (AppDestination) -> Unit = { destination ->
+            if (!exitHandled && entry.isResumed() && navController.currentBackStackEntry == entry) {
+                exitHandled = true
+                navController.popBackStack(destination.route, inclusive = false)
+            }
+        }
+        VoiceSpeakingScreen(
+            onBack = { returnTo(VoiceIdle) },
+            onInterrupt = { returnTo(VoiceListening) },
+        )
+    }
     placeholder(VoiceConversation, navController, onBack = closeCoach)
     placeholder(VoiceError, navController, onBack = closeCoach)
 
@@ -258,16 +314,23 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
 
     // Nutrition
     composable(NutritionDashboard.route) { entry ->
-        val viewModel: MealRoomCheckViewModel = hiltViewModel()
+        val viewModel: NutritionDashboardViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
-        PlaceholderScreen(
-            title = NutritionDashboard.frame,
-            links = listOf(Link(TodaysMeals.frame, TodaysMeals.createRoute()), linkTo(AddFood)).map { link ->
-                PlaceholderLink(link.label) { if (entry.isResumed()) navController.navigate(link.route) }
+        NutritionDashboardScreen(
+            uiState = uiState,
+            // Inferred: the calendar picks the date of the RF04 list and opens it there.
+            onDateSelected = { date ->
+                if (entry.isResumed()) navController.navigate(TodaysMeals.createRoute(date))
             },
-        ) {
-            MealRoomCheckSection(uiState = uiState, onInsertClick = viewModel::insertSampleMeal)
-        }
+            onViewHistory = { if (entry.isResumed()) navController.navigate(TodaysMeals.createRoute()) },
+            onMealClick = { mealId ->
+                if (entry.isResumed()) navController.navigate(MealDetails.createRoute(mealId.toString()))
+            },
+            // The type is not passed yet: AddFood has no type argument (NUC-04 D16).
+            onAddMeal = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            onVoice = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.route) },
+            onPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.route) },
+        )
     }
     composable(TodaysMeals.route, todaysMealsArgs) { entry ->
         val viewModel: TodaysMealsViewModel = hiltViewModel()
@@ -405,8 +468,18 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onBack = { if (entry.isResumed()) navController.popBackStack() },
         )
     }
-    placeholder(HealthTrends, navController)
-    placeholder(WeeklyReview, navController)
+    composable(HealthTrends.route) { entry ->
+        HealthTrendsScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+        )
+    }
+    composable(WeeklyReview.route) { entry ->
+        WeeklyReviewScreen(
+            onClose = { if (entry.isResumed()) navController.popBackStack() },
+            onViewNextWeekPlan = { if (entry.isResumed()) navController.navigate(WeeklyPlan.route) },
+            onAskVora = { if (entry.isResumed()) navController.navigate(VoiceIdle.route) },
+        )
+    }
 
     // Profile
     composable(ProfileDashboard.route) { entry ->
@@ -457,8 +530,39 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(NutritionPreferences, navController)
-    placeholder(VoiceAiSettings, navController)
+    composable(NutritionPreferences.route) { entry ->
+        val viewModel: NutritionPreferencesViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        NutritionPreferencesScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onDietSelect = viewModel::onDietSelect,
+            onEnjoyedFoodToggle = viewModel::onEnjoyedFoodToggle,
+            onNewIngredientChange = viewModel::onNewIngredientChange,
+            onIngredientAdd = viewModel::onIngredientAdd,
+            onAvoidedFoodRemove = viewModel::onAvoidedFoodRemove,
+            onPriorityToggle = viewModel::onPriorityToggle,
+            onSave = {
+                if (entry.isResumed()) {
+                    viewModel.save()
+                    navController.popBackStack()
+                }
+            },
+        )
+    }
+    composable(VoiceAiSettings.route) { entry ->
+        val viewModel: VoiceAiSettingsViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        VoiceAiSettingsScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onCoachStyleSelect = viewModel::onCoachStyleSelect,
+            onResponseStyleSelect = viewModel::onResponseStyleSelect,
+            onToggleChange = viewModel::onToggleChange,
+            // "from Settings" in the notice: Profile / 06 (NAV03).
+            onPrivacyClick = { if (entry.isResumed()) navController.navigate(Settings.route) },
+        )
+    }
     composable(Settings.route) { entry ->
         val viewModel: SettingsViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
