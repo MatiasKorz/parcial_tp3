@@ -1,0 +1,68 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="161dp"
+    android:height="161dp"
+    android:viewportWidth="161"
+    android:viewportHeight="161">
+  <!-- Figma "vora-orb" (Nutrition / 05): orb-glow (140), orb-ripple (161), orb-ring (123) and orb-core (105),
+       all centered. The ripple goes past the 140 slot, so the drawable is 161x161 and the screen centers it
+       over the slot. The core's soft drop shadow (an SVG filter) has no VectorDrawable equivalent and is left out. -->
+  <path
+      android:pathData="M10.5,80.5A70,70 0,1 1,150.5 80.5A70,70 0,1 1,10.5 80.5Z"
+      android:fillAlpha="0.3">
+    <aapt:attr name="android:fillColor">
+      <gradient
+          android:type="radial"
+          android:centerX="80.5"
+          android:centerY="80.5"
+          android:gradientRadius="70">
+        <item android:offset="0" android:color="#65D6B0"/>
+        <item android:offset="1" android:color="#123D35"/>
+      </gradient>
+    </aapt:attr>
+  </path>
+  <path
+      android:pathData="M161,80.5C161,124.959 124.959,161 80.5,161C36.0411,161 0,124.959 0,80.5C0,36.0411 36.0411,0 80.5,0C124.959,0 161,36.0411 161,80.5ZM4.025,80.5C4.025,122.736 38.264,156.975 80.5,156.975C122.736,156.975 156.975,122.736 156.975,80.5C156.975,38.264 122.736,4.025 80.5,4.025C38.264,4.025 4.025,38.264 4.025,80.5Z"
+      android:fillColor="#65D6B0"
+      android:fillAlpha="0.4"/>
+  <!-- The ring asset is a 123x123 export: shift it to the center of the 161 canvas. -->
+  <group
+      android:translateX="19"
+      android:translateY="19">
+    <path
+        android:pathData="M123,61.5C123,95.4655 95.4655,123 61.5,123C27.5345,123 0,95.4655 0,61.5C0,27.5345 27.5345,0 61.5,0C95.4655,0 123,27.5345 123,61.5ZM7.38,61.5C7.38,91.3896 31.6103,115.62 61.5,115.62C91.3896,115.62 115.62,91.3896 115.62,61.5C115.62,31.6103 91.3896,7.38 61.5,7.38C31.6103,7.38 7.38,31.6103 7.38,61.5Z"
+        android:fillAlpha="0.8">
+      <aapt:attr name="android:fillColor">
+        <gradient
+            android:type="linear"
+            android:startX="0"
+            android:startY="0"
+            android:endX="123"
+            android:endY="0">
+          <item android:offset="0" android:color="#C9E86A"/>
+          <item android:offset="0.5" android:color="#65D6B0"/>
+          <item android:offset="1" android:color="#123D35"/>
+        </gradient>
+      </aapt:attr>
+    </path>
+  </group>
+  <!-- The core asset is a 291x291 export (room for the shadow) centered at 145.5,114.5: move that center to 80.5,80.5. -->
+  <group
+      android:translateX="-65"
+      android:translateY="-34">
+    <path
+        android:pathData="M93,114.5A52.5,52.5 0,1 1,198 114.5A52.5,52.5 0,1 1,93 114.5Z">
+      <aapt:attr name="android:fillColor">
+        <gradient
+            android:type="linear"
+            android:startX="114"
+            android:startY="62"
+            android:endX="194.769"
+            android:endY="78.1538">
+          <item android:offset="0" android:color="#65D6B0"/>
+          <item android:offset="1" android:color="#123D35"/>
+        </gradient>
+      </aapt:attr>
+    </path>
+  </group>
+</vector>

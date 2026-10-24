@@ -29,7 +29,7 @@ ActivityComponent (vive lo que MainActivity)
 └── inyecta MainActivity (@AndroidEntryPoint): habilita hiltViewModel() en su contenido
 
 ViewModelComponent (vive lo que el ViewModel = lo que su destino en el back stack)
-├── MealRoomCheckViewModel          ← MealRepository (Nutrition)
+├── NutritionDashboardViewModel     ← MealRepository (Nutrition)
 └── WorkoutConnectionCheckViewModel ← WorkoutRepository (Workout, DAT-01)
 ```
 
@@ -53,6 +53,6 @@ ViewModelComponent (vive lo que el ViewModel = lo que su destino en el back stac
 ## Cómo llega un ViewModel a una pantalla de Compose
 
 1. `MainActivity` es `@AndroidEntryPoint`, así que tiene acceso al grafo de Hilt.
-2. En el NavHost (`AppNavGraph.kt`), cada `composable(...)` hace `val viewModel: MealRoomCheckViewModel = hiltViewModel()`.
+2. En el NavHost (`AppNavGraph.kt`), cada `composable(...)` hace `val viewModel: NutritionDashboardViewModel = hiltViewModel()`.
 3. `hiltViewModel()` usa la `NavBackStackEntry` de ese destino como dueña del ViewModel y una fábrica de Hilt. La primera vez crea el ViewModel y le inyecta el repositorio (que a su vez trae el DAO, que trae la base). Las siguientes veces, por ejemplo después de una rotación, devuelve el mismo ViewModel.
 4. El NavHost lee `viewModel.uiState` y le pasa a la pantalla el **estado y lambdas**. La pantalla no conoce el ViewModel ni el repositorio.

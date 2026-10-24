@@ -12,9 +12,11 @@ data class UserProfile(
     val weight: String,
     val gender: String,
     val goals: GoalsSelection,
+    val nutrition: NutritionSelection,
 )
 
-// Values from the Figma frames "Profile / 02 — Edit Profile" and "Profile / 03 — Goals & Preferences".
+// Values from the Figma frames "Profile / 02 — Edit Profile", "Profile / 03 — Goals & Preferences"
+// and "Profile / 04 — Nutrition Preferences".
 val DemoUserProfile = UserProfile(
     firstName = "Alex",
     lastName = "Morgan",
@@ -23,4 +25,5 @@ val DemoUserProfile = UserProfile(
     weight = "76 kg",
     gender = "Prefer not to say",
     goals = DemoGoalsSelection,
+    nutrition = DemoNutritionSelection,
 )

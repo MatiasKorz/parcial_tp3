@@ -1,0 +1,58 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="28dp"
+    android:height="28dp"
+    android:viewportWidth="28"
+    android:viewportHeight="28">
+  <!-- Figma "vora-orb" (Nutrition / 01): a 59x59 export of a 28x28 node centered at 29.5,23.5, so
+       the group moves it into a 28x28 viewport. The soft drop shadow of the core (an SVG filter) has
+       no VectorDrawable equivalent and is left out. -->
+  <group
+      android:translateX="-15.5"
+      android:translateY="-9.5">
+    <path
+        android:pathData="M15.5,23.5A14,14 0,1 1,43.5 23.5A14,14 0,1 1,15.5 23.5Z"
+        android:fillAlpha="0.3">
+      <aapt:attr name="android:fillColor">
+        <gradient
+            android:type="radial"
+            android:centerX="29.5"
+            android:centerY="23.5"
+            android:gradientRadius="14">
+          <item android:offset="0" android:color="#65D6B0"/>
+          <item android:offset="1" android:color="#123D35"/>
+        </gradient>
+      </aapt:attr>
+    </path>
+    <path
+        android:pathData="M42,23.5C42,30.4036 36.4036,36 29.5,36C22.5964,36 17,30.4036 17,23.5C17,16.5964 22.5964,11 29.5,11C36.4036,11 42,16.5964 42,23.5ZM18.5,23.5C18.5,29.5751 23.4249,34.5 29.5,34.5C35.5751,34.5 40.5,29.5751 40.5,23.5C40.5,17.4249 35.5751,12.5 29.5,12.5C23.4249,12.5 18.5,17.4249 18.5,23.5Z"
+        android:fillAlpha="0.8">
+      <aapt:attr name="android:fillColor">
+        <gradient
+            android:type="linear"
+            android:startX="17"
+            android:startY="11"
+            android:endX="42"
+            android:endY="11">
+          <item android:offset="0" android:color="#C9E86A"/>
+          <item android:offset="0.5" android:color="#65D6B0"/>
+          <item android:offset="1" android:color="#123D35"/>
+        </gradient>
+      </aapt:attr>
+    </path>
+    <path
+        android:pathData="M19,23.5A10.5,10.5 0,1 1,40 23.5A10.5,10.5 0,1 1,19 23.5Z">
+      <aapt:attr name="android:fillColor">
+        <gradient
+            android:type="linear"
+            android:startX="23.2"
+            android:startY="13"
+            android:endX="39.3538"
+            android:endY="16.2308">
+          <item android:offset="0" android:color="#65D6B0"/>
+          <item android:offset="1" android:color="#123D35"/>
+        </gradient>
+      </aapt:attr>
+    </path>
+  </group>
+</vector>

@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+  <!-- Figma "calendar" (Nutrition / 01, calendar-action). -->
+  <path
+      android:pathData="M7.33333,3V4.33344M7.33333,4.33344V5.66688M7.33333,4.33344H5.33333C4.59695,4.33344 4,4.93044 4,5.66688V8.33376M7.33333,4.33344H12.6667M12.6667,3V4.33344M12.6667,4.33344V5.66688M12.6667,4.33344H14.6667C15.403,4.33344 16,4.93044 16,5.66688V8.33376M4,8.33376H16M4,8.33376V15.001C4,15.7374 4.59695,16.3344 5.33333,16.3344H14.6667C15.403,16.3344 16,15.7374 16,15.001V8.33376"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#123D35"
+      android:strokeLineCap="round"/>
+</vector>
