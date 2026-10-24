@@ -885,4 +885,24 @@
     <string name="voice_speaking_elapsed">0:08</string>
     <string name="voice_speaking_remaining">-0:14</string>
     <string name="voice_speaking_interrupt">Tap to Interrupt</string>
+    <!-- PAN-3.5 Voice / 05 — Conversation: Figma thread, local user messages only. -->
+    <string name="voice_conversation_back">Back</string>
+    <string name="voice_conversation_title">VORA Coach</string>
+    <string name="voice_conversation_date">TODAY AT 12:40 PM</string>
+    <string name="voice_conversation_user_dinner">What should I eat for dinner?</string>
+    <string name="voice_conversation_coach_dinner">You\'re currently 36g short of your protein target today. I\'d highly recommend grilled chicken breast with roasted seasonal vegetables and a side of Greek yoghurt.</string>
+    <string name="voice_conversation_user_vegetarian">Can you make that vegetarian?</string>
+    <string name="voice_conversation_coach_vegetarian">Absolutely. Try grilled organic tofu with roasted vegetables, quinoa and Greek yoghurt.</string>
+    <string name="voice_conversation_time_1241">12:41</string>
+    <string name="voice_conversation_time_1242">12:42</string>
+    <string name="voice_conversation_time_1243">12:43</string>
+    <string name="voice_conversation_listen">Listen to response (0:14)</string>
+    <string name="voice_conversation_placeholder">Ask VORA anything...</string>
+    <!-- Accessibility labels and requested demonstration notice, outside the Figma copy. -->
+    <string name="voice_conversation_add">Add attachment</string>
+    <string name="voice_conversation_microphone">Start simulated listening</string>
+    <string name="voice_conversation_send">Send message</string>
+    <string name="voice_conversation_demo_title">Demonstration</string>
+    <string name="voice_conversation_attachments_notice">Attachments are not available in this demonstration.</string>
+    <string name="voice_conversation_ok">OK</string>
 </resources>

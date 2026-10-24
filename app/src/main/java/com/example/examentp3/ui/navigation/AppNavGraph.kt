@@ -52,6 +52,7 @@ import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
 import com.example.examentp3.ui.screens.progress.WeeklyReviewScreen
+import com.example.examentp3.ui.screens.voice.VoiceConversationScreen
 import com.example.examentp3.ui.screens.voice.VoiceSpeakingScreen
 import com.example.examentp3.ui.screens.voice.VoiceProcessingScreen
 import com.example.examentp3.ui.screens.voice.VoiceListeningScreen
@@ -228,7 +229,24 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onInterrupt = { returnTo(VoiceListening) },
         )
     }
-    placeholder(VoiceConversation, navController, onBack = closeCoach)
+    composable(VoiceConversation.route) { entry ->
+        val navigateOnce: (() -> Unit) -> Unit = { action ->
+            if (entry.isResumed() && navController.currentBackStackEntry == entry) action()
+        }
+        VoiceConversationScreen(
+            onBack = { navigateOnce { navController.popBackStack(VoiceIdle.route, inclusive = false) } },
+            onMicrophone = {
+                navigateOnce { navController.navigate(VoiceListening.route) { launchSingleTop = true } }
+            },
+            onListen = {
+                navigateOnce {
+                    // Speaking's existing Interrupt action requires Listening below it.
+                    navController.navigate(VoiceListening.route) { launchSingleTop = true }
+                    navController.navigate(VoiceSpeaking.route) { launchSingleTop = true }
+                }
+            },
+        )
+    }
     placeholder(VoiceError, navController, onBack = closeCoach)
 
     // Workout
