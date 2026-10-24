@@ -52,6 +52,15 @@ private val workoutArgs = listOf(navArgument(NavArgs.WORKOUT_ID) { type = NavTyp
 private val exerciseArgs = listOf(navArgument(NavArgs.EXERCISE_ID) { type = NavType.StringType })
 private val mealArgs = listOf(navArgument(NavArgs.MEAL_ID) { type = NavType.StringType })
 
+// Optional query argument: null means today (resolved in TodaysMealsViewModel, not at graph build time).
+private val todaysMealsArgs = listOf(
+    navArgument(NavArgs.DATE_EPOCH_DAY) {
+        type = NavType.StringType
+        nullable = true
+        defaultValue = null
+    },
+)
+
 private class Link(
     val label: String,
     val route: String,
@@ -236,14 +245,14 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
         val uiState by viewModel.uiState.collectAsState()
         PlaceholderScreen(
             title = NutritionDashboard.frame,
-            links = listOf(TodaysMeals, AddFood).map { d ->
-                PlaceholderLink(d.frame) { if (entry.isResumed()) navController.navigate(d.route) }
+            links = listOf(Link(TodaysMeals.frame, TodaysMeals.createRoute()), linkTo(AddFood)).map { link ->
+                PlaceholderLink(link.label) { if (entry.isResumed()) navController.navigate(link.route) }
             },
         ) {
             MealRoomCheckSection(uiState = uiState, onInsertClick = viewModel::insertSampleMeal)
         }
     }
-    placeholder(TodaysMeals, navController) {
+    placeholder(TodaysMeals, navController, todaysMealsArgs) {
         listOf(Link(MealDetails.frame, MealDetails.createRoute(DEMO_MEAL_ID)), linkTo(AddFood))
     }
     placeholder(AddFood, navController) { listOf(linkTo(VoiceFoodLogging), linkTo(PhotoAnalysis)) }
@@ -251,7 +260,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     placeholder(FoodAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
     placeholder(PhotoAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
     placeholder(FoodConfirmation, navController) {
-        listOf(Link("Add to meal", TodaysMeals.route) { popUpTo(NutritionDashboard.route) })
+        listOf(Link("Add to meal", TodaysMeals.createRoute()) { popUpTo(NutritionDashboard.route) })
     }
     placeholder(MealDetails, navController, mealArgs)
 

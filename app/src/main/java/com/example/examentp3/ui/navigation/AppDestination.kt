@@ -1,6 +1,7 @@
 package com.example.examentp3.ui.navigation
 
 import android.net.Uri
+import java.time.LocalDate
 
 enum class BottomTab { Home, Workout, Nutrition, Progress, Profile }
 
@@ -8,6 +9,9 @@ object NavArgs {
     const val WORKOUT_ID = "workoutId"
     const val EXERCISE_ID = "exerciseId"
     const val MEAL_ID = "mealId"
+
+    /** Optional date of Today's Meals as epoch day; missing means today. */
+    const val DATE_EPOCH_DAY = "dateEpochDay"
 }
 
 sealed class AppDestination(
@@ -50,7 +54,15 @@ sealed class AppDestination(
 
     // Nutrition
     data object NutritionDashboard : AppDestination("nutrition", "Nutrition / 01 — Dashboard", BottomTab.Nutrition)
-    data object TodaysMeals : AppDestination("todays_meals", "Nutrition / 02 — Today's Meals", BottomTab.Nutrition)
+    data object TodaysMeals : AppDestination(
+        "todays_meals?${NavArgs.DATE_EPOCH_DAY}={${NavArgs.DATE_EPOCH_DAY}}",
+        "Nutrition / 02 — Today's Meals",
+        BottomTab.Nutrition,
+    ) {
+        /** Without [date] the list opens on today. */
+        fun createRoute(date: LocalDate? = null) =
+            if (date == null) "todays_meals" else "todays_meals?${NavArgs.DATE_EPOCH_DAY}=${date.toEpochDay()}"
+    }
     data object AddFood : AppDestination("add_food", "Nutrition / 03 — Add Food", BottomTab.Nutrition)
     data object VoiceFoodLogging : AppDestination("voice_food_logging", "Nutrition / 04 — Voice Food Logging")
     data object FoodAnalysis : AppDestination("food_analysis", "Nutrition / 05 — Food Analysis")
