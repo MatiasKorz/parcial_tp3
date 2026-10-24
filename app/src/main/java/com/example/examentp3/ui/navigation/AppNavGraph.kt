@@ -1,5 +1,6 @@
 package com.example.examentp3.ui.navigation
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -12,6 +13,7 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.examentp3.model.DemoMealEstimate
 import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.home.HomeSampleUiState
 import com.example.examentp3.ui.screens.home.HomeScreen
@@ -26,24 +28,37 @@ import com.example.examentp3.ui.screens.login.SignInScreen
 import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.notifications.NotificationsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
+import com.example.examentp3.ui.screens.nutrition.FoodConfirmationScreen
+import com.example.examentp3.ui.screens.nutrition.MealDetailsScreen
+import com.example.examentp3.ui.screens.nutrition.AddFoodScreen
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
+import com.example.examentp3.ui.screens.nutrition.VoiceFoodLoggingScreen
+import com.example.examentp3.ui.screens.nutrition.PhotoAnalysisScreen
+import com.example.examentp3.ui.screens.nutrition.TodaysMealsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.EditProfileScreen
 import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
 import com.example.examentp3.ui.screens.profile.NutritionPreferencesScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.profile.SettingsScreen
+import com.example.examentp3.ui.screens.progress.HealthTrendsScreen
+import com.example.examentp3.ui.screens.profile.VoiceAiSettingsScreen
 import com.example.examentp3.ui.screens.progress.NutritionProgressScreen
 import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
+import com.example.examentp3.viewmodel.FoodConfirmationViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.NutritionPreferencesViewModel
 import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
+import com.example.examentp3.viewmodel.MealDetailsUiState
+import com.example.examentp3.viewmodel.MealDetailsViewModel
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
+import com.example.examentp3.viewmodel.VoiceAiSettingsViewModel
+import com.example.examentp3.viewmodel.TodaysMealsViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
 private const val DEMO_WORKOUT_ID = "demo-workout"
@@ -53,6 +68,18 @@ private const val DEMO_MEAL_ID = "demo-meal"
 private val workoutArgs = listOf(navArgument(NavArgs.WORKOUT_ID) { type = NavType.StringType })
 private val exerciseArgs = listOf(navArgument(NavArgs.EXERCISE_ID) { type = NavType.StringType })
 private val mealArgs = listOf(navArgument(NavArgs.MEAL_ID) { type = NavType.StringType })
+private val foodConfirmationArgs = listOf(
+    navArgument(NavArgs.FOOD_CONFIRMATION_MODE) { type = NavType.StringType },
+)
+
+// Optional query argument: null means today (resolved in TodaysMealsViewModel, not at graph build time).
+private val todaysMealsArgs = listOf(
+    navArgument(NavArgs.DATE_EPOCH_DAY) {
+        type = NavType.StringType
+        nullable = true
+        defaultValue = null
+    },
+)
 
 private class Link(
     val label: String,
@@ -238,24 +265,107 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
         val uiState by viewModel.uiState.collectAsState()
         PlaceholderScreen(
             title = NutritionDashboard.frame,
-            links = listOf(TodaysMeals, AddFood).map { d ->
-                PlaceholderLink(d.frame) { if (entry.isResumed()) navController.navigate(d.route) }
+            links = listOf(Link(TodaysMeals.frame, TodaysMeals.createRoute()), linkTo(AddFood)).map { link ->
+                PlaceholderLink(link.label) { if (entry.isResumed()) navController.navigate(link.route) }
             },
         ) {
             MealRoomCheckSection(uiState = uiState, onInsertClick = viewModel::insertSampleMeal)
         }
     }
-    placeholder(TodaysMeals, navController) {
-        listOf(Link(MealDetails.frame, MealDetails.createRoute(DEMO_MEAL_ID)), linkTo(AddFood))
+    composable(TodaysMeals.route, todaysMealsArgs) { entry ->
+        val viewModel: TodaysMealsViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        TodaysMealsScreen(
+            uiState = uiState,
+            onPreviousDay = viewModel::onPreviousDay,
+            onNextDay = viewModel::onNextDay,
+            onDateSelected = viewModel::onDateSelected,
+            onMealClick = { mealId ->
+                if (entry.isResumed()) navController.navigate(MealDetails.createRoute(mealId.toString()))
+            },
+            // Inferred: "+ Add <type>" opens Add Food; its route (NUC-04) takes no meal type yet.
+            onAddMeal = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+        )
     }
-    placeholder(AddFood, navController) { listOf(linkTo(VoiceFoodLogging), linkTo(PhotoAnalysis)) }
-    placeholder(VoiceFoodLogging, navController) { listOf(linkTo(FoodAnalysis)) }
-    placeholder(FoodAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
-    placeholder(PhotoAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
-    placeholder(FoodConfirmation, navController) {
-        listOf(Link("Add to meal", TodaysMeals.route) { popUpTo(NutritionDashboard.route) })
+    composable(AddFood.route) { entry ->
+        AddFoodScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onStartVoiceLogging = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.route) },
+            onSnapPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.route) },
+            onLogManually = {
+                if (entry.isResumed()) {
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual))
+                }
+            },
+        )
     }
-    placeholder(MealDetails, navController, mealArgs)
+    composable(VoiceFoodLogging.route) { entry ->
+        VoiceFoodLoggingScreen(
+            onClose = { if (entry.isResumed()) navController.popBackStack() },
+            // Stays in the stack: back from the analysis returns to listening.
+            onDoneSpeaking = { if (entry.isResumed()) navController.navigate(FoodAnalysis.route) },
+            // Typing replaces listening: back from the manual form returns to where voice was opened.
+            onTypeInstead = {
+                if (entry.isResumed()) {
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual)) {
+                        popUpTo(VoiceFoodLogging.route) { inclusive = true }
+                    }
+                }
+            },
+        )
+    }
+    // The route has an argument: linkTo(FoodConfirmation) would navigate to the literal pattern.
+    val reviewEstimate = Link(FoodConfirmation.frame, FoodConfirmation.createRoute(FoodConfirmationMode.Estimate))
+    placeholder(FoodAnalysis, navController) { listOf(reviewEstimate) }
+    composable(PhotoAnalysis.route) { entry ->
+        PhotoAnalysisScreen(
+            estimate = DemoMealEstimate, // simulated analysis (SPEC p.10), same data that 5.7 reviews
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onReviewAndAdd = {
+                if (entry.isResumed()) {
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate))
+                }
+            },
+        )
+    }
+    composable(FoodConfirmation.route, foodConfirmationArgs) { entry ->
+        val viewModel: FoodConfirmationViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        // Saving is asynchronous: once Room confirms, open the list on the meal's date (D12).
+        LaunchedEffect(uiState.savedDate) {
+            uiState.savedDate?.let { date ->
+                navController.navigate(TodaysMeals.createRoute(date)) { popUpTo(NutritionDashboard.route) }
+                viewModel.onSavedHandled()
+            }
+        }
+        FoodConfirmationScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onNameChange = viewModel::onNameChange,
+            onDateSelect = viewModel::onDateSelect,
+            onTypeSelect = viewModel::onTypeSelect,
+            onCaloriesChange = viewModel::onCaloriesChange,
+            onProteinChange = viewModel::onProteinChange,
+            onCarbsChange = viewModel::onCarbsChange,
+            onFatChange = viewModel::onFatChange,
+            onAddToMeal = { if (entry.isResumed()) viewModel.onAddToMeal() },
+        )
+    }
+    composable(MealDetails.route, mealArgs) { entry ->
+        val viewModel: MealDetailsViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        val lifecycleState by entry.lifecycle.currentStateFlow.collectAsState()
+        // Leave only after Room confirmed the delete: popping first would cancel viewModelScope.
+        // Keyed on the lifecycle too, so a delete that ends while paused still pops on resume.
+        LaunchedEffect(uiState, lifecycleState) {
+            if (uiState is MealDetailsUiState.Deleted && entry.isResumed()) navController.popBackStack()
+        }
+        MealDetailsScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onDeleteConfirmed = viewModel::deleteMeal,
+        )
+    }
 
     // Progress
     composable(ProgressDashboard.route) { entry ->
@@ -283,7 +393,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onBack = { if (entry.isResumed()) navController.popBackStack() },
         )
     }
-    placeholder(HealthTrends, navController)
+    composable(HealthTrends.route) { entry ->
+        HealthTrendsScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+        )
+    }
     placeholder(WeeklyReview, navController)
 
     // Profile
@@ -355,7 +469,19 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(VoiceAiSettings, navController)
+    composable(VoiceAiSettings.route) { entry ->
+        val viewModel: VoiceAiSettingsViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        VoiceAiSettingsScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onCoachStyleSelect = viewModel::onCoachStyleSelect,
+            onResponseStyleSelect = viewModel::onResponseStyleSelect,
+            onToggleChange = viewModel::onToggleChange,
+            // "from Settings" in the notice: Profile / 06 (NAV03).
+            onPrivacyClick = { if (entry.isResumed()) navController.navigate(Settings.route) },
+        )
+    }
     composable(Settings.route) { entry ->
         val viewModel: SettingsViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
