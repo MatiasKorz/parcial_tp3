@@ -940,4 +940,20 @@
     <string name="voice_conversation_demo_title">Demonstration</string>
     <string name="voice_conversation_attachments_notice">Attachments are not available in this demonstration.</string>
     <string name="voice_conversation_ok">OK</string>
+    <!-- PAN-3.6 Voice / 06 — Error: simulated alert and permissions. -->
+    <string name="voice_error_back">Back</string>
+    <string name="voice_error_title">System Alert</string>
+    <string name="voice_error_heading">Sorry, I didn\'t catch that</string>
+    <string name="voice_error_description">Try speaking again or type your request instead. Make sure your microphone is enabled.</string>
+    <string name="voice_error_permission_title">Microphone access needed</string>
+    <string name="voice_error_permission_description">VORA uses your microphone to listen to your voice commands and provide real-time hands-free coaching.</string>
+    <string name="voice_error_allow">Allow Access</string>
+    <string name="voice_error_not_now">Not Now</string>
+    <string name="voice_error_retry">Try again</string>
+    <string name="voice_error_type_instead">Type instead</string>
+    <!-- Approved demonstration entry, accessibility action and notice, outside the Figma copy. -->
+    <string name="voice_error_simulate_action">Simulate voice error</string>
+    <string name="voice_error_demo_title">Demonstration</string>
+    <string name="voice_error_access_notice">Microphone access is simulated in this demo.</string>
+    <string name="voice_error_ok">OK</string>
 </resources>
