@@ -53,6 +53,7 @@ import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
 import com.example.examentp3.ui.screens.progress.WeeklyReviewScreen
+import com.example.examentp3.ui.screens.voice.VoiceErrorScreen
 import com.example.examentp3.ui.screens.voice.VoiceConversationScreen
 import com.example.examentp3.ui.screens.voice.VoiceSpeakingScreen
 import com.example.examentp3.ui.screens.voice.VoiceProcessingScreen
@@ -191,6 +192,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
                 if (entry.isResumed()) navController.popBackStack(VoiceIdle.route, inclusive = false)
             },
             onProcess = { if (entry.isResumed()) navController.navigate(VoiceProcessing.route) },
+            onSimulateError = {
+                if (entry.isResumed() && navController.currentBackStackEntry == entry) {
+                    navController.navigate(VoiceError.route) { launchSingleTop = true }
+                }
+            },
         )
     }
     composable(VoiceProcessing.route) { entry ->
@@ -249,7 +255,26 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(VoiceError, navController, onBack = closeCoach)
+    composable(VoiceError.route) { entry ->
+        val navigateOnce: (() -> Unit) -> Unit = { action ->
+            if (entry.isResumed() && navController.currentBackStackEntry == entry) action()
+        }
+        VoiceErrorScreen(
+            onBack = { navigateOnce { navController.popBackStack(VoiceIdle.route, inclusive = false) } },
+            onRetry = { navigateOnce { navController.popBackStack(VoiceListening.route, inclusive = false) } },
+            onTypeInstead = {
+                navigateOnce {
+                    // Reuse an existing local thread when Error was entered from Conversation.
+                    if (!navController.popBackStack(VoiceConversation.route, inclusive = false)) {
+                        navController.navigate(VoiceConversation.route) {
+                            popUpTo(VoiceIdle.route) { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    }
+                }
+            },
+        )
+    }
 
     // Workout
     composable(WorkoutDashboard.route) { entry ->

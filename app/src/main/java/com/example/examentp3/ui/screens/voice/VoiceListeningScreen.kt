@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -38,6 +39,7 @@ import com.example.examentp3.ui.theme.ExamenTP3Theme
 fun VoiceListeningScreen(
     onBack: () -> Unit,
     onProcess: () -> Unit,
+    onSimulateError: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = onBack)
@@ -130,7 +132,13 @@ fun VoiceListeningScreen(
         ) {
             Box(
                 modifier = Modifier.size(80.dp).clip(CircleShape).background(colors.secondary)
-                    .clickable(role = Role.Button, onClick = onProcess),
+                    .combinedClickable(
+                        role = Role.Button,
+                        onClickLabel = stringResource(R.string.voice_listening_process),
+                        onLongClickLabel = stringResource(R.string.voice_error_simulate_action),
+                        onLongClick = onSimulateError,
+                        onClick = onProcess,
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -172,11 +180,11 @@ private fun ListeningSystemBars() {
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun ListeningPreview() {
-    ExamenTP3Theme { VoiceListeningScreen({}, {}) }
+    ExamenTP3Theme { VoiceListeningScreen({}, {}, {}) }
 }
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 640, fontScale = 1.3f)
 @Composable
 private fun ListeningCompactPreview() {
-    ExamenTP3Theme { VoiceListeningScreen({}, {}) }
+    ExamenTP3Theme { VoiceListeningScreen({}, {}, {}) }
 }
