@@ -607,6 +607,34 @@
     <string name="workout_complete_too_easy">Too Easy</string>
     <string name="workout_complete_done">Done</string>
 
+    <!-- PAN-6.5 Progress / 05 — Health Trends (demo data from Figma) -->
+    <string name="health_trends_title">Health trends</string>
+    <string name="health_trends_subtitle">See how your daily habits are changing.</string>
+    <string name="health_trends_back">Back</string>
+    <string name="health_trends_avg_steps_label">Avg Steps</string>
+    <string name="health_trends_avg_steps_value">7,842</string>
+    <string name="health_trends_avg_distance_label">Avg Distance</string>
+    <string name="health_trends_avg_distance_value">5.6 km</string>
+    <string name="health_trends_active_kcal_label">Active Kcal</string>
+    <string name="health_trends_active_kcal_value">312 kcal</string>
+    <string name="health_trends_chart_title">Weekly Steps Trend</string>
+    <string name="health_trends_chart_goal">Goal: 8,000</string>
+    <string name="health_trends_day_monday">M</string>
+    <string name="health_trends_day_tuesday">T</string>
+    <string name="health_trends_day_wednesday">W</string>
+    <string name="health_trends_day_thursday">T</string>
+    <string name="health_trends_day_friday">F</string>
+    <string name="health_trends_day_saturday">S</string>
+    <string name="health_trends_day_sunday">S</string>
+    <string name="health_trends_insight">\"Your activity has been more consistent over the last two weeks. Your workout days also tend to be your most active days.\"</string>
+    <string name="health_trends_habits_title">Habit Signals</string>
+    <string name="health_trends_habit_sleep_quality">Sleep Quality</string>
+    <string name="health_trends_habit_daily_movement">Daily Movement</string>
+    <string name="health_trends_habit_workout_frequency">Workout Frequency</string>
+    <string name="health_trends_habit_protein_intake">Protein Intake</string>
+    <string name="health_trends_trend_improving">Improving</string>
+    <string name="health_trends_trend_consistent">Consistent</string>
+
     <!-- PAN-7.5 Profile / 05 — Voice & AI Settings -->
     <string name="voice_ai_settings_title">VORA Coach</string>
     <string name="voice_ai_settings_back_description">Back</string>
@@ -639,7 +667,6 @@
     <string name="voice_ai_settings_demo_title">Demonstration</string>
     <string name="voice_ai_settings_preview_notice">Voice preview is not available in this demonstration. No audio is played and the microphone is not used.</string>
     <string name="voice_ai_settings_ok">OK</string>
-
     <!-- NUC-05 Meal types (shared with NUC-04, PAN-5.1, PAN-5.2, PAN-5.7 and PAN-5.8) -->
     <string name="meal_type_breakfast">Breakfast</string>
     <string name="meal_type_lunch">Lunch</string>

@@ -43,7 +43,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 6.2 | Progress / 02 — Dashboard | `progress` | Pestaña Progress | demostración | Hecha | Datos de ejemplo |
 | 6.3 | Progress / 03 — Workout Progress | `workout_progress` | Progress / 02 | demostración | Hecha | Datos de ejemplo |
 | 6.4 | Progress / 04 — Nutrition Progress | `nutrition_progress` | Progress / 02 | demostración | Hecha | Datos de ejemplo |
-| 6.5 | Progress / 05 — Health Trends | `health_trends` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
+| 6.5 | Progress / 05 — Health Trends | `health_trends` | Progress / 02 | demostración | Hecha | Datos de ejemplo |
 | 6.6 | Progress / 06 — Weekly Review | `weekly_review` | Progress / 02 | demostración | Provisoria | Datos de ejemplo |
 | 7.1 | Profile / 01 — Dashboard | `profile` | Pestaña Profile | demostración | Hecha | Datos de ejemplo |
 | 7.2 | Profile / 02 — Edit Profile | `edit_profile` | Profile / 01 ("Edit profile") | demostración (datos locales) | Hecha | Edición local de los seis campos; los valores guardados se mantienen durante la sesión; "Change photo" informa modo demostración sin cámara |
