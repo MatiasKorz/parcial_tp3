@@ -32,7 +32,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 4.6 | Workout / 06 — Exercise Details | `exercise_details/{exerciseId}` | Workout / 03 | demostración | UI hecha (validación manual pendiente) | Guía Figma fija de Seated Cable Row con imagen original; filas actuales usan demo-exercise; identificación e instrucciones reales pendientes de NUC-02; NAV04/RF01 incompletos |
 | 4.7 | Workout / 07 — Workout Complete | `workout_complete` | Workout / 05 | demostración | UI hecha (validación manual pendiente) | Métricas Figma fijas y valoración local no persistida; Done/Atrás vuelven a Dashboard y limpian el flujo terminado |
 | 5.1 | Nutrition / 01 — Dashboard | `nutrition` | Pestaña Nutrition | funcional | Provisoria | Muestra el total diario desde Room |
-| 5.2 | Nutrition / 02 — Today's Meals | `todays_meals` | Nutrition / 01 | funcional | Provisoria | Listado por fecha desde Room |
+| 5.2 | Nutrition / 02 — Today's Meals | `todays_meals` | Nutrition / 01 | funcional | Hecha | Comidas de la fecha desde Room agrupadas por tipo, total del día, flechas y DatePicker para cambiar la fecha |
 | 5.3 | Nutrition / 03 — Add Food | `add_food` | Nutrition / 01 y 02 | funcional | UI hecha (validación visual pendiente) | Voz y foto llevan a 5.4 y 5.6 sin pedir permisos; "Search Database" informa modo demostración (búsqueda: EXT-05); "Log Manually" abre 5.7, donde NUC-04 agrega el registro manual de RF03 |
 | 5.4 | Nutrition / 04 — Voice Food Logging | `voice_food_logging` | Nutrition / 03 | demostración | Provisoria | Registro por voz simulado; sin micrófono |
 | 5.5 | Nutrition / 05 — Food Analysis | `food_analysis` | Nutrition / 04 | demostración | Provisoria | Análisis simulado |

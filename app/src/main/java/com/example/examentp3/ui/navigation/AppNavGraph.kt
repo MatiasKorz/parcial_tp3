@@ -28,6 +28,7 @@ import com.example.examentp3.ui.screens.notifications.NotificationsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.AddFoodScreen
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
+import com.example.examentp3.ui.screens.nutrition.TodaysMealsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.EditProfileScreen
 import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
@@ -43,6 +44,7 @@ import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
+import com.example.examentp3.viewmodel.TodaysMealsViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
 private const val DEMO_WORKOUT_ID = "demo-workout"
@@ -253,8 +255,20 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             MealRoomCheckSection(uiState = uiState, onInsertClick = viewModel::insertSampleMeal)
         }
     }
-    placeholder(TodaysMeals, navController, todaysMealsArgs) {
-        listOf(Link(MealDetails.frame, MealDetails.createRoute(DEMO_MEAL_ID)), linkTo(AddFood))
+    composable(TodaysMeals.route, todaysMealsArgs) { entry ->
+        val viewModel: TodaysMealsViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        TodaysMealsScreen(
+            uiState = uiState,
+            onPreviousDay = viewModel::onPreviousDay,
+            onNextDay = viewModel::onNextDay,
+            onDateSelected = viewModel::onDateSelected,
+            onMealClick = { mealId ->
+                if (entry.isResumed()) navController.navigate(MealDetails.createRoute(mealId.toString()))
+            },
+            // Inferred: "+ Add <type>" opens Add Food; its route (NUC-04) takes no meal type yet.
+            onAddMeal = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+        )
     }
     composable(AddFood.route) { entry ->
         AddFoodScreen(
