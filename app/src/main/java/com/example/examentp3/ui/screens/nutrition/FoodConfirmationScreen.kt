@@ -7,23 +7,33 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,40 +47,63 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.examentp3.R
-import com.example.examentp3.model.DemoMealEstimate
 import com.example.examentp3.model.EstimatedIngredient
 import com.example.examentp3.model.MealType
 import com.example.examentp3.ui.components.VoraButtonSize
 import com.example.examentp3.ui.components.VoraPrimaryButton
 import com.example.examentp3.ui.components.VoraTextAction
+import com.example.examentp3.ui.components.VoraTextField
+import com.example.examentp3.ui.navigation.FoodConfirmationMode
 import com.example.examentp3.ui.theme.ExamenTP3Theme
 import com.example.examentp3.ui.theme.Spacing
 import com.example.examentp3.ui.theme.VoraPillShape
+import com.example.examentp3.ui.theme.voraColors
 import com.example.examentp3.viewmodel.FoodConfirmationUiState
-import kotlin.math.roundToInt
+import com.example.examentp3.viewmodel.MealFieldError
+import com.example.examentp3.viewmodel.MealFormDraft
+import com.example.examentp3.viewmodel.MealFormErrors
+import com.example.examentp3.viewmodel.MealTotals
+import com.example.examentp3.viewmodel.foodConfirmationInitialState
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+// D9: long date in English, like the dates of the Nutrition dashboard, plus the year.
+private val formDateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", Locale.ENGLISH)
 
 /**
- * "Nutrition / 07 — Food Confirmation": review of the simulated estimate before logging it.
- * Adjusting ingredients and "Save without logging" only show a demonstration notice (REF-05).
+ * "Nutrition / 07 — Food Confirmation". Manual mode: RF03 form (no Figma frame, it reuses the look
+ * of the ingredient card). Estimate mode: the simulated analysis as drawn; adjusting ingredients
+ * and "Save without logging" only show a demonstration notice (REF-05).
  */
 @Composable
 fun FoodConfirmationScreen(
     uiState: FoodConfirmationUiState,
     onBack: () -> Unit,
+    onNameChange: (String) -> Unit,
+    onDateSelect: (LocalDate) -> Unit,
+    onTypeSelect: (MealType) -> Unit,
+    onCaloriesChange: (String) -> Unit,
+    onProteinChange: (String) -> Unit,
+    onCarbsChange: (String) -> Unit,
+    onFatChange: (String) -> Unit,
     onAddToMeal: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Ephemeral UI state: which demonstration notice is open, if any.
+    // Ephemeral UI state: which demonstration notice is open, if any, and the date picker.
     var notice by rememberSaveable { mutableStateOf<Int?>(null) }
+    var showDatePicker by rememberSaveable { mutableStateOf(false) }
     val showAdjustNotice = { notice = R.string.food_confirmation_demo_adjust }
-    val estimate = uiState.estimate
+    val totals = uiState.totals
 
-    // The bottom bar is shown here: the Scaffold already applies the bottom inset.
+    // The bottom bar is shown here: the Scaffold already applies and consumes the bottom inset,
+    // so imePadding only adds what the keyboard covers beyond the bar.
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .statusBarsPadding(),
+            .statusBarsPadding()
+            .imePadding(),
     ) {
         FoodConfirmationHeader(
             onBack = onBack,
@@ -92,33 +125,51 @@ fun FoodConfirmationScreen(
                 ),
             verticalArrangement = Arrangement.spacedBy(Spacing.s20),
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.s12)) {
-                estimate.ingredients.forEach { ingredient ->
-                    IngredientCard(
-                        ingredient = ingredient,
-                        onDecrease = showAdjustNotice,
-                        onIncrease = showAdjustNotice,
-                        onRemove = showAdjustNotice,
+            val estimate = uiState.estimate
+            if (estimate != null) {
+                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s12)) {
+                    estimate.ingredients.forEach { ingredient ->
+                        IngredientCard(
+                            ingredient = ingredient,
+                            onDecrease = showAdjustNotice,
+                            onIncrease = showAdjustNotice,
+                            onRemove = showAdjustNotice,
+                        )
+                    }
+                }
+                // Figma: 14 SemiBold; VoraTextAction is 13 SemiBold (deviation, BASE-03).
+                VoraTextAction(
+                    text = stringResource(R.string.food_confirmation_add_ingredient),
+                    onClick = showAdjustNotice,
+                )
+            } else {
+                MealFormCard(
+                    draft = uiState.draft,
+                    errors = uiState.errors,
+                    onNameChange = onNameChange,
+                    onDateClick = { showDatePicker = true },
+                    onTypeSelect = onTypeSelect,
+                    onCaloriesChange = onCaloriesChange,
+                    onProteinChange = onProteinChange,
+                    onCarbsChange = onCarbsChange,
+                    onFatChange = onFatChange,
+                )
+            }
+            MealTotalsPanel(totals = totals)
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.s10)) {
+                if (uiState.saveFailed) {
+                    Text(
+                        text = stringResource(R.string.food_confirmation_save_error),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                        color = MaterialTheme.colorScheme.error,
                     )
                 }
-            }
-            // Figma: 14 SemiBold; VoraTextAction is 13 SemiBold (deviation, BASE-03).
-            VoraTextAction(
-                text = stringResource(R.string.food_confirmation_add_ingredient),
-                onClick = showAdjustNotice,
-            )
-            MealTotalsPanel(
-                calories = estimate.calories,
-                proteinGrams = estimate.proteinGrams,
-                carbsGrams = estimate.carbsGrams,
-                fatGrams = estimate.fatGrams,
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.s10)) {
                 // Figma: 15 SemiBold; VoraPrimaryButton Large is 15 Bold (deviation, BASE-03).
+                // While saving, the ViewModel ignores further taps.
                 VoraPrimaryButton(
                     text = stringResource(
                         R.string.food_confirmation_add_to,
-                        stringResource(uiState.mealType.labelRes()),
+                        stringResource(uiState.draft.type.labelRes()),
                     ),
                     onClick = onAddToMeal,
                     size = VoraButtonSize.Large,
@@ -141,6 +192,17 @@ fun FoodConfirmationScreen(
                     Text(stringResource(R.string.food_confirmation_demo_ok))
                 }
             },
+        )
+    }
+
+    if (showDatePicker) {
+        MealDatePickerDialog(
+            selectedDate = uiState.draft.date,
+            onConfirm = { date ->
+                onDateSelect(date)
+                showDatePicker = false
+            },
+            onDismiss = { showDatePicker = false },
         )
     }
 }
@@ -256,13 +318,206 @@ private fun QuantityButton(sign: String, onClick: () -> Unit) {
     }
 }
 
+/** RF03 form. No Figma frame (D3): same card as the ingredients (white, border, radius 16, padding 12). */
 @Composable
-private fun MealTotalsPanel(
-    calories: Int,
-    proteinGrams: Double,
-    carbsGrams: Double,
-    fatGrams: Double,
+private fun MealFormCard(
+    draft: MealFormDraft,
+    errors: MealFormErrors,
+    onNameChange: (String) -> Unit,
+    onDateClick: () -> Unit,
+    onTypeSelect: (MealType) -> Unit,
+    onCaloriesChange: (String) -> Unit,
+    onProteinChange: (String) -> Unit,
+    onCarbsChange: (String) -> Unit,
+    onFatChange: (String) -> Unit,
 ) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
+            .padding(Spacing.s12),
+        verticalArrangement = Arrangement.spacedBy(Spacing.s16),
+    ) {
+        // VoraTextField has no keyboardOptions nor error state yet (deviation, BASE-03): numbers use
+        // the text keyboard and errors are shown below each field.
+        FormField(errors.name) {
+            VoraTextField(
+                label = stringResource(R.string.food_confirmation_name_label),
+                value = draft.name,
+                onValueChange = onNameChange,
+            )
+        }
+        MealDateField(date = draft.date, onClick = onDateClick)
+        MealTypeSelector(selected = draft.type, onSelect = onTypeSelect)
+        FormField(errors.calories) {
+            VoraTextField(
+                label = stringResource(R.string.food_confirmation_calories_label),
+                value = draft.calories,
+                onValueChange = onCaloriesChange,
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s12)) {
+            FormField(errors.protein, Modifier.weight(1f)) {
+                VoraTextField(
+                    label = stringResource(R.string.food_confirmation_protein_label),
+                    value = draft.protein,
+                    onValueChange = onProteinChange,
+                )
+            }
+            FormField(errors.carbs, Modifier.weight(1f)) {
+                VoraTextField(
+                    label = stringResource(R.string.food_confirmation_carbs_label),
+                    value = draft.carbs,
+                    onValueChange = onCarbsChange,
+                )
+            }
+            FormField(errors.fat, Modifier.weight(1f)) {
+                VoraTextField(
+                    label = stringResource(R.string.food_confirmation_fat_label),
+                    value = draft.fat,
+                    onValueChange = onFatChange,
+                )
+            }
+        }
+    }
+}
+
+/** A field with its validation message below (D11: 12 Regular, error red). */
+@Composable
+private fun FormField(
+    error: MealFieldError?,
+    modifier: Modifier = Modifier,
+    field: @Composable () -> Unit,
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Spacing.s4)) {
+        field()
+        if (error != null) {
+            Text(
+                text = stringResource(error.message),
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
+    }
+}
+
+/** Read-only field with the look of VoraTextField; tapping it opens the date picker. */
+@Composable
+private fun MealDateField(date: LocalDate, onClick: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s6)) {
+        Text(
+            text = stringResource(R.string.food_confirmation_date_label).uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.voraColors.textSecondary,
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.small)
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
+                .clickable(
+                    onClickLabel = stringResource(R.string.food_confirmation_date_description),
+                    role = Role.Button,
+                    onClick = onClick,
+                )
+                .padding(horizontal = Spacing.s16, vertical = Spacing.s12),
+        ) {
+            Text(
+                text = formDateFormatter.format(date),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+}
+
+/** Breakfast / Lunch / Snack / Dinner (D8). No component nor frame: private pills that wrap if needed. */
+@Composable
+private fun MealTypeSelector(selected: MealType, onSelect: (MealType) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s6)) {
+        Text(
+            text = stringResource(R.string.food_confirmation_type_label).uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.voraColors.textSecondary,
+        )
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .selectableGroup(),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.s8),
+            verticalArrangement = Arrangement.spacedBy(Spacing.s8),
+        ) {
+            MealType.entries.forEach { type ->
+                MealTypeChip(
+                    label = stringResource(type.labelRes()),
+                    selected = type == selected,
+                    onClick = { onSelect(type) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MealTypeChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    val container = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
+    val content = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+    Box(
+        modifier = Modifier
+            .clip(VoraPillShape)
+            .background(container)
+            .border(1.dp, if (selected) container else MaterialTheme.colorScheme.outline, VoraPillShape)
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .padding(horizontal = Spacing.s14, vertical = Spacing.s8),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(text = label, style = MaterialTheme.typography.labelMedium, color = content)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MealDatePickerDialog(
+    selectedDate: LocalDate,
+    onConfirm: (LocalDate) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    // D9: no future dates. The picker works in UTC milliseconds (see NutritionFormat.kt).
+    val todayMillis = remember { LocalDate.now().toUtcMillis() }
+    val selectableDates = remember(todayMillis) {
+        object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis <= todayMillis
+            override fun isSelectableYear(year: Int): Boolean = year <= utcMillisToLocalDate(todayMillis).year
+        }
+    }
+    val state = rememberDatePickerState(
+        initialSelectedDateMillis = selectedDate.toUtcMillis(),
+        selectableDates = selectableDates,
+    )
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = { state.selectedDateMillis?.let { onConfirm(utcMillisToLocalDate(it)) } ?: onDismiss() },
+            ) {
+                Text(stringResource(R.string.food_confirmation_date_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.food_confirmation_date_cancel))
+            }
+        },
+    ) {
+        DatePicker(state = state)
+    }
+}
+
+@Composable
+private fun MealTotalsPanel(totals: MealTotals) {
     // Figma: radius 20, padding 16, gap 12 (VoraPanel is padding 20, gap 16).
     Column(
         modifier = Modifier
@@ -284,7 +539,7 @@ private fun MealTotalsPanel(
             )
             // Figma: 18 Bold, no token (titleMedium is 18 SemiBold).
             Text(
-                text = stringResource(R.string.food_confirmation_kcal, calories),
+                text = stringResource(R.string.food_confirmation_kcal, totals.calories),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onPrimary,
             )
@@ -297,9 +552,9 @@ private fun MealTotalsPanel(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            MacroTotal(R.string.food_confirmation_protein, proteinGrams)
-            MacroTotal(R.string.food_confirmation_carbs, carbsGrams)
-            MacroTotal(R.string.food_confirmation_fat, fatGrams)
+            MacroTotal(R.string.food_confirmation_protein, totals.proteinGrams)
+            MacroTotal(R.string.food_confirmation_carbs, totals.carbsGrams)
+            MacroTotal(R.string.food_confirmation_fat, totals.fatGrams)
         }
     }
 }
@@ -312,9 +567,9 @@ private fun MacroTotal(@StringRes label: Int, grams: Double) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.secondary,
         )
-        // The Figma shows whole grams; NUC-04 may need decimals for typed values.
+        // Whole grams as in Figma ("38g"); typed decimals keep one ("12.5g").
         Text(
-            text = stringResource(R.string.food_confirmation_grams, grams.roundToInt()),
+            text = stringResource(R.string.food_confirmation_macro_grams, formatGrams(grams)),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onPrimary,
         )
@@ -343,26 +598,58 @@ private fun SaveWithoutLoggingButton(onClick: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
-private fun FoodConfirmationScreenPreview() {
+private fun FoodConfirmationPreviewContent(uiState: FoodConfirmationUiState) {
     ExamenTP3Theme {
         FoodConfirmationScreen(
-            uiState = FoodConfirmationUiState(estimate = DemoMealEstimate),
+            uiState = uiState,
             onBack = {},
+            onNameChange = {},
+            onDateSelect = {},
+            onTypeSelect = {},
+            onCaloriesChange = {},
+            onProteinChange = {},
+            onCarbsChange = {},
+            onFatChange = {},
             onAddToMeal = {},
         )
     }
 }
 
+private val previewDate = LocalDate.of(2026, 10, 23)
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun FoodConfirmationEstimatePreview() {
+    FoodConfirmationPreviewContent(foodConfirmationInitialState(FoodConfirmationMode.Estimate, previewDate))
+}
+
 @Preview(showBackground = true, widthDp = 360, heightDp = 640, fontScale = 1.3f)
 @Composable
-private fun FoodConfirmationScreenSmallPreview() {
-    ExamenTP3Theme {
-        FoodConfirmationScreen(
-            uiState = FoodConfirmationUiState(estimate = DemoMealEstimate),
-            onBack = {},
-            onAddToMeal = {},
-        )
-    }
+private fun FoodConfirmationEstimateSmallPreview() {
+    FoodConfirmationPreviewContent(foodConfirmationInitialState(FoodConfirmationMode.Estimate, previewDate))
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun FoodConfirmationManualEmptyPreview() {
+    FoodConfirmationPreviewContent(foodConfirmationInitialState(FoodConfirmationMode.Manual, previewDate))
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 900)
+@Composable
+private fun FoodConfirmationManualErrorsPreview() {
+    val initial = foodConfirmationInitialState(FoodConfirmationMode.Manual, previewDate)
+    FoodConfirmationPreviewContent(
+        initial.copy(
+            draft = initial.draft.copy(calories = "12.5", protein = "-3", carbs = "abc", fat = "4,5", type = MealType.DINNER),
+            errors = MealFormErrors(
+                name = MealFieldError.NameRequired,
+                calories = MealFieldError.NotAWholeNumber,
+                protein = MealFieldError.Negative,
+                carbs = MealFieldError.NotANumber,
+            ),
+            saveFailed = true,
+        ),
+    )
 }

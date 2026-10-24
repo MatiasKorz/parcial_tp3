@@ -12,6 +12,24 @@ object NavArgs {
 
     /** Optional date of Today's Meals as epoch day; missing means today. */
     const val DATE_EPOCH_DAY = "dateEpochDay"
+
+    /** Mode of Food Confirmation, see [FoodConfirmationMode]. */
+    const val FOOD_CONFIRMATION_MODE = "mode"
+}
+
+/**
+ * Food Confirmation serves two flows on one route: the RF03 manual form ("Log Manually") and the
+ * review of the simulated estimate (Food Analysis / Photo Analysis).
+ */
+enum class FoodConfirmationMode(val routeValue: String) {
+    Manual("manual"),
+    Estimate("estimate");
+
+    companion object {
+        /** Unknown or missing values fall back to [Estimate], the screen as drawn in Figma. */
+        fun fromRouteValue(value: String?): FoodConfirmationMode =
+            entries.firstOrNull { it.routeValue == value } ?: Estimate
+    }
 }
 
 sealed class AppDestination(
@@ -67,7 +85,13 @@ sealed class AppDestination(
     data object VoiceFoodLogging : AppDestination("voice_food_logging", "Nutrition / 04 — Voice Food Logging")
     data object FoodAnalysis : AppDestination("food_analysis", "Nutrition / 05 — Food Analysis")
     data object PhotoAnalysis : AppDestination("photo_analysis", "Nutrition / 06 — Photo Analysis", BottomTab.Nutrition)
-    data object FoodConfirmation : AppDestination("food_confirmation", "Nutrition / 07 — Food Confirmation", BottomTab.Nutrition)
+    data object FoodConfirmation : AppDestination(
+        "food_confirmation/{${NavArgs.FOOD_CONFIRMATION_MODE}}",
+        "Nutrition / 07 — Food Confirmation",
+        BottomTab.Nutrition,
+    ) {
+        fun createRoute(mode: FoodConfirmationMode) = "food_confirmation/${mode.routeValue}"
+    }
     data object MealDetails : AppDestination("meal_details/{${NavArgs.MEAL_ID}}", "Nutrition / 08 — Meal Details", BottomTab.Nutrition) {
         fun createRoute(mealId: String) = "meal_details/${Uri.encode(mealId)}"
     }

@@ -60,6 +60,9 @@ private const val DEMO_MEAL_ID = "demo-meal"
 private val workoutArgs = listOf(navArgument(NavArgs.WORKOUT_ID) { type = NavType.StringType })
 private val exerciseArgs = listOf(navArgument(NavArgs.EXERCISE_ID) { type = NavType.StringType })
 private val mealArgs = listOf(navArgument(NavArgs.MEAL_ID) { type = NavType.StringType })
+private val foodConfirmationArgs = listOf(
+    navArgument(NavArgs.FOOD_CONFIRMATION_MODE) { type = NavType.StringType },
+)
 
 // Optional query argument: null means today (resolved in TodaysMealsViewModel, not at graph build time).
 private val todaysMealsArgs = listOf(
@@ -281,25 +284,39 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onBack = { if (entry.isResumed()) navController.popBackStack() },
             onStartVoiceLogging = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.route) },
             onSnapPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.route) },
-            // NUC-04 switches this to the manual mode route of Food Confirmation.
-            onLogManually = { if (entry.isResumed()) navController.navigate(FoodConfirmation.route) },
+            onLogManually = {
+                if (entry.isResumed()) {
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual))
+                }
+            },
         )
     }
     placeholder(VoiceFoodLogging, navController) { listOf(linkTo(FoodAnalysis)) }
-    placeholder(FoodAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
-    placeholder(PhotoAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
-    composable(FoodConfirmation.route) { entry ->
+    // The route has an argument: linkTo(FoodConfirmation) would navigate to the literal pattern.
+    val reviewEstimate = Link(FoodConfirmation.frame, FoodConfirmation.createRoute(FoodConfirmationMode.Estimate))
+    placeholder(FoodAnalysis, navController) { listOf(reviewEstimate) }
+    placeholder(PhotoAnalysis, navController) { listOf(reviewEstimate) }
+    composable(FoodConfirmation.route, foodConfirmationArgs) { entry ->
         val viewModel: FoodConfirmationViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
+        // Saving is asynchronous: once Room confirms, open the list on the meal's date (D12).
+        LaunchedEffect(uiState.savedDate) {
+            uiState.savedDate?.let { date ->
+                navController.navigate(TodaysMeals.createRoute(date)) { popUpTo(NutritionDashboard.route) }
+                viewModel.onSavedHandled()
+            }
+        }
         FoodConfirmationScreen(
             uiState = uiState,
             onBack = { if (entry.isResumed()) navController.popBackStack() },
-            onAddToMeal = {
-                // Simulated until NUC-04 saves the meal in Room: goes to the list like the old placeholder.
-                if (entry.isResumed()) {
-                    navController.navigate(TodaysMeals.createRoute()) { popUpTo(NutritionDashboard.route) }
-                }
-            },
+            onNameChange = viewModel::onNameChange,
+            onDateSelect = viewModel::onDateSelect,
+            onTypeSelect = viewModel::onTypeSelect,
+            onCaloriesChange = viewModel::onCaloriesChange,
+            onProteinChange = viewModel::onProteinChange,
+            onCarbsChange = viewModel::onCarbsChange,
+            onFatChange = viewModel::onFatChange,
+            onAddToMeal = { if (entry.isResumed()) viewModel.onAddToMeal() },
         )
     }
     composable(MealDetails.route, mealArgs) { entry ->
