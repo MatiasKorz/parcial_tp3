@@ -25,6 +25,12 @@ import androidx.compose.ui.unit.dp
 import com.example.examentp3.R
 import com.example.examentp3.viewmodel.WorkoutCatalogUiState
 import com.example.examentp3.ui.components.VoraCard
+import com.example.examentp3.ui.components.VoraEmptyState
+import com.example.examentp3.ui.components.VoraErrorBanner
+import com.example.examentp3.ui.components.VoraErrorState
+import com.example.examentp3.ui.components.VoraLoadingState
+import com.example.examentp3.model.WorkoutSummary
+import com.example.examentp3.viewmodel.UiError
 import com.example.examentp3.ui.theme.*
 
 /** Keeps the Figma demonstration plan separate from the Room-backed NUC-01 catalog. */
@@ -33,6 +39,7 @@ fun WeeklyPlanScreen(
     uiState: WorkoutCatalogUiState,
     onWorkoutDetails: () -> Unit,
     onWorkoutClick: (String) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedDay by rememberSaveable { mutableIntStateOf(1) }
@@ -90,8 +97,42 @@ fun WeeklyPlanScreen(
                 )
             }
         }
-        items(uiState.workouts, key = { "catalog:${it.id}" }) { workout ->
-            WorkoutCatalogCard(workout = workout, onClick = { onWorkoutClick(workout.id) })
+        // RF05: content first (with loading or error alongside), then loading, then error, then empty.
+        when {
+            uiState.workouts.isNotEmpty() -> {
+                if (uiState.isLoading) {
+                    item(key = "catalog_loading") { VoraLoadingState(stringResource(R.string.weekly_plan_catalog_loading)) }
+                }
+                uiState.error?.let { error ->
+                    item(key = "catalog_error") {
+                        VoraErrorBanner(
+                            stringResource(R.string.weekly_plan_catalog_cached, stringResource(error.message)),
+                            stringResource(R.string.state_retry),
+                            onRetry,
+                        )
+                    }
+                }
+                items(uiState.workouts, key = { "catalog:${it.id}" }) { workout ->
+                    WorkoutCatalogCard(workout = workout, onClick = { onWorkoutClick(workout.id) })
+                }
+            }
+            uiState.isLoading -> item(key = "catalog_loading") {
+                VoraLoadingState(stringResource(R.string.weekly_plan_catalog_loading))
+            }
+            uiState.error != null -> item(key = "catalog_error") {
+                VoraErrorState(
+                    stringResource(R.string.weekly_plan_catalog_error_title),
+                    stringResource(uiState.error.message),
+                    stringResource(R.string.state_retry),
+                    onRetry,
+                )
+            }
+            else -> item(key = "catalog_empty") {
+                VoraEmptyState(
+                    stringResource(R.string.weekly_plan_catalog_empty_title),
+                    stringResource(R.string.weekly_plan_catalog_empty_message),
+                )
+            }
         }
     }
     coachPrompt?.let { prompt ->
@@ -240,14 +281,46 @@ private fun CoachChip(@StringRes label: Int, onPrompt: (Int) -> Unit) {
     )
 }
 
+// Sample data shaped like the mock fixtures (w01-w02).
+private val PreviewCatalog = listOf(
+    WorkoutSummary(id = "w01", name = "Fuerza inicial", level = "beginner", durationMinutes = 25, exerciseCount = 3),
+    WorkoutSummary(id = "w02", name = "Entrenamiento completo", level = "intermediate", durationMinutes = 35, exerciseCount = 3),
+)
+
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun WeeklyPlanPreview() {
-    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(), {}, {}) }
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(workouts = PreviewCatalog), {}, {}, {}) }
 }
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 640, fontScale = 1.3f)
 @Composable
 private fun WeeklyPlanCompactPreview() {
-    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(), {}, {}) }
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(workouts = PreviewCatalog), {}, {}, {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 1400)
+@Composable
+private fun WeeklyPlanLoadingPreview() {
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(isLoading = true), {}, {}, {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 1400)
+@Composable
+private fun WeeklyPlanEmptyPreview() {
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(), {}, {}, {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 1400)
+@Composable
+private fun WeeklyPlanErrorPreview() {
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(error = UiError.Server), {}, {}, {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 1400)
+@Composable
+private fun WeeklyPlanCachedErrorPreview() {
+    ExamenTP3Theme {
+        WeeklyPlanScreen(WorkoutCatalogUiState(workouts = PreviewCatalog, error = UiError.NoConnection), {}, {}, {})
+    }
 }
