@@ -670,5 +670,33 @@
     <string name="food_confirmation_save_error">The meal could not be saved. Try again.</string>
     <!-- NUC-04: macro totals with up to one decimal ("38g", "12.5g") -->
     <string name="food_confirmation_macro_grams">%1$sg</string>
+    <!-- PAN-5.1 Nutrition / 01 — Dashboard (goals and tip are sample values from Figma) -->
+    <string name="nutrition_dashboard_title">Nutrition</string>
+    <string name="nutrition_dashboard_calories_consumed">Calories Consumed</string>
+    <string name="nutrition_dashboard_calories_goal">Goal: %1$s kcal</string>
+    <string name="nutrition_dashboard_percent">%1$d%%</string>
+    <string name="nutrition_dashboard_protein">Protein</string>
+    <string name="nutrition_dashboard_carbs">Carbs</string>
+    <string name="nutrition_dashboard_fat">Fat</string>
+    <string name="nutrition_dashboard_grams">%1$sg</string>
+    <string name="nutrition_dashboard_goal_grams">/%1$sg</string>
+    <string name="nutrition_dashboard_tip">You\'re on track today. A protein-rich dinner would help you reach your target.</string>
+    <string name="nutrition_dashboard_todays_meals">Today\'s Meals</string>
+    <string name="nutrition_dashboard_view_history">View History</string>
+    <string name="nutrition_dashboard_kcal">%1$s kcal</string>
+    <string name="nutrition_dashboard_not_logged">Not logged yet</string>
+    <string name="nutrition_dashboard_add">+ Add</string>
+    <string name="nutrition_dashboard_tell_vora">Tell Vora what you ate</string>
+    <string name="nutrition_dashboard_tell_vora_description">Vora will automatically estimate the portions, ingredients, and log the nutrition details.</string>
+    <string name="nutrition_dashboard_voice">Voice</string>
+    <string name="nutrition_dashboard_photo">Photo</string>
+    <string name="nutrition_dashboard_search">Search</string>
+    <!-- PAN-5.1: not in Figma, date picker and demo notice for "Search" (NAV03; the search is EXT-05) -->
+    <string name="nutrition_dashboard_choose_date">Choose date</string>
+    <string name="nutrition_dashboard_date_picker_ok">OK</string>
+    <string name="nutrition_dashboard_date_picker_cancel">Cancel</string>
+    <string name="nutrition_dashboard_demo_title">Demonstration</string>
+    <string name="nutrition_dashboard_demo_search">Food search is not available in this demonstration.</string>
+    <string name="nutrition_dashboard_demo_ok">OK</string>
 
 </resources>
