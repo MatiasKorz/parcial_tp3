@@ -607,14 +607,44 @@
     <string name="workout_complete_too_easy">Too Easy</string>
     <string name="workout_complete_done">Done</string>
 
-
+    <!-- PAN-7.5 Profile / 05 — Voice & AI Settings -->
+    <string name="voice_ai_settings_title">VORA Coach</string>
+    <string name="voice_ai_settings_back_description">Back</string>
+    <string name="voice_ai_settings_intro">Choose how VORA communicates and coaches you.</string>
+    <string name="voice_ai_settings_coaching_style">Coaching Style</string>
+    <string name="voice_ai_settings_coaching_supportive">Supportive</string>
+    <string name="voice_ai_settings_coaching_balanced">Balanced</string>
+    <string name="voice_ai_settings_coaching_direct">Direct</string>
+    <string name="voice_ai_settings_active_voice">Active Voice</string>
+    <string name="voice_ai_settings_voice_name">VORA Voice 01</string>
+    <string name="voice_ai_settings_preview">Preview</string>
+    <string name="voice_ai_settings_speaking_behaviour">Speaking Behaviour</string>
+    <string name="voice_ai_settings_speak_aloud">Speak responses aloud</string>
+    <string name="voice_ai_settings_auto_play">Auto-play coaching</string>
+    <string name="voice_ai_settings_allow_interruptions">Allow interruptions</string>
+    <string name="voice_ai_settings_interruptions_hint">Interrupt VORA anytime while it\'s speaking.</string>
+    <string name="voice_ai_settings_response_style">Response Style</string>
+    <string name="voice_ai_settings_response_concise">Concise</string>
+    <string name="voice_ai_settings_response_concise_description">Quick answers</string>
+    <string name="voice_ai_settings_response_balanced">Balanced</string>
+    <string name="voice_ai_settings_response_balanced_description">Useful detail without overwhelming</string>
+    <string name="voice_ai_settings_response_detailed">Detailed</string>
+    <string name="voice_ai_settings_response_detailed_description">More explanation and context</string>
+    <string name="voice_ai_settings_voice_feedback">Voice feedback</string>
+    <string name="voice_ai_settings_haptic_feedback">Haptic feedback</string>
+    <string name="voice_ai_settings_control_title">Your control matters</string>
+    <string name="voice_ai_settings_control_body">Manage microphone permissions and connected data from Settings.</string>
+    <string name="voice_ai_settings_privacy_link">Privacy &amp; permissions</string>
+    <!-- Not in Figma: demo notice for "Preview" (NAV03/NAV05), pending approval in REF-05 -->
+    <string name="voice_ai_settings_demo_title">Demonstration</string>
+    <string name="voice_ai_settings_preview_notice">Voice preview is not available in this demonstration. No audio is played and the microphone is not used.</string>
+    <string name="voice_ai_settings_ok">OK</string>
 
     <!-- NUC-05 Meal types (shared with NUC-04, PAN-5.1, PAN-5.2, PAN-5.7 and PAN-5.8) -->
     <string name="meal_type_breakfast">Breakfast</string>
     <string name="meal_type_lunch">Lunch</string>
     <string name="meal_type_snack">Snack</string>
     <string name="meal_type_dinner">Dinner</string>
-
     <!-- PAN-5.7 Nutrition / 07 — Food Confirmation -->
     <string name="food_confirmation_title">Review Meal</string>
     <string name="food_confirmation_back_description">Back</string>
@@ -635,7 +665,6 @@
     <string name="food_confirmation_demo_adjust">Adjusting ingredients is not available in this demonstration.</string>
     <string name="food_confirmation_demo_save_without_logging">Saving without logging is not available in this demonstration.</string>
     <string name="food_confirmation_demo_ok">OK</string>
-
     <!-- PAN-5.3 Nutrition / 03 — Add Food -->
     <string name="add_food_title">Add Food</string>
     <string name="add_food_back_description">Back</string>
@@ -652,7 +681,6 @@
     <string name="add_food_demo_title">Demonstration</string>
     <string name="add_food_demo_search">Food search is not available in this demonstration.</string>
     <string name="add_food_demo_ok">OK</string>
-
     <!-- NUC-04: RF03 manual form in Food Confirmation; labels and messages are not in Figma, pending approval -->
     <string name="food_confirmation_name_label">Meal name</string>
     <string name="food_confirmation_date_label">Date</string>
@@ -681,7 +709,6 @@
     <string name="voice_food_logging_transcript">\"I had grilled chicken with rice and some mixed vegetables for lunch.\"</string>
     <string name="voice_food_logging_done">Done Speaking</string>
     <string name="voice_food_logging_type_instead">Type instead</string>
-
     <!-- PAN-5.6 Nutrition / 06 — Photo Analysis -->
     <string name="photo_analysis_title">Analyse Meal</string>
     <string name="photo_analysis_back_description">Back</string>
@@ -700,7 +727,6 @@
     <string name="photo_analysis_demo_title">Demonstration</string>
     <string name="photo_analysis_demo_retake">Taking a photo is not available in this demonstration.</string>
     <string name="photo_analysis_demo_ok">OK</string>
-
     <!-- PAN-5.8 Nutrition / 08 — Meal Details -->
     <string name="meal_details_back">Back</string>
     <string name="meal_details_total_calories">Total Calories</string>

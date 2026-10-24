@@ -40,6 +40,7 @@ import com.example.examentp3.ui.screens.profile.EditProfileScreen
 import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.profile.SettingsScreen
+import com.example.examentp3.ui.screens.profile.VoiceAiSettingsScreen
 import com.example.examentp3.ui.screens.progress.NutritionProgressScreen
 import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
@@ -53,6 +54,7 @@ import com.example.examentp3.viewmodel.MealDetailsUiState
 import com.example.examentp3.viewmodel.MealDetailsViewModel
 import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
+import com.example.examentp3.viewmodel.VoiceAiSettingsViewModel
 import com.example.examentp3.viewmodel.TodaysMealsViewModel
 
 // Provisional ids until the real catalogs exist (REF-04).
@@ -441,7 +443,19 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
         )
     }
     placeholder(NutritionPreferences, navController)
-    placeholder(VoiceAiSettings, navController)
+    composable(VoiceAiSettings.route) { entry ->
+        val viewModel: VoiceAiSettingsViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        VoiceAiSettingsScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onCoachStyleSelect = viewModel::onCoachStyleSelect,
+            onResponseStyleSelect = viewModel::onResponseStyleSelect,
+            onToggleChange = viewModel::onToggleChange,
+            // "from Settings" in the notice: Profile / 06 (NAV03).
+            onPrivacyClick = { if (entry.isResumed()) navController.navigate(Settings.route) },
+        )
+    }
     composable(Settings.route) { entry ->
         val viewModel: SettingsViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
