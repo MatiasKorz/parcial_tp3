@@ -32,6 +32,7 @@ import com.example.examentp3.ui.screens.login.SignInScreen
 import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.notifications.NotificationsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
+import com.example.examentp3.ui.screens.nutrition.FoodAnalysisScreen
 import com.example.examentp3.ui.screens.nutrition.FoodConfirmationScreen
 import com.example.examentp3.ui.screens.nutrition.NutritionDashboardScreen
 import com.example.examentp3.ui.screens.nutrition.MealDetailsScreen
@@ -57,6 +58,7 @@ import com.example.examentp3.ui.screens.voice.VoiceProcessingScreen
 import com.example.examentp3.ui.screens.voice.VoiceListeningScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
+import com.example.examentp3.viewmodel.FoodAnalysisViewModel
 import com.example.examentp3.viewmodel.FoodConfirmationViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.NutritionPreferencesViewModel
@@ -372,9 +374,24 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    // The route has an argument: linkTo(FoodConfirmation) would navigate to the literal pattern.
-    val reviewEstimate = Link(FoodConfirmation.frame, FoodConfirmation.createRoute(FoodConfirmationMode.Estimate))
-    placeholder(FoodAnalysis, navController) { listOf(reviewEstimate) }
+    composable(FoodAnalysis.route) { entry ->
+        val viewModel: FoodAnalysisViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        // The simulated analysis ends by itself: open the review and drop this screen from the back stack,
+        // so going back from the review does not land on an analysis that would advance again.
+        LaunchedEffect(uiState.isComplete) {
+            if (uiState.isComplete) {
+                navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate)) {
+                    popUpTo(FoodAnalysis.route) { inclusive = true }
+                }
+            }
+        }
+        FoodAnalysisScreen(
+            uiState = uiState,
+            // Cancel, the header button and system back return to Voice Food Logging without saving.
+            onCancel = { if (entry.isResumed()) navController.popBackStack() },
+        )
+    }
     composable(PhotoAnalysis.route) { entry ->
         PhotoAnalysisScreen(
             estimate = DemoMealEstimate, // simulated analysis (SPEC p.10), same data that 5.7 reviews

@@ -849,6 +849,17 @@
     <string name="photo_analysis_demo_title">Demonstration</string>
     <string name="photo_analysis_demo_retake">Taking a photo is not available in this demonstration.</string>
     <string name="photo_analysis_demo_ok">OK</string>
+
+    <!-- PAN-5.5 Nutrition / 05 — Food Analysis -->
+    <string name="food_analysis_brand">VORA AI</string>
+    <string name="food_analysis_title">Analyzing Meal...</string>
+    <string name="food_analysis_captured_input_label">CAPTURED INPUT</string>
+    <string name="food_analysis_captured_input">\"Grilled chicken, rice and mixed vegetables\"</string>
+    <string name="food_analysis_step_identifying">Identifying foods...</string>
+    <string name="food_analysis_step_estimating">Estimating portions...</string>
+    <string name="food_analysis_step_calculating">Calculating nutrition...</string>
+    <string name="food_analysis_cancel">Cancel analysis</string>
+
     <!-- PAN-5.8 Nutrition / 08 — Meal Details -->
     <string name="meal_details_back">Back</string>
     <string name="meal_details_total_calories">Total Calories</string>
