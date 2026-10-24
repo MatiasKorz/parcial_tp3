@@ -32,13 +32,13 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 4.6 | Workout / 06 — Exercise Details | `exercise_details/{exerciseId}` | Workout / 03 | demostración | UI hecha (validación manual pendiente) | Guía Figma fija de Seated Cable Row con imagen original; filas actuales usan demo-exercise; identificación e instrucciones reales pendientes de NUC-02; NAV04/RF01 incompletos |
 | 4.7 | Workout / 07 — Workout Complete | `workout_complete` | Workout / 05 | demostración | UI hecha (validación manual pendiente) | Métricas Figma fijas y valoración local no persistida; Done/Atrás vuelven a Dashboard y limpian el flujo terminado |
 | 5.1 | Nutrition / 01 — Dashboard | `nutrition` | Pestaña Nutrition | funcional | Provisoria | Muestra el total diario desde Room |
-| 5.2 | Nutrition / 02 — Today's Meals | `todays_meals` | Nutrition / 01 | funcional | Provisoria | Listado por fecha desde Room |
-| 5.3 | Nutrition / 03 — Add Food | `add_food` | Nutrition / 01 y 02 | funcional | Provisoria | Entrada al registro manual |
+| 5.2 | Nutrition / 02 — Today's Meals | `todays_meals` | Nutrition / 01 | funcional | Hecha | Comidas de la fecha desde Room agrupadas por tipo, total del día, flechas y DatePicker para cambiar la fecha |
+| 5.3 | Nutrition / 03 — Add Food | `add_food` | Nutrition / 01 y 02 | funcional | UI hecha (validación visual pendiente) | Voz y foto llevan a 5.4 y 5.6 sin pedir permisos; "Search Database" informa modo demostración (búsqueda: EXT-05); "Log Manually" abre 5.7, donde NUC-04 agrega el registro manual de RF03 |
 | 5.4 | Nutrition / 04 — Voice Food Logging | `voice_food_logging` | Nutrition / 03 | demostración | Provisoria | Registro por voz simulado; sin micrófono |
 | 5.5 | Nutrition / 05 — Food Analysis | `food_analysis` | Nutrition / 04 | demostración | Provisoria | Análisis simulado |
 | 5.6 | Nutrition / 06 — Photo Analysis | `photo_analysis` | Nutrition / 03 | demostración | Provisoria | Análisis de foto simulado; sin cámara |
 | 5.7 | Nutrition / 07 — Food Confirmation | `food_confirmation` | Nutrition / 05 y 06 | demostración | UI hecha (validación visual pendiente) | Estimación fija del Figma (3 ingredientes, 520 kcal); "Add to Lunch" vuelve al listado sin guardar hasta NUC-04; `-`, `+`, "Remove", "+ Add Ingredient" y "Save without logging" informan modo demostración |
-| 5.8 | Nutrition / 08 — Meal Details | `meal_details/{mealId}` | Nutrition / 02 | demostración | Provisoria | Detalle de la comida elegida |
+| 5.8 | Nutrition / 08 — Meal Details | `meal_details/{mealId}` | Nutrition / 01 y 02 | funcional (Room) | Hecha | Tipo, fecha, calorías y macros de la comida guardada; eliminar con confirmación; anillo y consejo de ejemplo; Edit/Duplicate en modo demostración |
 | 6.1 | Progress / 01 — Today's Overview | `todays_overview` | Home / 01 | demostración | Hecha | Datos de ejemplo |
 | 6.2 | Progress / 02 — Dashboard | `progress` | Pestaña Progress | demostración | Hecha | Datos de ejemplo |
 | 6.3 | Progress / 03 — Workout Progress | `workout_progress` | Progress / 02 | demostración | Hecha | Datos de ejemplo |
