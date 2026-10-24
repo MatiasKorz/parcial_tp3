@@ -52,6 +52,7 @@ import com.example.examentp3.ui.screens.progress.ProgressDashboardScreen
 import com.example.examentp3.ui.screens.progress.TodaysOverviewScreen
 import com.example.examentp3.ui.screens.progress.WorkoutProgressScreen
 import com.example.examentp3.ui.screens.progress.WeeklyReviewScreen
+import com.example.examentp3.ui.screens.voice.VoiceSpeakingScreen
 import com.example.examentp3.ui.screens.voice.VoiceProcessingScreen
 import com.example.examentp3.ui.screens.voice.VoiceListeningScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
@@ -214,7 +215,19 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onCancel = { exitOnce { navController.popBackStack(VoiceIdle.route, inclusive = false) } },
         )
     }
-    placeholder(VoiceSpeaking, navController, onBack = closeCoach) { listOf(linkTo(VoiceConversation)) }
+    composable(VoiceSpeaking.route) { entry ->
+        var exitHandled by remember(entry) { mutableStateOf(false) }
+        val returnTo: (AppDestination) -> Unit = { destination ->
+            if (!exitHandled && entry.isResumed() && navController.currentBackStackEntry == entry) {
+                exitHandled = true
+                navController.popBackStack(destination.route, inclusive = false)
+            }
+        }
+        VoiceSpeakingScreen(
+            onBack = { returnTo(VoiceIdle) },
+            onInterrupt = { returnTo(VoiceListening) },
+        )
+    }
     placeholder(VoiceConversation, navController, onBack = closeCoach)
     placeholder(VoiceError, navController, onBack = closeCoach)
 

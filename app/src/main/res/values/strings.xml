@@ -877,4 +877,12 @@
     <string name="voice_processing_transcript">\"I had chicken, rice and some vegetables for lunch.\"</string>
     <string name="voice_processing_checking">Checking your nutrition target...</string>
     <string name="voice_processing_cancel">Cancel</string>
+    <!-- PAN-3.4 Voice / 04 — Speaking: fixed response and static playback. -->
+    <string name="voice_speaking_back">Back</string>
+    <string name="voice_speaking_title">VORA Speaking</string>
+    <string name="voice_speaking_status">SPEAKING</string>
+    <string name="voice_speaking_response">\"That sounds like a balanced lunch. I\'ve estimated around 520 calories with approximately 38 grams of protein.\"</string>
+    <string name="voice_speaking_elapsed">0:08</string>
+    <string name="voice_speaking_remaining">-0:14</string>
+    <string name="voice_speaking_interrupt">Tap to Interrupt</string>
 </resources>
