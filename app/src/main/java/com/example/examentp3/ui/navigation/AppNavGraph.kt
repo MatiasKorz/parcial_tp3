@@ -26,6 +26,7 @@ import com.example.examentp3.ui.screens.login.SignInScreen
 import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.notifications.NotificationsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
+import com.example.examentp3.ui.screens.nutrition.AddFoodScreen
 import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.EditProfileScreen
@@ -255,7 +256,15 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     placeholder(TodaysMeals, navController, todaysMealsArgs) {
         listOf(Link(MealDetails.frame, MealDetails.createRoute(DEMO_MEAL_ID)), linkTo(AddFood))
     }
-    placeholder(AddFood, navController) { listOf(linkTo(VoiceFoodLogging), linkTo(PhotoAnalysis)) }
+    composable(AddFood.route) { entry ->
+        AddFoodScreen(
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onStartVoiceLogging = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.route) },
+            onSnapPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.route) },
+            // NUC-04 switches this to the manual mode route of Food Confirmation.
+            onLogManually = { if (entry.isResumed()) navController.navigate(FoodConfirmation.route) },
+        )
+    }
     placeholder(VoiceFoodLogging, navController) { listOf(linkTo(FoodAnalysis)) }
     placeholder(FoodAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
     placeholder(PhotoAnalysis, navController) { listOf(linkTo(FoodConfirmation)) }
