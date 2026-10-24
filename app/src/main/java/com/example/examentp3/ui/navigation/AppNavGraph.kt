@@ -33,9 +33,9 @@ import com.example.examentp3.ui.screens.login.SignUpScreen
 import com.example.examentp3.ui.screens.notifications.NotificationsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderLink
 import com.example.examentp3.ui.screens.nutrition.FoodConfirmationScreen
+import com.example.examentp3.ui.screens.nutrition.NutritionDashboardScreen
 import com.example.examentp3.ui.screens.nutrition.MealDetailsScreen
 import com.example.examentp3.ui.screens.nutrition.AddFoodScreen
-import com.example.examentp3.ui.screens.nutrition.MealRoomCheckSection
 import com.example.examentp3.ui.screens.nutrition.VoiceFoodLoggingScreen
 import com.example.examentp3.ui.screens.nutrition.PhotoAnalysisScreen
 import com.example.examentp3.ui.screens.nutrition.TodaysMealsScreen
@@ -61,9 +61,9 @@ import com.example.examentp3.viewmodel.FoodConfirmationViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.NutritionPreferencesViewModel
 import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
+import com.example.examentp3.viewmodel.NutritionDashboardViewModel
 import com.example.examentp3.viewmodel.MealDetailsUiState
 import com.example.examentp3.viewmodel.MealDetailsViewModel
-import com.example.examentp3.viewmodel.MealRoomCheckViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
 import com.example.examentp3.viewmodel.VoiceAiSettingsViewModel
 import com.example.examentp3.viewmodel.TodaysMealsViewModel
@@ -312,16 +312,23 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
 
     // Nutrition
     composable(NutritionDashboard.route) { entry ->
-        val viewModel: MealRoomCheckViewModel = hiltViewModel()
+        val viewModel: NutritionDashboardViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
-        PlaceholderScreen(
-            title = NutritionDashboard.frame,
-            links = listOf(Link(TodaysMeals.frame, TodaysMeals.createRoute()), linkTo(AddFood)).map { link ->
-                PlaceholderLink(link.label) { if (entry.isResumed()) navController.navigate(link.route) }
+        NutritionDashboardScreen(
+            uiState = uiState,
+            // Inferred: the calendar picks the date of the RF04 list and opens it there.
+            onDateSelected = { date ->
+                if (entry.isResumed()) navController.navigate(TodaysMeals.createRoute(date))
             },
-        ) {
-            MealRoomCheckSection(uiState = uiState, onInsertClick = viewModel::insertSampleMeal)
-        }
+            onViewHistory = { if (entry.isResumed()) navController.navigate(TodaysMeals.createRoute()) },
+            onMealClick = { mealId ->
+                if (entry.isResumed()) navController.navigate(MealDetails.createRoute(mealId.toString()))
+            },
+            // The type is not passed yet: AddFood has no type argument (NUC-04 D16).
+            onAddMeal = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            onVoice = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.route) },
+            onPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.route) },
+        )
     }
     composable(TodaysMeals.route, todaysMealsArgs) { entry ->
         val viewModel: TodaysMealsViewModel = hiltViewModel()
