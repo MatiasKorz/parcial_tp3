@@ -607,6 +607,24 @@
     <string name="workout_complete_too_easy">Too Easy</string>
     <string name="workout_complete_done">Done</string>
 
+
+    <!-- PAN-5.3 Nutrition / 03 — Add Food -->
+    <string name="add_food_title">Add Food</string>
+    <string name="add_food_back_description">Back</string>
+    <string name="add_food_talk_title">Talk to VORA</string>
+    <string name="add_food_talk_example">\"I had grilled chicken breast with basmati rice.\"</string>
+    <string name="add_food_start_voice">Start Voice Logging</string>
+    <string name="add_food_photo_title">Snap a Photo</string>
+    <string name="add_food_photo_description">Vora estimates sizes and nutrition info.</string>
+    <string name="add_food_search_title">Search Database</string>
+    <string name="add_food_search_description">Search millions of local &amp; global food items.</string>
+    <string name="add_food_manual_title">Log Manually</string>
+    <string name="add_food_manual_description">Input weight, calories and macros yourself.</string>
+    <!-- PAN-5.3: not in Figma, demo notice for "Search Database" (NAV03; the search is EXT-05) -->
+    <string name="add_food_demo_title">Demonstration</string>
+    <string name="add_food_demo_search">Food search is not available in this demonstration.</string>
+    <string name="add_food_demo_ok">OK</string>
+
     <!-- NUC-05 Meal types (shared with NUC-04, PAN-5.1, PAN-5.2, PAN-5.7 and PAN-5.8) -->
     <string name="meal_type_breakfast">Breakfast</string>
     <string name="meal_type_lunch">Lunch</string>
@@ -638,4 +656,16 @@
     <string name="meal_details_duplicate_demo">Duplicating meals is not available in this demonstration.</string>
     <string name="meal_details_demo_ok">OK</string>
 
+    <!-- PAN-5.2 Nutrition / 02 — Today's Meals -->
+    <string name="todays_meals_title">Today\'s Meals</string>
+    <string name="todays_meals_kcal">%1$s kcal</string>
+    <string name="todays_meals_not_logged">%1$s is not logged yet</string>
+    <string name="todays_meals_add">+ Add %1$s</string>
+    <!-- Not in Figma: date navigation (decision of 23/10), pending REF-05 -->
+    <string name="todays_meals_timeline_date">TIMELINE · %1$s</string>
+    <string name="todays_meals_previous_day">Previous day</string>
+    <string name="todays_meals_next_day">Next day</string>
+    <string name="todays_meals_pick_date">Choose date</string>
+    <string name="todays_meals_date_picker_ok">OK</string>
+    <string name="todays_meals_date_picker_cancel">Cancel</string>
 </resources>
