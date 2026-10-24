@@ -607,6 +607,45 @@
     <string name="workout_complete_too_easy">Too Easy</string>
     <string name="workout_complete_done">Done</string>
 
+    <!-- PAN-7.4 Profile / 04 — Nutrition Preferences (the sample selection lives in model/NutritionSelection.kt) -->
+    <string name="nutrition_preferences_title">Nutrition preferences</string>
+    <string name="nutrition_preferences_back_description">Back</string>
+    <string name="nutrition_preferences_intro">Help VORA make food recommendations that actually fit your lifestyle.</string>
+    <string name="nutrition_preferences_diet_label">Dietary Preference</string>
+    <string name="nutrition_preferences_diet_everything">Everything</string>
+    <string name="nutrition_preferences_diet_vegetarian">Vegetarian</string>
+    <string name="nutrition_preferences_diet_vegan">Vegan</string>
+    <string name="nutrition_preferences_diet_pescatarian">Pescatarian</string>
+    <string name="nutrition_preferences_diet_other">Other</string>
+    <string name="nutrition_preferences_enjoy_label">Foods You Enjoy</string>
+    <string name="nutrition_preferences_food_chicken">Chicken</string>
+    <string name="nutrition_preferences_food_eggs">Eggs</string>
+    <string name="nutrition_preferences_food_fish">Fish</string>
+    <string name="nutrition_preferences_food_rice">Rice</string>
+    <string name="nutrition_preferences_food_pasta">Pasta</string>
+    <string name="nutrition_preferences_food_greek_yoghurt">Greek yoghurt</string>
+    <string name="nutrition_preferences_food_vegetables">Vegetables</string>
+    <string name="nutrition_preferences_food_fruit">Fruit</string>
+    <string name="nutrition_preferences_avoid_label">Foods to Avoid</string>
+    <!-- Three dots as in Figma, not the ellipsis character -->
+    <string name="nutrition_preferences_add_ingredient_hint">Add an ingredient...</string>
+    <string name="nutrition_preferences_remove_action">Remove</string>
+    <string name="nutrition_preferences_meals_label">Meal Preferences</string>
+    <string name="nutrition_preferences_meals_per_day">Meals per day</string>
+    <string name="nutrition_preferences_meals_per_day_value">3 meals + 1 snack</string>
+    <string name="nutrition_preferences_breakfast">Preferred breakfast</string>
+    <string name="nutrition_preferences_breakfast_value">Quick &amp; high protein</string>
+    <string name="nutrition_preferences_dinner">Preferred dinner</string>
+    <string name="nutrition_preferences_dinner_value">Balanced</string>
+    <string name="nutrition_preferences_priorities_label">What matters most to you?</string>
+    <string name="nutrition_preferences_priority_protein">Hit protein targets</string>
+    <string name="nutrition_preferences_priority_consistency">Eat more consistently</string>
+    <string name="nutrition_preferences_save">Save preferences</string>
+    <!-- PAN-7.4: not in Figma, demo notice for the Meal Preferences rows (NAV03) -->
+    <string name="nutrition_preferences_demo_title">Demonstration</string>
+    <string name="nutrition_preferences_demo_meals">Meal preferences can\'t be changed in this demonstration.</string>
+    <string name="nutrition_preferences_ok">OK</string>
+
     <!-- PAN-6.5 Progress / 05 — Health Trends (demo data from Figma) -->
     <string name="health_trends_title">Health trends</string>
     <string name="health_trends_subtitle">See how your daily habits are changing.</string>
@@ -634,7 +673,6 @@
     <string name="health_trends_habit_protein_intake">Protein Intake</string>
     <string name="health_trends_trend_improving">Improving</string>
     <string name="health_trends_trend_consistent">Consistent</string>
-
     <!-- PAN-7.5 Profile / 05 — Voice & AI Settings -->
     <string name="voice_ai_settings_title">VORA Coach</string>
     <string name="voice_ai_settings_back_description">Back</string>

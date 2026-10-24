@@ -38,6 +38,7 @@ import com.example.examentp3.ui.screens.nutrition.TodaysMealsScreen
 import com.example.examentp3.ui.screens.placeholder.PlaceholderScreen
 import com.example.examentp3.ui.screens.profile.EditProfileScreen
 import com.example.examentp3.ui.screens.profile.GoalsPreferencesScreen
+import com.example.examentp3.ui.screens.profile.NutritionPreferencesScreen
 import com.example.examentp3.ui.screens.profile.ProfileDashboardScreen
 import com.example.examentp3.ui.screens.profile.SettingsScreen
 import com.example.examentp3.ui.screens.progress.HealthTrendsScreen
@@ -50,6 +51,7 @@ import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
 import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.FoodConfirmationViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
+import com.example.examentp3.viewmodel.NutritionPreferencesViewModel
 import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
 import com.example.examentp3.viewmodel.MealDetailsUiState
 import com.example.examentp3.viewmodel.MealDetailsViewModel
@@ -447,7 +449,26 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             },
         )
     }
-    placeholder(NutritionPreferences, navController)
+    composable(NutritionPreferences.route) { entry ->
+        val viewModel: NutritionPreferencesViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        NutritionPreferencesScreen(
+            uiState = uiState,
+            onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onDietSelect = viewModel::onDietSelect,
+            onEnjoyedFoodToggle = viewModel::onEnjoyedFoodToggle,
+            onNewIngredientChange = viewModel::onNewIngredientChange,
+            onIngredientAdd = viewModel::onIngredientAdd,
+            onAvoidedFoodRemove = viewModel::onAvoidedFoodRemove,
+            onPriorityToggle = viewModel::onPriorityToggle,
+            onSave = {
+                if (entry.isResumed()) {
+                    viewModel.save()
+                    navController.popBackStack()
+                }
+            },
+        )
+    }
     composable(VoiceAiSettings.route) { entry ->
         val viewModel: VoiceAiSettingsViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
