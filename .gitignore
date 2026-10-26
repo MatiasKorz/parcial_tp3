@@ -13,3 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Firebase client config of each member's project (EXT-01, see README)
+google-services.json
+# Firebase emulator logs and rules test dependencies (EXT-03)
+firestore-debug.log
+firebase-debug.log
+ui-debug.log
+firestore-rules-tests/node_modules/

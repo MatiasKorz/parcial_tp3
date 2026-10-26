@@ -1,0 +1,18 @@
+rules_version = '2';
+
+// EXT-03: each account only reaches its own profile.
+// The profile of EXT-02 lives in users/{uid}, where {uid} is the Firebase Authentication user id.
+// Anything not matched below is denied: Firestore rules deny by default.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      // Read, create, update and delete only by the signed-in owner of that document.
+      allow read, write: if isOwner(userId);
+    }
+  }
+}

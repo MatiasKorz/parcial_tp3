@@ -81,3 +81,42 @@ adb shell am broadcast -n com.example.examentp3/.debug.MockScenarioReceiver
 
 Después de cambiar el escenario, tocá "Retry" o volvé a abrir Weekly Plan. El escenario se mantiene hasta que se cambia o se cierra la app. Para el paso 4 (sin conexión), detené el mock con Ctrl+C y levantalo de nuevo antes de tocar "Retry".
 
+## Reglas de Firestore (extra EXT-03)
+
+Las reglas de seguridad aíslan los datos de cada cuenta: el perfil vive en `users/{uid}` (EXT-02), y solo la cuenta con ese `uid` puede leerlo o escribirlo. Sin sesión no se accede a nada, y cualquier otra ruta se rechaza.
+
+| Archivo | Qué es |
+|---|---|
+| [`firestore.rules`](firestore.rules) | Las reglas. Es la única copia: lo que se despliega sale de acá |
+| [`firebase.json`](firebase.json) | Le dice a la Firebase CLI dónde están las reglas y en qué puerto corre el emulador |
+| [`.firebaserc`](.firebaserc) | El proyecto de Firebase del equipo (`vora-coach-tp3-659c9`). El Project ID no es secreto |
+| [`firestore-rules-tests/`](firestore-rules-tests/) | Tests de las reglas con dos cuentas, sobre el emulador de Firestore |
+| [`docs/evidencia/EXT-03-reglas-firestore.md`](docs/evidencia/EXT-03-reglas-firestore.md) | **Evidencia de la prueba con dos cuentas** |
+
+### Requisitos
+
+- [Node.js](https://nodejs.org/) 20 o más nuevo.
+- Firebase CLI: `npm install -g firebase-tools`, y después `firebase login` con una cuenta que sea miembro del proyecto.
+- Java 21 o más nuevo para el emulador. Sirve el JDK de Android Studio: en PowerShell, `$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"; $env:Path = "$env:JAVA_HOME\bin;$env:Path"`.
+
+### Correr los tests
+
+Desde la raíz del repo:
+
+```powershell
+npm install --prefix firestore-rules-tests
+firebase emulators:exec --only firestore --project demo-vora-coach "npm test --prefix firestore-rules-tests"
+```
+
+La primera vez, la CLI descarga el emulador de Firestore (unos 130 MB, en `~/.cache/firebase`). El proyecto `demo-vora-coach` es local: el prefijo `demo-` hace que el emulador no se conecte a ningún proyecto real. Los 11 tests tienen que pasar.
+
+### Aplicar las reglas al proyecto
+
+```powershell
+firebase deploy --only firestore:rules
+```
+
+Sube `firestore.rules` al proyecto de `.firebaserc`. Para comprobar que lo desplegado es lo mismo que el repo, abrí en la consola **Firestore Database → Reglas** y comparalo con `firestore.rules`. Cada despliegue queda en el historial de esa pestaña.
+
+No cambies las reglas desde la consola: el cambio no queda en el repo y la próxima vez que alguien despliegue se pierde. Se cambia `firestore.rules`, se corren los tests y se despliega.
+
