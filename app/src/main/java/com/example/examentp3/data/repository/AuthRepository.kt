@@ -1,8 +1,8 @@
 package com.example.examentp3.data.repository
 
 import android.util.Log
+import com.example.examentp3.data.remote.awaitTask
 import com.example.examentp3.model.AuthFailure
-import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
@@ -14,9 +14,6 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val TAG = "AuthRepository"
 
@@ -26,6 +23,9 @@ class AuthRepository @Inject constructor(private val auth: FirebaseAuth?) {
 
     /** False when the build has no google-services.json: the app keeps the demo access (SPEC p.1). */
     val isFirebaseEnabled: Boolean get() = auth != null
+
+    /** Firebase uid of the signed-in account, or null without a session; the profile is keyed by it (EXT-02). */
+    val currentUserId: String? get() = auth?.currentUser?.uid
 
     suspend fun signIn(email: String, password: String): Result<Unit> = runAuth { firebase ->
         firebase.signInWithEmailAndPassword(email, password).awaitTask()
@@ -73,16 +73,4 @@ internal fun Exception.toAuthFailure(): AuthFailure = when (this) {
     is FirebaseNetworkException -> AuthFailure.Network
     is FirebaseTooManyRequestsException -> AuthFailure.TooManyRequests
     else -> AuthFailure.Unknown
-}
-
-/** Suspends until the Play Services task ends, without adding kotlinx-coroutines-play-services. */
-private suspend fun <T> Task<T>.awaitTask(): T = suspendCancellableCoroutine { continuation ->
-    addOnCompleteListener { task ->
-        val error = task.exception
-        when {
-            error != null -> continuation.resumeWithException(error)
-            task.isCanceled -> continuation.cancel()
-            else -> continuation.resume(task.result)
-        }
-    }
 }

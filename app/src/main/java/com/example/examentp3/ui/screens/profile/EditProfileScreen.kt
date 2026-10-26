@@ -51,7 +51,10 @@ import com.example.examentp3.ui.theme.Spacing
 import com.example.examentp3.ui.theme.voraColors
 import com.example.examentp3.viewmodel.EditProfileUiState
 
-/** Profile / 02 — Edit Profile. Demo screen: the form edits the local profile (no network, no camera). */
+/**
+ * Profile / 02 — Edit Profile. The form edits the profile, which is saved to Firestore when there is
+ * a Firebase session (EXT-02) and stays local otherwise. "Change photo" is a demo notice (no camera).
+ */
 @Composable
 fun EditProfileScreen(
     uiState: EditProfileUiState,

@@ -1,5 +1,6 @@
 package com.example.examentp3.viewmodel
 
+import com.example.examentp3.data.repository.AuthRepository
 import com.example.examentp3.data.repository.ProfileRepository
 import com.example.examentp3.model.DemoUserProfile
 import org.junit.Assert.assertEquals
@@ -7,7 +8,8 @@ import org.junit.Test
 
 class EditProfileViewModelTest {
 
-    private val repository = ProfileRepository()
+    // Without Firebase: the demo profile, in memory (SPEC p.3).
+    private val repository = ProfileRepository(AuthRepository(auth = null), firestore = null)
 
     @Test
     fun init_loadsProfileFromRepository() {
