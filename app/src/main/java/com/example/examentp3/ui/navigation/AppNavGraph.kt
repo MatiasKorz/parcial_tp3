@@ -317,6 +317,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onExerciseClick = { exerciseId ->
                 if (entry.isResumed()) navController.navigate(ExerciseDetails.createRoute(workoutId, exerciseId))
             },
+            onRetry = viewModel::retry,
         )
     }
     composable(PreWorkout.route, workoutArgs) { entry ->
