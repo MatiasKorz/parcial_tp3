@@ -31,19 +31,24 @@ import com.example.examentp3.ui.components.*
 import com.example.examentp3.ui.theme.ExamenTP3Theme
 import com.example.examentp3.ui.theme.signInSubtitle
 import com.example.examentp3.ui.theme.signInDescription
+import com.example.examentp3.viewmodel.AuthError
+import com.example.examentp3.viewmodel.SignInUiState
 
 // Scoped to this screen: the ticket defines this background without changing BASE-01.
 private val SignInBackground = Color(0xFFF3F9F5)
 
 @Composable
 fun SignInScreen(
-    onSignIn: () -> Unit,
+    uiState: SignInUiState,
+    onSignIn: (email: String, password: String) -> Unit,
     onSignUp: () -> Unit,
+    onInputChange: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val exampleEmail = stringResource(R.string.sign_in_example_email)
     var email by rememberSaveable { mutableStateOf(exampleEmail) }
-    // A visual demo value only; never used for authentication or sent anywhere.
+    // Sent to Firebase Authentication only when the build has it (EXT-01); kept out of the saved
+    // instance state on purpose, so it is not written to the Bundle.
     var password by remember { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var notice by remember { mutableStateOf<Int?>(null) }
@@ -107,7 +112,7 @@ fun SignInScreen(
                             Text(stringResource(R.string.sign_in_email), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                             val emailLabel = stringResource(R.string.sign_in_email)
                             VoraSignInField(
-                                email, { email = it }, emailLabel, R.drawable.ic_sign_in_mail,
+                                email, { email = it; onInputChange() }, emailLabel, R.drawable.ic_sign_in_mail,
                                 KeyboardOptions(keyboardType = KeyboardType.Email),
                                 modifier = Modifier.semantics { contentDescription = emailLabel },
                             )
@@ -123,7 +128,7 @@ fun SignInScreen(
                             }
                             val passwordLabel = stringResource(R.string.sign_in_password)
                             VoraSignInField(
-                                password, { password = it }, passwordLabel, R.drawable.ic_sign_in_lock,
+                                password, { password = it; onInputChange() }, passwordLabel, R.drawable.ic_sign_in_lock,
                                 KeyboardOptions(keyboardType = KeyboardType.Password),
                                 modifier = Modifier.semantics { contentDescription = passwordLabel },
                                 placeholder = stringResource(R.string.sign_in_password_placeholder),
@@ -139,22 +144,27 @@ fun SignInScreen(
                                 },
                             )
                         }
+                        uiState.error?.let { error -> VoraAuthErrorText(stringResource(error.message)) }
                         Box {
                             val actionLabel = stringResource(R.string.sign_in_action)
                             // Reuse the BASE-02 surface and click behavior; custom content matches the trailing icon.
                             VoraLimeButton(
-                                "", onSignIn,
+                                "", { onSignIn(email, password) },
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
                                     .semantics { contentDescription = actionLabel },
                             )
-                            Row(
-                                modifier = Modifier.align(Alignment.Center).padding(horizontal = 16.dp)
-                                    .clearAndSetSemantics {},
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            ) {
-                                Text(actionLabel, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onTertiary)
-                                Icon(painterResource(R.drawable.ic_sign_in_arrow), null, tint = Color.Unspecified, modifier = Modifier.size(16.dp))
+                            if (uiState.isLoading) {
+                                VoraAuthProgress(Modifier.align(Alignment.Center))
+                            } else {
+                                Row(
+                                    modifier = Modifier.align(Alignment.Center).padding(horizontal = 16.dp)
+                                        .clearAndSetSemantics {},
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                ) {
+                                    Text(actionLabel, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onTertiary)
+                                    Icon(painterResource(R.drawable.ic_sign_in_arrow), null, tint = Color.Unspecified, modifier = Modifier.size(16.dp))
+                                }
                             }
                         }
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -202,11 +212,23 @@ fun SignInScreen(
 @Preview(showBackground = true, widthDp = 390, heightDp = 894)
 @Composable
 private fun SignInPreview() {
-    ExamenTP3Theme { SignInScreen({}, {}) }
+    ExamenTP3Theme { SignInScreen(SignInUiState(), { _, _ -> }, {}, {}) }
 }
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 640, fontScale = 1.3f)
 @Composable
 private fun SignInCompactPreview() {
-    ExamenTP3Theme { SignInScreen({}, {}) }
+    ExamenTP3Theme { SignInScreen(SignInUiState(), { _, _ -> }, {}, {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 894)
+@Composable
+private fun SignInErrorPreview() {
+    ExamenTP3Theme { SignInScreen(SignInUiState(error = AuthError.InvalidCredentials), { _, _ -> }, {}, {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 894)
+@Composable
+private fun SignInLoadingPreview() {
+    ExamenTP3Theme { SignInScreen(SignInUiState(isLoading = true), { _, _ -> }, {}, {}) }
 }

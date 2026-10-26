@@ -71,6 +71,8 @@ import com.example.examentp3.viewmodel.NutritionDashboardViewModel
 import com.example.examentp3.viewmodel.MealDetailsUiState
 import com.example.examentp3.viewmodel.MealDetailsViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
+import com.example.examentp3.viewmodel.SignInViewModel
+import com.example.examentp3.viewmodel.SignUpViewModel
 import com.example.examentp3.viewmodel.VoiceAiSettingsViewModel
 import com.example.examentp3.viewmodel.TodaysMealsViewModel
 
@@ -133,23 +135,46 @@ private fun NavGraphBuilder.placeholder(
 internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     // Access
     composable(SignIn.route) { entry ->
-        SignInScreen(
-            onSignIn = {
-                if (entry.isResumed()) {
-                    navController.navigate(Home.route) {
-                        popUpTo(SignIn.route) { inclusive = true }
-                        launchSingleTop = true
-                    }
+        val viewModel: SignInViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        // Signing in is asynchronous with Firebase (EXT-01): open Home once it succeeds, without Sign In behind.
+        LaunchedEffect(uiState.isSignedIn) {
+            if (uiState.isSignedIn) {
+                navController.navigate(Home.route) {
+                    popUpTo(SignIn.route) { inclusive = true }
+                    launchSingleTop = true
                 }
-            },
+                viewModel.onSignedInHandled()
+            }
+        }
+        SignInScreen(
+            uiState = uiState,
+            onSignIn = { email, password -> if (entry.isResumed()) viewModel.onSignIn(email, password) },
             onSignUp = {
                 if (entry.isResumed()) navController.navigate(SignUp.route)
             },
+            onInputChange = viewModel::onInputChange,
         )
     }
     composable(SignUp.route) { entry ->
+        val viewModel: SignUpViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        // Inferred (EXT-01): Firebase signs the new account in, so it opens Home and clears the access screens.
+        LaunchedEffect(uiState.isSignedUp) {
+            if (uiState.isSignedUp) {
+                navController.navigate(Home.route) {
+                    popUpTo(navController.graph.id) { inclusive = true }
+                    launchSingleTop = true
+                }
+                viewModel.onSignedUpHandled()
+            }
+        }
         SignUpScreen(
+            uiState = uiState,
             onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onSignUp = { name, email, password -> if (entry.isResumed()) viewModel.onSignUp(name, email, password) },
+            onInputChange = viewModel::onInputChange,
+            onDemoNoticeDismiss = viewModel::onDemoNoticeDismiss,
         )
     }
 
@@ -625,6 +650,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onLogOut = {
                 // Inferred: not drawn as a connection in Figma. Clears the back stack.
                 if (entry.isResumed()) {
+                    viewModel.onLogOut() // closes the Firebase session (EXT-01); synchronous
                     navController.navigate(SignIn.route) {
                         popUpTo(navController.graph.id) { inclusive = true }
                         launchSingleTop = true

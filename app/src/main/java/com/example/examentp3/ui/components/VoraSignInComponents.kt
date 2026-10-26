@@ -20,6 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.examentp3.R
@@ -105,6 +107,30 @@ internal fun VoraSignInService(
     }
 }
 
+/**
+ * Form or Firebase Authentication message (EXT-01). The Figma frames draw no error state, so it uses
+ * the theme's error color; the live region makes TalkBack read it when it appears.
+ */
+@Composable
+internal fun VoraAuthErrorText(message: String, modifier: Modifier = Modifier) {
+    Text(
+        message,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.error,
+        modifier = modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+    )
+}
+
+/** Replaces the label of the lime action button while Firebase answers. */
+@Composable
+internal fun VoraAuthProgress(modifier: Modifier = Modifier) {
+    CircularProgressIndicator(
+        modifier = modifier.size(20.dp),
+        color = MaterialTheme.colorScheme.onTertiary,
+        strokeWidth = 2.dp,
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun SignInComponentsPreview() {
@@ -112,6 +138,8 @@ private fun SignInComponentsPreview() {
         Column(Modifier.padding(24.dp)) {
             VoraSignInField("alex.morgan@email.com", {}, "Email Address", R.drawable.ic_sign_in_mail, KeyboardOptions.Default)
             VoraSignInService(R.drawable.ic_sign_in_apple, "Apple", {})
+            VoraAuthErrorText("Incorrect email or password.")
+            VoraAuthProgress()
         }
     }
 }

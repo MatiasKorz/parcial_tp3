@@ -5,6 +5,12 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+// EXT-01: google-services.json stays out of git (public repo). Without it the plugin is not applied,
+// so a clean clone still builds and the app keeps the demo access (see README, "Firebase").
+if (file("google-services.json").exists()) {
+    apply(plugin = libs.plugins.google.services.get().pluginId)
+}
+
 android {
     namespace = "com.example.examentp3"
     compileSdk {
