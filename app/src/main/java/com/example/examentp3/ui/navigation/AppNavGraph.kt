@@ -18,6 +18,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.examentp3.model.DemoMealEstimate
+import com.example.examentp3.model.DemoWorkout
 import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.home.HomeSampleUiState
 import com.example.examentp3.ui.screens.home.HomeScreen
@@ -76,7 +77,8 @@ import com.example.examentp3.viewmodel.TodaysMealsViewModel
 
 import kotlinx.coroutines.delay
 
-// Provisional ids until the real catalogs exist (REF-04).
+// Provisional ids until the real catalogs exist (REF-04). Pre Workout does not load its workout yet,
+// so this id never reaches the mock; Workout Details uses DemoWorkout instead.
 private const val DEMO_WORKOUT_ID = "demo-workout"
 private const val DEMO_MEAL_ID = "demo-meal"
 
@@ -295,8 +297,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onStartWorkout = {
                 if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
             },
+            // The card shows Figma's "Upper Body Strength": open the mock workout mapped to it.
             onWorkoutDetails = {
-                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(DEMO_WORKOUT_ID))
+                if (entry.isResumed()) {
+                    navController.navigate(WorkoutDetails.createRoute(DemoWorkout.UpperBody.workoutId))
+                }
             },
             onViewProgress = { if (entry.isResumed()) navController.navigate(WorkoutProgress.route) },
         )
@@ -306,9 +311,6 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
         val uiState by viewModel.uiState.collectAsState()
         WeeklyPlanScreen(
             uiState = uiState,
-            onWorkoutDetails = {
-                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(DEMO_WORKOUT_ID))
-            },
             onWorkoutClick = { workoutId ->
                 if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(workoutId))
             },

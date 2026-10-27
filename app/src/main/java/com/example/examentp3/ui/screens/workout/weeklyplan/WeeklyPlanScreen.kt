@@ -29,6 +29,7 @@ import com.example.examentp3.ui.components.VoraEmptyState
 import com.example.examentp3.ui.components.VoraErrorBanner
 import com.example.examentp3.ui.components.VoraErrorState
 import com.example.examentp3.ui.components.VoraLoadingState
+import com.example.examentp3.model.DemoWorkout
 import com.example.examentp3.model.WorkoutSummary
 import com.example.examentp3.viewmodel.UiError
 import com.example.examentp3.ui.theme.*
@@ -37,7 +38,6 @@ import com.example.examentp3.ui.theme.*
 @Composable
 fun WeeklyPlanScreen(
     uiState: WorkoutCatalogUiState,
-    onWorkoutDetails: () -> Unit,
     onWorkoutClick: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
@@ -73,15 +73,16 @@ fun WeeklyPlanScreen(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.voraColors.textSecondary,
                 )
-                TodayCard(onWorkoutDetails)
+                // Demo cards open real mock workouts, so Details never lands on a 404 (NAV03).
+                TodayCard { onWorkoutClick(DemoWorkout.UpperBody.workoutId) }
                 PlannedWorkoutCard(
                     R.string.weekly_plan_wednesday, R.string.weekly_plan_recovery,
-                    R.string.weekly_plan_recovery_summary, true, onWorkoutDetails,
-                )
+                    R.string.weekly_plan_recovery_summary, true,
+                ) { onWorkoutClick(DemoWorkout.ActiveRecovery.workoutId) }
                 PlannedWorkoutCard(
                     R.string.weekly_plan_thursday, R.string.weekly_plan_lower_body,
-                    R.string.weekly_plan_lower_body_summary, false, onWorkoutDetails,
-                )
+                    R.string.weekly_plan_lower_body_summary, false,
+                ) { onWorkoutClick(DemoWorkout.LowerBody.workoutId) }
             }
         }
         item(key = "coach") {
@@ -290,37 +291,37 @@ private val PreviewCatalog = listOf(
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun WeeklyPlanPreview() {
-    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(workouts = PreviewCatalog), {}, {}, {}) }
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(workouts = PreviewCatalog), {}, {}) }
 }
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 640, fontScale = 1.3f)
 @Composable
 private fun WeeklyPlanCompactPreview() {
-    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(workouts = PreviewCatalog), {}, {}, {}) }
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(workouts = PreviewCatalog), {}, {}) }
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 1400)
 @Composable
 private fun WeeklyPlanLoadingPreview() {
-    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(isLoading = true), {}, {}, {}) }
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(isLoading = true), {}, {}) }
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 1400)
 @Composable
 private fun WeeklyPlanEmptyPreview() {
-    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(), {}, {}, {}) }
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(), {}, {}) }
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 1400)
 @Composable
 private fun WeeklyPlanErrorPreview() {
-    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(error = UiError.Server), {}, {}, {}) }
+    ExamenTP3Theme { WeeklyPlanScreen(WorkoutCatalogUiState(error = UiError.Server), {}, {}) }
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 1400)
 @Composable
 private fun WeeklyPlanCachedErrorPreview() {
     ExamenTP3Theme {
-        WeeklyPlanScreen(WorkoutCatalogUiState(workouts = PreviewCatalog, error = UiError.NoConnection), {}, {}, {})
+        WeeklyPlanScreen(WorkoutCatalogUiState(workouts = PreviewCatalog, error = UiError.NoConnection), {}, {})
     }
 }
