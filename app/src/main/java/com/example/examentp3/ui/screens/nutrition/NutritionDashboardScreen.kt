@@ -20,7 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -84,7 +83,7 @@ private val OrbSize = 28.dp
 /**
  * Nutrition dashboard: the daily total and the meals of today come from Room (NUC-05); the goals and
  * the tip are sample values from Figma. Voice and Photo only navigate (no microphone or camera
- * permission, NAV05); Search is an optional service (EXT-05) and shows a demonstration notice (NAV03).
+ * permission, NAV05); Search opens the food search of EXT-05.
  */
 @Composable
 fun NutritionDashboardScreen(
@@ -95,11 +94,11 @@ fun NutritionDashboardScreen(
     onAddMeal: (MealType) -> Unit,
     onVoice: () -> Unit,
     onPhoto: () -> Unit,
+    onSearch: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // Ephemeral UI state: the ViewModel does not need to know a dialog is open.
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
-    var showSearchNotice by rememberSaveable { mutableStateOf(false) }
 
     // The bottom bar Scaffold already applies the navigation bar inset, so only the status bar is added.
     Column(
@@ -127,7 +126,7 @@ fun NutritionDashboardScreen(
                 onAddMeal = onAddMeal,
             )
         }
-        TellVoraPanel(onVoice = onVoice, onPhoto = onPhoto, onSearch = { showSearchNotice = true })
+        TellVoraPanel(onVoice = onVoice, onPhoto = onPhoto, onSearch = onSearch)
     }
 
     if (showDatePicker) {
@@ -138,19 +137,6 @@ fun NutritionDashboardScreen(
                 onDateSelected(date)
             },
             onDismiss = { showDatePicker = false },
-        )
-    }
-
-    if (showSearchNotice) {
-        AlertDialog(
-            onDismissRequest = { showSearchNotice = false },
-            title = { Text(stringResource(R.string.nutrition_dashboard_demo_title)) },
-            text = { Text(stringResource(R.string.nutrition_dashboard_demo_search)) },
-            confirmButton = {
-                TextButton(onClick = { showSearchNotice = false }) {
-                    Text(stringResource(R.string.nutrition_dashboard_demo_ok))
-                }
-            },
         )
     }
 }
@@ -549,6 +535,7 @@ private fun NutritionDashboardScreenPreview() {
             onAddMeal = {},
             onVoice = {},
             onPhoto = {},
+            onSearch = {},
         )
     }
 }
@@ -565,6 +552,7 @@ private fun NutritionDashboardScreenEmptyPreview() {
             onAddMeal = {},
             onVoice = {},
             onPhoto = {},
+            onSearch = {},
         )
     }
 }
