@@ -18,11 +18,11 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 1.2 | Login - 02 — SignUp | `sign_up` | SignIn ("Sign up here") | funcional con Firebase / demostración sin él (EXT-01) | Hecha (validación visual pendiente) | Con `google-services.json`, "Sign Up" crea la cuenta (Full Name como nombre visible) y abre Home; sin él, aviso de registro de demostración sin crear cuenta. Regreso a SignIn |
 | 2.1 | Home / 01 — Dashboard | `home` | SignIn; pestaña Home | demostración | Hecha | Datos de ejemplo |
 | 2.2 | Home / 02 — Notifications | `notifications` | Home | demostración | Hecha | Notificaciones de ejemplo |
-| 3.1 | Voice / 01 — Idle | `voice_idle` | Home ("Start voice session") | demostración | Hecha | Estado del coach simulado; sin micrófono; los chips y "LAST CONVERSATION" llevan a destinos de ejemplo |
+| 3.1 | Voice / 01 — Idle | `voice_idle` | Home ("Start voice session") | funcional (EXT-04) / voz simulada | Hecha | Las preguntas sugeridas salen de `GET /v1/coach/suggestions`, con carga, vacío y error con reintento; tocar una abre la conversación y la pregunta. "LAST CONVERSATION" muestra la última pregunta del historial de Room (no aparece sin historial). "TAP TO TALK" sigue simulado, sin micrófono. Ver [EXT-04](#coach-por-retrofit-con-historial-en-room-extra-ext-04) |
 | 3.2 | Voice / 02 — Listening | `voice_listening` | Voice / 01 ("TAP TO TALK") | demostración / simulado | Hecha | Transcripción fija del Figma; sin micrófono real; micrófono activo abre Processing; Cancel y Atrás vuelven a Idle. [Recursos y navegación](docs/design/PAN-3.2-recursos.md) |
 | 3.3 | Voice / 03 — Processing | `voice_processing` | Voice / 02 | demostración / simulado | UI hecha (validación manual pendiente) | Transcripción fija; sin consultas a servicios; avance simulado a Speaking tras 3 s activos; Cancel vuelve a Idle y Atrás a Listening. [Recursos y navegación](docs/design/PAN-3.3-recursos.md) |
 | 3.4 | Voice / 04 — Speaking | `voice_speaking` | Voice / 03 | demostración / simulado | UI hecha (validación manual pendiente) | Respuesta fija; barra y controles de reproducción estáticos; sin audio real. Interrupt vuelve a Listening; chevron y Atrás a Idle. [Recursos y navegación](docs/design/PAN-3.4-recursos.md) |
-| 3.5 | Voice / 05 — Conversation | `voice_conversation` | Voice / 01 (Type instead, LAST CONVERSATION y sugerencias) | demostración / simulado | UI hecha (validación manual pendiente) | Hilo inicial fijo del Figma; mensajes nuevos locales, sin historial persistido ni servicios del coach. Micrófono y audio simulados; + informa modo demostración. [Recursos y navegación](docs/design/PAN-3.5-recursos.md) |
+| 3.5 | Voice / 05 — Conversation | `voice_conversation?prompt={prompt}` | Voice / 01 (Type instead, LAST CONVERSATION y sugerencias) | funcional (EXT-04) / voz simulada | UI hecha (validación manual pendiente) | Historial guardado en Room; enviar un texto llama a `POST /v1/coach/messages` y la respuesta se marca como simulada (`isSimulated`). Carga mientras responde y error con reintento sin perder el historial. Micrófono y audio simulados; + informa modo demostración. [Recursos y navegación](docs/design/PAN-3.5-recursos.md) |
 | 3.6 | Voice / 06 — Error | `voice_error` | Mantener presionado el micrófono activo de Voice / 02 — Listening | demostración / simulado | UI hecha (validación manual pendiente) | Error y permisos simulados; Allow Access solo muestra un aviso. Try again vuelve a Listening; Type instead a Conversation; Not Now y Atrás a Idle. El toque normal del micrófono sigue hacia Processing. [Recursos y navegación](docs/design/PAN-3.6-recursos.md) |
 | 4.1 | Workout / 01 — Dashboard | `workout` | Pestaña Workout | demostración | Hecha (validación visual pendiente) | Datos del Figma; catálogo en Weekly Plan según NUC-01 (confirmación docente en REF-05); rutas existentes con id de demostración |
 | 4.2 | Workout / 02 — Weekly Plan | `weekly_plan` | Workout / 01 | mixta: plan de demostración y catálogo funcional | Integrada (validación manual pendiente) | Conserva PAN-4.2; catálogo GET /v1/workouts leído desde Room (NUC-01), con IDs reales hacia Details; carga, vacío y error con reintento (NUC-03) |
@@ -187,3 +187,28 @@ Sube `firestore.rules` al proyecto de `.firebaserc`. Para comprobar que lo despl
 
 No cambies las reglas desde la consola: el cambio no queda en el repo y la próxima vez que alguien despliegue se pierde. Se cambia `firestore.rules`, se corren los tests y se despliega.
 
+
+## Coach por Retrofit con historial en Room (extra EXT-04)
+
+El coach de `Voice / 01 — Idle` y `Voice / 05 — Conversation` usa el mock con Retrofit, y la conversación queda guardada en Room: sigue ahí al cerrar y volver a abrir la app. El mock no guarda mensajes (SPEC p.4), así que el historial es solo el de Room. No es IA real: el mock devuelve respuestas simuladas, y la app lo indica con "Simulated response" en cada respuesta marcada con `isSimulated`.
+
+| Pieza | Qué hace |
+|---|---|
+| `CoachApi` | `GET v1/coach/suggestions` y `POST v1/coach/messages` (cuerpo `{"text": …}`, de 1 a 2000 caracteres; no se manda `context`) |
+| `CoachMessageEntity` y `CoachMessageDao` | La tabla `coach_messages` (Room versión 4, con `MIGRATION_3_4`, que no toca las comidas ni la caché de entrenamientos) |
+| `CoachRepository` | Única puerta a los datos: guarda la pregunta en Room, pide la respuesta al mock y la guarda |
+| `VoiceIdleViewModel` y `VoiceConversationViewModel` | Inyectados con Hilt. Exponen el estado; la UI no ve Retrofit ni el DAO |
+
+**Estados** (los mismos que NUC-03):
+
+| Estado | Idle (sugerencias) | Conversation (respuesta) |
+|---|---|---|
+| Carga | "Loading suggestions…" | "VORA is replying…" debajo del último mensaje |
+| Vacío | `X-Mock-Scenario: empty`: "No suggestions right now" | sin historial: "No messages yet" |
+| Error con reintento | `error`, `malformed` o mock detenido: error con "Retry"; si ya había sugerencias, se ven con un aviso | el mensaje enviado queda en el historial y aparece un aviso con "Retry", que vuelve a pedir la respuesta sin duplicar la pregunta |
+
+**Decisiones inferidas** (preguntas abiertas de la tarjeta): tocar una sugerencia abre la conversación y la envía; "LAST CONVERSATION" muestra la última pregunta guardada; no se manda `context.coachingStyle`. La voz ("TAP TO TALK", "Listen to response") sigue simulada y no se pide permiso de micrófono (NAV05).
+
+**Probarlo:** con el mock levantado, abrí el coach desde Home → tocá una sugerencia o "Type instead" y escribí un mensaje. Cerrá la app del todo, volvé a abrirla y entrá al coach: la conversación sigue y "LAST CONVERSATION" muestra tu última pregunta. Para el error, detené el mock o usá `--es scenario error` (ver [cómo provocar los escenarios](#cómo-provocar-los-escenarios-en-la-demo)), enviá un mensaje y tocá "Retry" con el mock de nuevo en normal.
+
+**Al actualizar la app instalada:** la base pasa de la versión 3 a la 4 con una migración, así que no hace falta desinstalar.

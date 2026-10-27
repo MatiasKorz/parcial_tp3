@@ -76,6 +76,8 @@ import com.example.examentp3.viewmodel.SettingsViewModel
 import com.example.examentp3.viewmodel.SignInViewModel
 import com.example.examentp3.viewmodel.SignUpViewModel
 import com.example.examentp3.viewmodel.VoiceAiSettingsViewModel
+import com.example.examentp3.viewmodel.VoiceConversationViewModel
+import com.example.examentp3.viewmodel.VoiceIdleViewModel
 import com.example.examentp3.viewmodel.TodaysMealsViewModel
 
 import kotlinx.coroutines.delay
@@ -102,6 +104,15 @@ private val foodConfirmationArgs = listOf(
 
 /** Meal type chosen earlier in the Nutrition flow, to pass on to the next route (NAV04). */
 private fun NavBackStackEntry.mealType() = mealTypeFromRouteValue(arguments?.getString(NavArgs.MEAL_TYPE))
+
+// Optional query argument: null opens the conversation without asking anything (EXT-04).
+private val coachPromptArgs = listOf(
+    navArgument(NavArgs.COACH_PROMPT) {
+        type = NavType.StringType
+        nullable = true
+        defaultValue = null
+    },
+)
 
 // Optional query argument: null means today (resolved in TodaysMealsViewModel, not at graph build time).
 private val todaysMealsArgs = listOf(
@@ -213,17 +224,19 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     // Coach: closing returns to where it was opened from
     val closeCoach: (NavHostController) -> Unit = { it.popBackStack(VoiceIdle.route, inclusive = true) }
     composable(VoiceIdle.route) { entry ->
+        val viewModel: VoiceIdleViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
         VoiceIdleScreen(
+            uiState = uiState,
             onBack = { if (entry.isResumed()) closeCoach(navController) },
             onTapToTalk = { if (entry.isResumed()) navController.navigate(VoiceListening.route) },
-            onTypeInstead = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
-            onLastConversationClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
-            onStartMyWorkoutClick = {
-                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
+            onTypeInstead = { if (entry.isResumed()) navController.navigate(VoiceConversation.createRoute()) },
+            onLastConversationClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.createRoute()) },
+            // Inferred (EXT-04): a suggested question opens the conversation and asks it.
+            onSuggestionClick = { text ->
+                if (entry.isResumed()) navController.navigate(VoiceConversation.createRoute(text))
             },
-            onLogMyBreakfastClick = { if (entry.isResumed()) navController.navigate(AddFood.createRoute()) },
-            onWhatToEatClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
-            onHowAmIDoingClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
+            onRetrySuggestions = viewModel::retry,
         )
     }
     composable(VoiceListening.route) { entry ->
@@ -277,11 +290,16 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onInterrupt = { returnTo(VoiceListening) },
         )
     }
-    composable(VoiceConversation.route) { entry ->
+    composable(VoiceConversation.route, coachPromptArgs) { entry ->
+        val viewModel: VoiceConversationViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
         val navigateOnce: (() -> Unit) -> Unit = { action ->
             if (entry.isResumed() && navController.currentBackStackEntry == entry) action()
         }
         VoiceConversationScreen(
+            uiState = uiState,
+            onSend = viewModel::onSend,
+            onRetry = viewModel::retry,
             onBack = { navigateOnce { navController.popBackStack(VoiceIdle.route, inclusive = false) } },
             onMicrophone = {
                 navigateOnce { navController.navigate(VoiceListening.route) { launchSingleTop = true } }
@@ -306,7 +324,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
                 navigateOnce {
                     // Reuse an existing local thread when Error was entered from Conversation.
                     if (!navController.popBackStack(VoiceConversation.route, inclusive = false)) {
-                        navController.navigate(VoiceConversation.route) {
+                        navController.navigate(VoiceConversation.createRoute()) {
                             popUpTo(VoiceIdle.route) { inclusive = false }
                             launchSingleTop = true
                         }

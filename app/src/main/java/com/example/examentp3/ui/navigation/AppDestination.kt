@@ -22,6 +22,9 @@ object NavArgs {
      * from Add Food through voice or photo until it is saved (NAV04). Missing means none chosen.
      */
     const val MEAL_TYPE = "mealType"
+
+    /** Optional suggested question that Voice / 05 asks as soon as it opens (EXT-04). */
+    const val COACH_PROMPT = "prompt"
 }
 
 /** Value of [NavArgs.MEAL_TYPE] in a route; unknown or missing values mean no type was chosen. */
@@ -67,7 +70,14 @@ sealed class AppDestination(
     data object VoiceListening : AppDestination("voice_listening", "Voice / 02 — Listening")
     data object VoiceProcessing : AppDestination("voice_processing", "Voice / 03 — Processing")
     data object VoiceSpeaking : AppDestination("voice_speaking", "Voice / 04 — Speaking")
-    data object VoiceConversation : AppDestination("voice_conversation", "Voice / 05 — Conversation")
+    data object VoiceConversation : AppDestination(
+        "voice_conversation?${NavArgs.COACH_PROMPT}={${NavArgs.COACH_PROMPT}}",
+        "Voice / 05 — Conversation",
+    ) {
+        /** Without [prompt] it only opens the history. */
+        fun createRoute(prompt: String? = null) =
+            if (prompt == null) "voice_conversation" else "voice_conversation?${NavArgs.COACH_PROMPT}=${Uri.encode(prompt)}"
+    }
     data object VoiceError : AppDestination("voice_error", "Voice / 06 — Error")
 
     // Workout
