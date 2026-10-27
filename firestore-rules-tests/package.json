@@ -1,0 +1,13 @@
+{
+  "name": "firestore-rules-tests",
+  "private": true,
+  "description": "EXT-03: checks that firestore.rules isolates the profile of two accounts, on the Firestore emulator.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-reporter=spec rules.test.mjs"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "6.0.0",
+    "firebase": "13.0.0"
+  }
+}
