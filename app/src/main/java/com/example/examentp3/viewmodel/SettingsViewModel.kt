@@ -1,6 +1,7 @@
 package com.example.examentp3.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.examentp3.data.repository.AuthRepository
 import com.example.examentp3.data.repository.SettingsRepository
 import com.example.examentp3.model.AppSettings
 import com.example.examentp3.model.AppearanceMode
@@ -21,6 +22,7 @@ data class SettingsUiState(
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val repository: SettingsRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -37,6 +39,9 @@ class SettingsViewModel @Inject constructor(
         repository.updateSettings { it.copy(notificationsEnabled = enabled) }
         _uiState.update { it.copy(notificationsEnabled = enabled) }
     }
+
+    /** "Log out" (EXT-01): closes the Firebase session, if any. The NavHost then opens Sign In. */
+    fun onLogOut() = authRepository.signOut()
 }
 
 private fun AppSettings.toSettingsUiState() = SettingsUiState(

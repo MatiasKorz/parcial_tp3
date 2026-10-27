@@ -25,6 +25,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.examentp3.R
+import com.example.examentp3.ui.components.VoraAuthErrorText
+import com.example.examentp3.ui.components.VoraAuthProgress
 import com.example.examentp3.ui.components.VoraCard
 import com.example.examentp3.ui.components.VoraLimeButton
 import com.example.examentp3.ui.components.VoraSignInField
@@ -32,13 +34,23 @@ import com.example.examentp3.ui.components.VoraSignInService
 import com.example.examentp3.ui.components.VoraTextAction
 import com.example.examentp3.ui.theme.ExamenTP3Theme
 import com.example.examentp3.ui.theme.SignUpTheme
+import com.example.examentp3.viewmodel.AuthError
+import com.example.examentp3.viewmodel.SignUpUiState
 
 @Composable
-fun SignUpScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun SignUpScreen(
+    uiState: SignUpUiState,
+    onBack: () -> Unit,
+    onSignUp: (name: String, email: String, password: String) -> Unit,
+    onInputChange: () -> Unit,
+    onDemoNoticeDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val exampleName = stringResource(R.string.sign_up_example_name)
     val exampleEmail = stringResource(R.string.sign_up_example_email)
     var name by rememberSaveable { mutableStateOf(exampleName) }
     var email by rememberSaveable { mutableStateOf(exampleEmail) }
+    // Not saveable on purpose: the password is never written to the Bundle.
     var password by remember { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var notice by remember { mutableStateOf<Int?>(null) }
@@ -88,15 +100,15 @@ fun SignUpScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 VoraCard {
                     Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                         SignUpField(
-                            stringResource(R.string.sign_up_name), name, { name = it },
+                            stringResource(R.string.sign_up_name), name, { name = it; onInputChange() },
                             R.drawable.ic_sign_up_person, KeyboardOptions(keyboardType = KeyboardType.Text),
                         )
                         SignUpField(
-                            stringResource(R.string.sign_up_email), email, { email = it },
+                            stringResource(R.string.sign_up_email), email, { email = it; onInputChange() },
                             R.drawable.ic_sign_in_mail, KeyboardOptions(keyboardType = KeyboardType.Email),
                         )
                         SignUpField(
-                            stringResource(R.string.sign_up_password), password, { password = it },
+                            stringResource(R.string.sign_up_password), password, { password = it; onInputChange() },
                             R.drawable.ic_sign_in_lock, KeyboardOptions(keyboardType = KeyboardType.Password),
                             placeholder = stringResource(R.string.sign_up_password_placeholder),
                             transformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -118,14 +130,19 @@ fun SignUpScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                                 Text(stringResource(R.string.sign_up_help), style = MaterialTheme.typography.bodySmall)
                             }
                         }
+                        uiState.error?.let { error -> VoraAuthErrorText(stringResource(error.message)) }
                         Box {
                             val action = stringResource(R.string.sign_up_action)
-                            VoraLimeButton("", { notice = R.string.sign_up_demo_register },
+                            VoraLimeButton("", { onSignUp(name, email, password) },
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).semantics { contentDescription = action })
-                            Row(Modifier.align(Alignment.Center).padding(horizontal = 16.dp).clearAndSetSemantics {},
-                                horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Text(action, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onTertiary)
-                                Icon(painterResource(R.drawable.ic_sign_in_arrow), null, tint = Color.Unspecified, modifier = Modifier.size(14.dp))
+                            if (uiState.isLoading) {
+                                VoraAuthProgress(Modifier.align(Alignment.Center))
+                            } else {
+                                Row(Modifier.align(Alignment.Center).padding(horizontal = 16.dp).clearAndSetSemantics {},
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    Text(action, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onTertiary)
+                                    Icon(painterResource(R.drawable.ic_sign_in_arrow), null, tint = Color.Unspecified, modifier = Modifier.size(14.dp))
+                                }
                             }
                         }
                         Text(stringResource(R.string.sign_up_divider), style = MaterialTheme.typography.bodySmall,
@@ -168,6 +185,15 @@ fun SignUpScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 confirmButton = { TextButton(onClick = { notice = null }) { Text(stringResource(R.string.sign_up_ok)) } },
             )
         }
+        // Without Firebase registration stays simulated, with the PAN-1.2 notice.
+        if (uiState.showDemoNotice) {
+            AlertDialog(
+                onDismissRequest = onDemoNoticeDismiss,
+                title = { Text(stringResource(R.string.sign_up_demo_title)) },
+                text = { Text(stringResource(R.string.sign_up_demo_register)) },
+                confirmButton = { TextButton(onClick = onDemoNoticeDismiss) { Text(stringResource(R.string.sign_up_ok)) } },
+            )
+        }
     }
 }
 
@@ -202,11 +228,23 @@ private fun SignUpField(
 @Preview(showBackground = true, widthDp = 390, heightDp = 921)
 @Composable
 private fun SignUpPreview() {
-    ExamenTP3Theme { SignUpScreen({}) }
+    ExamenTP3Theme { SignUpScreen(SignUpUiState(), {}, { _, _, _ -> }, {}, {}) }
 }
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 640, fontScale = 1.3f)
 @Composable
 private fun SignUpCompactPreview() {
-    ExamenTP3Theme { SignUpScreen({}) }
+    ExamenTP3Theme { SignUpScreen(SignUpUiState(), {}, { _, _, _ -> }, {}, {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 921)
+@Composable
+private fun SignUpErrorPreview() {
+    ExamenTP3Theme { SignUpScreen(SignUpUiState(error = AuthError.EmailInUse), {}, { _, _, _ -> }, {}, {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 921)
+@Composable
+private fun SignUpLoadingPreview() {
+    ExamenTP3Theme { SignUpScreen(SignUpUiState(isLoading = true), {}, { _, _, _ -> }, {}, {}) }
 }

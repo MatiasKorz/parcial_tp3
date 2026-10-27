@@ -1,5 +1,6 @@
 package com.example.examentp3.viewmodel
 
+import com.example.examentp3.data.repository.AuthRepository
 import com.example.examentp3.data.repository.SettingsRepository
 import com.example.examentp3.model.CoachStyle
 import com.example.examentp3.model.ResponseStyle
@@ -72,7 +73,7 @@ class VoiceAiSettingsViewModelTest {
 
     @Test
     fun voiceChanges_andNotifications_doNotOverwriteEachOther() {
-        SettingsViewModel(repository).onNotificationsChange(false)
+        SettingsViewModel(repository, AuthRepository(auth = null)).onNotificationsChange(false)
         VoiceAiSettingsViewModel(repository).onToggleChange(VoiceToggle.VoiceFeedback, false)
 
         val saved = repository.settings.value

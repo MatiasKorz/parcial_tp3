@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Firebase client config of each member's project (EXT-01, see README)
+google-services.json

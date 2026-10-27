@@ -14,8 +14,8 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 
 | Cód. | Frame de Figma | Destino en la app | Se llega desde | Estado | Maqueta | Qué se simula |
 |---|---|---|---|---|---|---|
-| 1.1 | Login - 01 — SignIn | `sign_in` | Inicio de la app | demostración | Hecha (validación visual pendiente) | Acceso de demostración sin Firebase; los controles opcionales (contraseña olvidada, proveedores, biometría) informan modo demostración |
-| 1.2 | Login - 02 — SignUp | `sign_up` | SignIn ("Sign up here") | demostración | Hecha (validación visual pendiente) | Aviso de registro de demostración sin crear cuenta; permanece en SignUp; regreso a SignIn |
+| 1.1 | Login - 01 — SignIn | `sign_in` | Inicio de la app | funcional con Firebase / demostración sin él (EXT-01) | Hecha (validación visual pendiente) | Con `google-services.json`, "Sign In" inicia sesión en Firebase Authentication y muestra los errores de credenciales o de red; sin él, acceso de demostración. Los controles opcionales (contraseña olvidada, proveedores, biometría) informan modo demostración |
+| 1.2 | Login - 02 — SignUp | `sign_up` | SignIn ("Sign up here") | funcional con Firebase / demostración sin él (EXT-01) | Hecha (validación visual pendiente) | Con `google-services.json`, "Sign Up" crea la cuenta (Full Name como nombre visible) y abre Home; sin él, aviso de registro de demostración sin crear cuenta. Regreso a SignIn |
 | 2.1 | Home / 01 — Dashboard | `home` | SignIn; pestaña Home | demostración | Hecha | Datos de ejemplo |
 | 2.2 | Home / 02 — Notifications | `notifications` | Home | demostración | Hecha | Notificaciones de ejemplo |
 | 3.1 | Voice / 01 — Idle | `voice_idle` | Home ("Start voice session") | demostración | Hecha | Estado del coach simulado; sin micrófono; los chips y "LAST CONVERSATION" llevan a destinos de ejemplo |
@@ -50,7 +50,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 7.3 | Profile / 03 — Goals & Preferences | `goals_preferences` | Profile / 01 ("Your Goals") | demostración (datos locales) | Hecha | Selección local de objetivos (varios), frecuencia y tipo de entrenamiento; "Balanced" fija; lo guardado se mantiene durante la sesión y volver sin guardar lo descarta |
 | 7.4 | Profile / 04 — Nutrition Preferences | `nutrition_preferences` | Profile / 01 ("Your Preferences") | demostración (datos locales) | Hecha | Selección local de tipo de alimentación (una), alimentos preferidos y prioridades (varios); los ingredientes a evitar se agregan con el campo y se quitan tocando el chip; "Meal Preferences" informa modo demostración; lo guardado se mantiene durante la sesión y volver sin guardar lo descarta |
 | 7.5 | Profile / 05 — Voice & AI Settings | `voice_ai_settings` | Profile / 01 ("Review preferences") | demostración (datos locales) | Hecha | Estilo de coaching, estilo de respuesta y cinco interruptores que se mantienen durante la sesión; "Preview" informa modo demostración sin audio ni micrófono; "Privacy & permissions" abre Settings |
-| 7.6 | Profile / 06 — Settings | `settings` | Profile / 01 (engranaje, "Connected Data", "Account") | demostración (datos locales) | Hecha | Notifications on/off se mantiene durante la sesión; Units, Appearance y el resto de las opciones informan modo demostración; "Alex Morgan" abre Edit Profile; "Log out" vuelve a SignIn y vacía la pila |
+| 7.6 | Profile / 06 — Settings | `settings` | Profile / 01 (engranaje, "Connected Data", "Account") | demostración (datos locales) | Hecha | Notifications on/off se mantiene durante la sesión; Units, Appearance y el resto de las opciones informan modo demostración; "Alex Morgan" abre Edit Profile; "Log out" cierra la sesión de Firebase (si hay), vuelve a SignIn y vacía la pila |
 
 ## Estados de las consultas remotas y escenarios del mock (RF05)
 
@@ -92,4 +92,35 @@ adb shell am broadcast -n com.example.examentp3/.debug.MockScenarioReceiver
 ```
 
 Después de cambiar el escenario, tocá "Retry" o volvé a abrir Weekly Plan o el detalle. El escenario se mantiene hasta que se cambia o se cierra la app. Para el paso 4 (sin conexión), detené el mock con Ctrl+C y levantalo de nuevo antes de tocar "Retry".
+
+## Firebase Authentication (extra EXT-01)
+
+Registro, inicio y cierre de sesión con email y contraseña. **Es opcional:** sin configurar Firebase, la app compila igual y el acceso funciona en modo demostración (SPEC p.1).
+
+### Cómo funciona sin y con Firebase
+
+- **Sin `app/google-services.json`** (un clon limpio): `app/build.gradle.kts` no aplica el plugin `com.google.gms.google-services`, no se crea ninguna `FirebaseApp` y `FirebaseModule` provee `FirebaseAuth` como `null`. "Sign In" abre Home como antes, "Sign Up" muestra el aviso de registro simulado y "Log out" solo vuelve a SignIn.
+- **Con `app/google-services.json`**: se aplica el plugin y la app usa Firebase Authentication. `AuthRepository` es la única clase que llama a `FirebaseAuth`; las pantallas y los ViewModels no lo conocen.
+- No hay endpoints de login en el mock ni en ningún servidor propio (SPEC p.3): la app habla solo con Firebase.
+
+### Configurarlo
+
+1. Entrá a la [consola de Firebase](https://console.firebase.google.com/) y creá un proyecto (Google Analytics no hace falta).
+2. **Build → Authentication → Comenzar → Sign-in method:** habilitá **Correo electrónico/contraseña**.
+3. **Configuración del proyecto → Tus apps → Agregar app → Android**, con el nombre de paquete `com.example.examentp3`. El SHA-1 no hace falta para email y contraseña.
+4. Descargá `google-services.json` y copialo en `app/google-services.json`.
+5. Compilá (`.\gradlew.bat :app:assembleDebug`) y corré la app.
+
+**`google-services.json` no se sube al repo** (está en `.gitignore`): el repo es público y cada integrante usa el archivo de su proyecto, o el que el equipo comparta por un canal privado. El archivo tiene la configuración del cliente (id del proyecto y una API key de cliente), no claves administrativas, pero igual queda fuera de git. Nunca subas una cuenta de servicio (`*-firebase-adminsdk-*.json`) ni contraseñas.
+
+### Reglas de acceso
+
+Firebase Authentication no tiene reglas propias: las reglas de seguridad se escriben para Firestore o Storage, que este extra no usa (el perfil en Firestore es EXT-02). En la consola conviene dejar habilitado **solo** el proveedor Correo electrónico/contraseña y, en **Authentication → Configuración**, mantener activada la protección contra la enumeración de correos (viene activada en los proyectos nuevos).
+
+### Probarlo (paso 5 de la demo)
+
+1. **Registro:** SignIn → "Sign up here". Completá Full Name, un email nuevo y una contraseña de 8 caracteres o más → "Sign Up". Abre Home, y la cuenta aparece en la consola en **Authentication → Usuarios**.
+2. **Cierre:** Profile → engranaje → "Log out". Vuelve a SignIn, y el botón atrás sale de la app en vez de volver a Home.
+3. **Inicio:** en SignIn, el mismo email y contraseña → "Sign In". Abre Home; atrás no vuelve a SignIn.
+4. **Errores:** una contraseña incorrecta muestra "Incorrect email or password."; registrar el mismo email otra vez muestra que la cuenta ya existe; con el emulador en modo avión, un mensaje de conexión. Ninguno cierra la app.
 

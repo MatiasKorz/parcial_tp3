@@ -5,7 +5,7 @@ Instrucciones de proyecto para agentes de IA (Codex, Claude Code y otros). Es la
 ## El proyecto
 
 - **VORA Coach:** app Android en Kotlin + Jetpack Compose, para el parcial domiciliario de Taller de Programación 3 (ORT Argentina). Hito el 21/10/2026, entrega el 28/10/2026.
-- **Stack:** Compose + Material 3, Navigation Compose, ViewModel + Hilt, Retrofit + Gson (OkHttp), Room. Firebase Auth está declarado pero no configurado.
+- **Stack:** Compose + Material 3, Navigation Compose, ViewModel + Hilt, Retrofit + Gson (OkHttp), Room. Firebase Auth es opcional (EXT-01): se activa poniendo `app/google-services.json`, que no va en git; sin ese archivo la app compila y usa el acceso de demostración (ver README).
 - **Estructura:** un módulo `:app`, paquete `com.example.examentp3`, con `ui/screens`, `ui/navigation`, `ui/theme`, `viewmodel`, `di` y `data/remote`. Seguí las guías de la skill `tp3-guidelines`. Si el código existente no las cumple, ganan las guías: alineá solo lo que toca tu tarjeta, sin refactors fuera de alcance.
 - **Versiones** (en `gradle/libs.versions.toml` y `gradle/wrapper/gradle-wrapper.properties`): AGP 9.3.3, Gradle 9.5.0, Kotlin 2.2.10, KSP 2.3.10, Hilt 2.60.1, Room 2.8.5, Retrofit 3.0.0, Compose BOM 2026.02.01, `compileSdk`/`targetSdk` 37, `minSdk` 26, bytecode Java 17. El daemon de Gradle pide JDK 25 (`gradle/gradle-daemon-jvm.properties`) y lo descarga si no lo encuentra.
 - **No cambies versiones ni agregues dependencias** dentro de una tarjeta de pantalla. Eso va en su propia tarjeta y se acuerda en el grupo.
