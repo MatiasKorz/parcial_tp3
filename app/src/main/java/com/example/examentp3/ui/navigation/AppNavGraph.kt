@@ -71,6 +71,7 @@ import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
 import com.example.examentp3.viewmodel.NutritionDashboardViewModel
 import com.example.examentp3.viewmodel.MealDetailsUiState
 import com.example.examentp3.viewmodel.MealDetailsViewModel
+import com.example.examentp3.viewmodel.ProfileDashboardViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
 import com.example.examentp3.viewmodel.SignInViewModel
 import com.example.examentp3.viewmodel.SignUpViewModel
@@ -576,7 +577,10 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
 
     // Profile
     composable(ProfileDashboard.route) { entry ->
+        val viewModel: ProfileDashboardViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
         ProfileDashboardScreen(
+            uiState = uiState,
             onSettingsClick = { if (entry.isResumed()) navController.navigate(Settings.route) },
             onEditProfileClick = { if (entry.isResumed()) navController.navigate(EditProfile.route) },
             onReviewPreferencesClick = { if (entry.isResumed()) navController.navigate(VoiceAiSettings.route) },

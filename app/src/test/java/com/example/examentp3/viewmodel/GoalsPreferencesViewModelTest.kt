@@ -1,5 +1,6 @@
 package com.example.examentp3.viewmodel
 
+import com.example.examentp3.data.repository.AuthRepository
 import com.example.examentp3.data.repository.ProfileRepository
 import com.example.examentp3.model.CoachingStyle
 import com.example.examentp3.model.DemoGoalsSelection
@@ -12,7 +13,7 @@ import org.junit.Test
 
 class GoalsPreferencesViewModelTest {
 
-    private val repository = ProfileRepository()
+    private val repository = ProfileRepository(AuthRepository(auth = null), firestore = null)
 
     @Test
     fun init_loadsSelectionFromRepository() {
