@@ -88,7 +88,8 @@ Tomadas de [`gradle/libs.versions.toml`](gradle/libs.versions.toml), [`gradle/wr
 | Retrofit + Gson converter | 3.0.0 |
 | OkHttp + logging interceptor | 4.12.0 |
 | Coroutines | 1.10.2 |
-| Firebase BoM (`firebase-auth` declarada; sin uso en `main`) | 34.19.0 |
+| Firebase BoM (`firebase-auth` y `firebase-firestore`, EXT-01 y EXT-02) | 34.19.0 |
+| Plugin Google Services (solo se aplica si existe `app/google-services.json`) | 4.5.0 |
 | Python (mock) | 3.9 o posterior |
 
 ## Estado de cada funcionalidad
