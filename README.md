@@ -187,3 +187,13 @@ Sube `firestore.rules` al proyecto de `.firebaserc`. Para comprobar que lo despl
 
 No cambies las reglas desde la consola: el cambio no queda en el repo y la próxima vez que alguien despliegue se pierde. Se cambia `firestore.rules`, se corren los tests y se despliega.
 
+
+## Práctica de Dagger puro (extra EXT-07)
+
+En [`dagger-practice/`](dagger-practice/) hay una práctica de Dagger **sin Hilt**, aislada de la app: es un build de Gradle aparte, el `settings.gradle.kts` de la raíz no la incluye, y ni el grafo de Hilt de `:app` ni su build cambian. Arma a mano, en miniatura, lo que Hilt arma solo en la app: el componente raíz, un subcomponente por pantalla con su scope y los valores de ejecución con `@BindsInstance`.
+
+- **Ejecutarla:** `.\gradlew.bat -p dagger-practice run` (PowerShell) o `./gradlew -p dagger-practice run`.
+- **Tests:** `.\gradlew.bat -p dagger-practice test`.
+- **Qué demuestra:** el [README de la práctica](dagger-practice/README.md) compara qué se escribe a mano con Dagger y qué genera o predefine Hilt (RF08).
+
+Usa Dagger en la misma versión que Hilt (`hilt` en `gradle/libs.versions.toml`), con KSP como la app. Un clon limpio de la app compila igual que antes: `:app:assembleDebug` no configura este build.
