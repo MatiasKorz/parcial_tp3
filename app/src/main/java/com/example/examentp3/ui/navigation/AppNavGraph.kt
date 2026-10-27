@@ -83,9 +83,20 @@ private const val DEMO_MEAL_ID = "demo-meal"
 private val workoutArgs = listOf(navArgument(NavArgs.WORKOUT_ID) { type = NavType.StringType })
 private val exerciseArgs = workoutArgs + navArgument(NavArgs.EXERCISE_ID) { type = NavType.StringType }
 private val mealArgs = listOf(navArgument(NavArgs.MEAL_ID) { type = NavType.StringType })
+// Optional query argument: null means no meal type was chosen (Food Confirmation keeps its default).
+private val mealTypeArgs = listOf(
+    navArgument(NavArgs.MEAL_TYPE) {
+        type = NavType.StringType
+        nullable = true
+        defaultValue = null
+    },
+)
 private val foodConfirmationArgs = listOf(
     navArgument(NavArgs.FOOD_CONFIRMATION_MODE) { type = NavType.StringType },
-)
+) + mealTypeArgs
+
+/** Meal type chosen earlier in the Nutrition flow, to pass on to the next route (NAV04). */
+private fun NavBackStackEntry.mealType() = mealTypeFromRouteValue(arguments?.getString(NavArgs.MEAL_TYPE))
 
 // Optional query argument: null means today (resolved in TodaysMealsViewModel, not at graph build time).
 private val todaysMealsArgs = listOf(
@@ -162,7 +173,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onStartMyWorkout = {
                 if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
             },
-            onLogBreakfast = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            onLogBreakfast = { if (entry.isResumed()) navController.navigate(AddFood.createRoute()) },
             onTodaysOverviewClick = { if (entry.isResumed()) navController.navigate(TodaysOverview.route) },
             onStartWorkout = {
                 if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
@@ -182,7 +193,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onStartMyWorkoutClick = {
                 if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
             },
-            onLogMyBreakfastClick = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            onLogMyBreakfastClick = { if (entry.isResumed()) navController.navigate(AddFood.createRoute()) },
             onWhatToEatClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
             onHowAmIDoingClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
         )
@@ -378,10 +389,10 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onMealClick = { mealId ->
                 if (entry.isResumed()) navController.navigate(MealDetails.createRoute(mealId.toString()))
             },
-            // The type is not passed yet: AddFood has no type argument (NUC-04 D16).
-            onAddMeal = { if (entry.isResumed()) navController.navigate(AddFood.route) },
-            onVoice = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.route) },
-            onPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.route) },
+            // "+ Add" of a meal type carries that type to Food Confirmation (NAV04).
+            onAddMeal = { type -> if (entry.isResumed()) navController.navigate(AddFood.createRoute(type)) },
+            onVoice = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.createRoute()) },
+            onPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.createRoute()) },
         )
     }
     composable(TodaysMeals.route, todaysMealsArgs) { entry ->
@@ -395,45 +406,48 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onMealClick = { mealId ->
                 if (entry.isResumed()) navController.navigate(MealDetails.createRoute(mealId.toString()))
             },
-            // Inferred: "+ Add <type>" opens Add Food; its route (NUC-04) takes no meal type yet.
-            onAddMeal = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            // Inferred: "+ Add <type>" opens Add Food with that meal type (NAV04).
+            onAddMeal = { type -> if (entry.isResumed()) navController.navigate(AddFood.createRoute(type)) },
         )
     }
-    composable(AddFood.route) { entry ->
+    // From Add Food on, each step passes the chosen meal type (if any) to the next route.
+    composable(AddFood.route, mealTypeArgs) { entry ->
         AddFoodScreen(
             onBack = { if (entry.isResumed()) navController.popBackStack() },
-            onStartVoiceLogging = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.route) },
-            onSnapPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.route) },
+            onStartVoiceLogging = {
+                if (entry.isResumed()) navController.navigate(VoiceFoodLogging.createRoute(entry.mealType()))
+            },
+            onSnapPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.createRoute(entry.mealType())) },
             onLogManually = {
                 if (entry.isResumed()) {
-                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual))
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual, entry.mealType()))
                 }
             },
         )
     }
-    composable(VoiceFoodLogging.route) { entry ->
+    composable(VoiceFoodLogging.route, mealTypeArgs) { entry ->
         VoiceFoodLoggingScreen(
             onClose = { if (entry.isResumed()) navController.popBackStack() },
             // Stays in the stack: back from the analysis returns to listening.
-            onDoneSpeaking = { if (entry.isResumed()) navController.navigate(FoodAnalysis.route) },
+            onDoneSpeaking = { if (entry.isResumed()) navController.navigate(FoodAnalysis.createRoute(entry.mealType())) },
             // Typing replaces listening: back from the manual form returns to where voice was opened.
             onTypeInstead = {
                 if (entry.isResumed()) {
-                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual)) {
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual, entry.mealType())) {
                         popUpTo(VoiceFoodLogging.route) { inclusive = true }
                     }
                 }
             },
         )
     }
-    composable(FoodAnalysis.route) { entry ->
+    composable(FoodAnalysis.route, mealTypeArgs) { entry ->
         val viewModel: FoodAnalysisViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
         // The simulated analysis ends by itself: open the review and drop this screen from the back stack,
         // so going back from the review does not land on an analysis that would advance again.
         LaunchedEffect(uiState.isComplete) {
             if (uiState.isComplete) {
-                navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate)) {
+                navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate, entry.mealType())) {
                     popUpTo(FoodAnalysis.route) { inclusive = true }
                 }
             }
@@ -444,13 +458,13 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onCancel = { if (entry.isResumed()) navController.popBackStack() },
         )
     }
-    composable(PhotoAnalysis.route) { entry ->
+    composable(PhotoAnalysis.route, mealTypeArgs) { entry ->
         PhotoAnalysisScreen(
             estimate = DemoMealEstimate, // simulated analysis (SPEC p.10), same data that 5.7 reviews
             onBack = { if (entry.isResumed()) navController.popBackStack() },
             onReviewAndAdd = {
                 if (entry.isResumed()) {
-                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate))
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate, entry.mealType()))
                 }
             },
         )

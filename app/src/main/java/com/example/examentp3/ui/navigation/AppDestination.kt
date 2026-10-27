@@ -1,6 +1,7 @@
 package com.example.examentp3.ui.navigation
 
 import android.net.Uri
+import com.example.examentp3.model.MealType
 import java.time.LocalDate
 
 enum class BottomTab { Home, Workout, Nutrition, Progress, Profile }
@@ -15,7 +16,23 @@ object NavArgs {
 
     /** Mode of Food Confirmation, see [FoodConfirmationMode]. */
     const val FOOD_CONFIRMATION_MODE = "mode"
+
+    /**
+     * Optional meal type chosen on the way to Food Confirmation ("+ Add" of a meal type), carried
+     * from Add Food through voice or photo until it is saved (NAV04). Missing means none chosen.
+     */
+    const val MEAL_TYPE = "mealType"
 }
+
+/** Value of [NavArgs.MEAL_TYPE] in a route; unknown or missing values mean no type was chosen. */
+fun mealTypeFromRouteValue(value: String?): MealType? = MealType.entries.firstOrNull { it.name == value }
+
+/** Route pattern with the optional `mealType` query argument. */
+private fun withMealTypeArg(base: String) = "$base?${NavArgs.MEAL_TYPE}={${NavArgs.MEAL_TYPE}}"
+
+/** Concrete route: without a type it stays the plain [base]. */
+private fun withMealType(base: String, type: MealType?) =
+    if (type == null) base else "$base?${NavArgs.MEAL_TYPE}=${type.name}"
 
 /**
  * Food Confirmation serves two flows on one route: the RF03 manual form ("Log Manually") and the
@@ -86,16 +103,30 @@ sealed class AppDestination(
         fun createRoute(date: LocalDate? = null) =
             if (date == null) "todays_meals" else "todays_meals?${NavArgs.DATE_EPOCH_DAY}=${date.toEpochDay()}"
     }
-    data object AddFood : AppDestination("add_food", "Nutrition / 03 — Add Food", BottomTab.Nutrition)
-    data object VoiceFoodLogging : AppDestination("voice_food_logging", "Nutrition / 04 — Voice Food Logging")
-    data object FoodAnalysis : AppDestination("food_analysis", "Nutrition / 05 — Food Analysis")
-    data object PhotoAnalysis : AppDestination("photo_analysis", "Nutrition / 06 — Photo Analysis", BottomTab.Nutrition)
+    // Add Food, Voice Food Logging, Food Analysis and Photo Analysis pass the optional meal type on.
+    data object AddFood : AppDestination(withMealTypeArg("add_food"), "Nutrition / 03 — Add Food", BottomTab.Nutrition) {
+        fun createRoute(type: MealType? = null) = withMealType("add_food", type)
+    }
+    data object VoiceFoodLogging : AppDestination(withMealTypeArg("voice_food_logging"), "Nutrition / 04 — Voice Food Logging") {
+        fun createRoute(type: MealType? = null) = withMealType("voice_food_logging", type)
+    }
+    data object FoodAnalysis : AppDestination(withMealTypeArg("food_analysis"), "Nutrition / 05 — Food Analysis") {
+        fun createRoute(type: MealType? = null) = withMealType("food_analysis", type)
+    }
+    data object PhotoAnalysis : AppDestination(
+        withMealTypeArg("photo_analysis"),
+        "Nutrition / 06 — Photo Analysis",
+        BottomTab.Nutrition,
+    ) {
+        fun createRoute(type: MealType? = null) = withMealType("photo_analysis", type)
+    }
     data object FoodConfirmation : AppDestination(
-        "food_confirmation/{${NavArgs.FOOD_CONFIRMATION_MODE}}",
+        withMealTypeArg("food_confirmation/{${NavArgs.FOOD_CONFIRMATION_MODE}}"),
         "Nutrition / 07 — Food Confirmation",
         BottomTab.Nutrition,
     ) {
-        fun createRoute(mode: FoodConfirmationMode) = "food_confirmation/${mode.routeValue}"
+        fun createRoute(mode: FoodConfirmationMode, type: MealType? = null) =
+            withMealType("food_confirmation/${mode.routeValue}", type)
     }
     data object MealDetails : AppDestination("meal_details/{${NavArgs.MEAL_ID}}", "Nutrition / 08 — Meal Details", BottomTab.Nutrition) {
         fun createRoute(mealId: String) = "meal_details/${Uri.encode(mealId)}"
