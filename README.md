@@ -234,19 +234,21 @@ Después de cambiar el escenario, tocá "Retry" o volvé a abrir Weekly Plan o e
 
 ## Comparaciones visuales (ENT-02)
 
-Cinco pantallas comparadas contra su frame de Figma en el emulador de referencia (~390 dp de ancho, igual que los frames), y una de ellas repetida en otro tamaño de emulador (UI03). Las imágenes van en `docs/comparaciones/`.
+Cinco pantallas comparadas contra su frame de Figma. Las capturas de la app se tomaron el 27/10 en el emulador Pixel 5 (1080 × 2340 px, 440 dpi ≈ **393 dp** de ancho, como los frames de 390 dp), con datos cargados por la propia app (formulario manual, análisis de foto y catálogo del mock) y la barra de estado en modo demo (9:41). Las imágenes están en [`docs/comparaciones/`](docs/comparaciones/).
 
-| Pantalla | Figma | App (~390 dp) |
-|---|---|---|
-| 4.2 · Workout / 02 — Weekly Plan | `docs/comparaciones/4.2-figma.png` · **Pendiente** | `docs/comparaciones/4.2-app-390dp.png` · **Pendiente** |
-| 4.3 · Workout / 03 — Workout Details | `docs/comparaciones/4.3-figma.png` · **Pendiente** | `docs/comparaciones/4.3-app-390dp.png` · **Pendiente** |
-| 5.1 · Nutrition / 01 — Dashboard | `docs/comparaciones/5.1-figma.png` · **Pendiente** | `docs/comparaciones/5.1-app-390dp.png` · **Pendiente** |
-| 5.2 · Nutrition / 02 — Today's Meals | `docs/comparaciones/5.2-figma.png` · **Pendiente** | `docs/comparaciones/5.2-app-390dp.png` · **Pendiente** |
-| 5.8 · Nutrition / 08 — Meal Details | `docs/comparaciones/5.8-figma.png` · **Pendiente** | `docs/comparaciones/5.8-app-390dp.png` · **Pendiente** |
+| Pantalla | Figma | App (~393 dp) | Diferencias |
+|---|---|---|---|
+| 4.2 · Workout / 02 — Weekly Plan | <img src="docs/comparaciones/4.2-figma.png" width="240" alt="4.2 Figma"> | <img src="docs/comparaciones/4.2-app-390dp.png" width="240" alt="4.2 app"> | Igual al frame. La app agrega la etiqueta "Demonstration plan" y, más abajo, la sección "Workout catalog" con el catálogo remoto (RF01). |
+| 4.3 · Workout / 03 — Workout Details | <img src="docs/comparaciones/4.3-figma.png" width="240" alt="4.3 Figma"> | <img src="docs/comparaciones/4.3-app-390dp.png" width="240" alt="4.3 app"> | Misma estructura; los datos son los del mock por Retrofit (`GET /v1/workouts/w02`: "Entrenamiento completo", 3 ejercicios), no los del ejemplo del Figma. |
+| 5.1 · Nutrition / 01 — Dashboard | <img src="docs/comparaciones/5.1-figma.png" width="240" alt="5.1 Figma"> | <img src="docs/comparaciones/5.1-app-390dp.png" width="240" alt="5.1 app"> | Totales y comidas leídos de Room. El Figma dice 1,420 kcal pero sus filas suman 1,180 (inconsistencia del diseño); la app muestra la suma real. La fecha es la de hoy. |
+| 5.2 · Nutrition / 02 — Today's Meals | <img src="docs/comparaciones/5.2-figma.png" width="240" alt="5.2 Figma"> | <img src="docs/comparaciones/5.2-app-390dp.png" width="240" alt="5.2 app"> | Comidas leídas de Room. Se agregan las flechas ‹ › y el selector de fecha; las filas no muestran gramos (RF03 no los pide). |
+| 5.8 · Nutrition / 08 — Meal Details | <img src="docs/comparaciones/5.8-figma.png" width="240" alt="5.8 Figma"> | <img src="docs/comparaciones/5.8-app-390dp.png" width="240" alt="5.8 app"> | Comida guardada desde el análisis simulado. Se muestra la fecha en lugar de la hora (Room no la guarda) y se agrega "Delete Meal" (RF04). |
 
-**Otro tamaño de emulador (UI03):** **Pendiente:** elegir cuál de las cinco se repite, el emulador (modelo y ancho en dp) y agregar `docs/comparaciones/<código>-app-<ancho>dp.png`.
+**Otro tamaño de emulador (UI03):** la misma pantalla 5.1 con 360 dp de ancho (Pixel 5 con densidad 480). El contenido se acomoda sin cortes y lo que no entra se desplaza.
 
-**Pendiente:** cuando estén las capturas (ENT-02), reemplazar cada ruta por la imagen (`![4.2 Figma](docs/comparaciones/4.2-figma.png)`) y quitar los marcadores. La imagen de Figma sale del export configurado en cada frame (REF-03).
+| 5.1 en ~393 dp | 5.1 en 360 dp |
+|---|---|
+| <img src="docs/comparaciones/5.1-app-390dp.png" width="240" alt="5.1 393 dp"> | <img src="docs/comparaciones/5.1-app-360dp.png" width="240" alt="5.1 360 dp"> |
 
 ## Video de demostración (ENT-03)
 
