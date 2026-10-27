@@ -21,6 +21,7 @@ App Android en Kotlin y Jetpack Compose que reproduce el diseño de VORA Coach, 
 
 - **Android Studio** con el SDK de **API 37** y un emulador (el de referencia mide ~390 dp de ancho, como los frames de Figma).
 - **JDK:** `gradlew.bat` necesita `JAVA_HOME`. Si no está definida, apuntala al JDK que trae Android Studio (`C:\Program Files\Android\Android Studio\jbr`). El daemon de Gradle pide JDK 25 y lo descarga solo si no lo encuentra.
+- **Ubicación del SDK:** Gradle la lee de `local.properties` (`sdk.dir`), que no está en el repo. Abrir el proyecto una vez en Android Studio lo crea solo; para compilar solo desde la terminal, definí `ANDROID_HOME` (en Windows suele ser `%LOCALAPPDATA%\Android\Sdk`). Sin eso, el build falla con "SDK location not found".
 - **Python 3.9 o posterior** para el mock (sin dependencias; con Python 3.8 falla).
 - El primer build descarga Gradle, las dependencias y quizás el JDK 25: necesita internet y tarda.
 
