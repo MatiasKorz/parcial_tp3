@@ -9,7 +9,7 @@ Guía para la defensa oral: qué arma Hilt en **esta** app, cuánto vive cada ob
 | "Usen Hilt" | `@HiltAndroidApp` en `ExamenTP3Application`, registrada con `android:name` en el manifest |
 | "Entry Point" | `@AndroidEntryPoint` en `MainActivity` |
 | "Hilt View Model" | `@HiltViewModel` + `@Inject constructor` en los ViewModels de `viewmodel/`, pedidos con `hiltViewModel()` en el NavHost |
-| "repositorios por constructor" | `@Singleton class MealRepository @Inject constructor(mealDao)` (y `WorkoutRepository`, de DAT-01) |
+| "repositorios por constructor" | `@Singleton class MealRepository @Inject constructor(mealDao)` y `@Singleton class WorkoutRepository @Inject constructor(api, workoutDao, workoutDetailDao)` |
 | "Retrofit, Room y DAO mediante módulos" | `di/NetworkModule`, `di/RetrofitModule`, `di/DatabaseModule`: `@Module @InstallIn(SingletonComponent::class) object` con `@Provides` |
 
 ## Qué objetos construye Hilt y cuánto viven
@@ -22,16 +22,25 @@ SingletonComponent (vive lo que el proceso de la app)
 ├── WorkoutApi              @Singleton  RetrofitModule  ← retrofit.create(...) (DAT-01)
 ├── AppDatabase             @Singleton  DatabaseModule  ← Room.databaseBuilder(@ApplicationContext)
 ├── MealDao                 sin scope   DatabaseModule  ← db.mealDao()
+├── WorkoutDao              sin scope   DatabaseModule  ← db.workoutDao() (NUC-01)
+├── WorkoutDetailDao        sin scope   DatabaseModule  ← db.workoutDetailDao() (NUC-02)
 ├── MealRepository          @Singleton  @Inject constructor(MealDao)
-└── WorkoutRepository       @Singleton  @Inject constructor(WorkoutApi) (DAT-01)
+└── WorkoutRepository       @Singleton  @Inject constructor(WorkoutApi, WorkoutDao, WorkoutDetailDao)
 
 ActivityComponent (vive lo que MainActivity)
 └── inyecta MainActivity (@AndroidEntryPoint): habilita hiltViewModel() en su contenido
 
 ViewModelComponent (vive lo que el ViewModel = lo que su destino en el back stack)
-├── NutritionDashboardViewModel     ← MealRepository (Nutrition)
-└── WorkoutConnectionCheckViewModel ← WorkoutRepository (Workout, DAT-01)
+├── WorkoutCatalogViewModel      ← WorkoutRepository (catálogo, NUC-01)
+├── WorkoutDetailsViewModel      ← SavedStateHandle, WorkoutRepository (detalle, NUC-02)
+├── ExerciseDetailsViewModel     ← SavedStateHandle, WorkoutRepository (NUC-02)
+├── NutritionDashboardViewModel  ← MealRepository (NUC-05)
+├── TodaysMealsViewModel         ← MealRepository, SavedStateHandle (NUC-05)
+├── FoodConfirmationViewModel    ← SavedStateHandle, MealRepository (formulario, NUC-04)
+└── MealDetailsViewModel         ← MealRepository, SavedStateHandle (NUC-05)
 ```
+
+Los ViewModels de las pantallas de perfil y de demostración no aparecen: no usan estos repositorios. El recorrido de un dato por las capas está en `CAPAS-Y-ESTADO.md`.
 
 - **`@Singleton`** hace que Hilt cree una sola instancia y la reuse. Instalar un módulo en `SingletonComponent` **no** alcanza: sin `@Singleton`, cada pedido crea una instancia nueva. Por eso OkHttp, Retrofit, la API, la base y los repositorios llevan la anotación: son caros de crear o tienen que ser únicos (una sola conexión a la base, un solo pool de conexiones HTTP).
 - **`MealDao` no lleva scope:** cada pedido vuelve a llamar a `db.mealDao()`, pero la base es única y Room ya cachea el DAO. Además, el único que lo pide es `MealRepository`, que es singleton.

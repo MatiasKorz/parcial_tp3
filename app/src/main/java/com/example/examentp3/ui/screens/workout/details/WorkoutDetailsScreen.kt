@@ -21,15 +21,20 @@ import androidx.compose.ui.unit.dp
 import com.example.examentp3.R
 import com.example.examentp3.model.Exercise
 import com.example.examentp3.model.WorkoutDetail
+import com.example.examentp3.ui.components.VoraEmptyState
+import com.example.examentp3.ui.components.VoraErrorBanner
+import com.example.examentp3.ui.components.VoraErrorState
+import com.example.examentp3.ui.components.VoraLoadingState
 import com.example.examentp3.ui.components.VoraPrimaryButton
 import com.example.examentp3.ui.screens.workout.weeklyplan.levelLabel
 import com.example.examentp3.ui.theme.*
-import com.example.examentp3.viewmodel.DetailUnavailable
+import com.example.examentp3.viewmodel.UiError
 import com.example.examentp3.viewmodel.WorkoutDetailsUiState
 
 /**
- * Workout / 03 — Workout Details with the data of GET /v1/workouts/{workoutId}, cached in Room (NUC-02).
- * The coach note, "Edit workout" and the menu stay as PAN-4.3 demonstrations; loading and retry belong to NUC-03.
+ * Workout / 03 — Workout Details with the data of GET /v1/workouts/{workoutId}, cached in Room (NUC-02),
+ * and the RF05 states inside the same frame (NUC-03).
+ * The coach note, "Edit workout" and the menu stay as PAN-4.3 demonstrations.
  */
 @Composable
 fun WorkoutDetailsScreen(
@@ -37,6 +42,7 @@ fun WorkoutDetailsScreen(
     onBack: () -> Unit,
     onStartWorkout: () -> Unit,
     onExerciseClick: (String) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var notice by rememberSaveable { mutableStateOf<Int?>(null) }
@@ -53,11 +59,44 @@ fun WorkoutDetailsScreen(
         item(key = "header") {
             OverviewHeader(onBack) { notice = R.string.workout_details_menu_notice }
         }
+        // RF05: cached content first (with loading or error alongside), then loading, then error.
+        // A detail is never "empty": the empty scenario of the mock only affects lists.
         if (workout == null) {
-            uiState.unavailable?.let { reason ->
-                item(key = "unavailable") { UnavailableMessage(reason, Modifier.padding(top = Spacing.s6)) }
+            when {
+                uiState.isLoading -> item(key = "loading") {
+                    VoraLoadingState(stringResource(R.string.workout_details_loading), Modifier.padding(top = Spacing.s6))
+                }
+                // Retrying cannot bring back a workout the server does not have.
+                uiState.error == UiError.NotFound -> item(key = "not_found") {
+                    VoraEmptyState(
+                        stringResource(R.string.workout_details_not_found_title),
+                        stringResource(uiState.error.message),
+                        Modifier.padding(top = Spacing.s6),
+                    )
+                }
+                uiState.error != null -> item(key = "error") {
+                    VoraErrorState(
+                        stringResource(R.string.workout_details_error_title),
+                        stringResource(uiState.error.message),
+                        stringResource(R.string.state_retry),
+                        onRetry,
+                        Modifier.padding(top = Spacing.s6),
+                    )
+                }
             }
             return@LazyColumn
+        }
+        if (uiState.isLoading) {
+            item(key = "loading") { VoraLoadingState(stringResource(R.string.workout_details_loading)) }
+        }
+        uiState.error?.let { error ->
+            item(key = "error") {
+                VoraErrorBanner(
+                    stringResource(R.string.workout_details_cached, stringResource(error.message)),
+                    stringResource(R.string.state_retry),
+                    onRetry,
+                )
+            }
         }
         item(key = "overview") {
             // Combined with the lazy list gap, preserves 16 dp before exercises.
@@ -174,19 +213,6 @@ private fun CoachNote() {
     }
 }
 
-/** Not designed in Figma: a state inside the detail, styled like the frame's coach note (RF02). */
-@Composable
-private fun UnavailableMessage(reason: DetailUnavailable, modifier: Modifier = Modifier) {
-    Text(
-        stringResource(reason.message),
-        style = MaterialTheme.typography.workoutDetailsNoteBody,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = modifier.fillMaxWidth()
-            .background(MaterialTheme.voraColors.mintSoft, MaterialTheme.shapes.small)
-            .padding(Spacing.s12),
-    )
-}
-
 @Composable
 private fun ExerciseRow(number: Int, exercise: Exercise, onClick: () -> Unit) {
     Surface(
@@ -240,7 +266,7 @@ private val PreviewWorkout = WorkoutDetail(
 @Composable
 private fun WorkoutDetailsPreview() {
     ExamenTP3Theme {
-        WorkoutDetailsScreen(WorkoutDetailsUiState(workout = PreviewWorkout, isLoading = false), {}, {}, {})
+        WorkoutDetailsScreen(WorkoutDetailsUiState(workout = PreviewWorkout), {}, {}, {}, {})
     }
 }
 
@@ -248,17 +274,32 @@ private fun WorkoutDetailsPreview() {
 @Composable
 private fun WorkoutDetailsCompactPreview() {
     ExamenTP3Theme {
-        WorkoutDetailsScreen(WorkoutDetailsUiState(workout = PreviewWorkout, isLoading = false), {}, {}, {})
+        WorkoutDetailsScreen(WorkoutDetailsUiState(workout = PreviewWorkout), {}, {}, {}, {})
     }
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
-private fun WorkoutDetailsOfflinePreview() {
+private fun WorkoutDetailsLoadingPreview() {
+    ExamenTP3Theme { WorkoutDetailsScreen(WorkoutDetailsUiState(isLoading = true), {}, {}, {}, {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun WorkoutDetailsErrorPreview() {
+    ExamenTP3Theme { WorkoutDetailsScreen(WorkoutDetailsUiState(error = UiError.NoConnection), {}, {}, {}, {}) }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun WorkoutDetailsCachedErrorPreview() {
     ExamenTP3Theme {
-        WorkoutDetailsScreen(
-            WorkoutDetailsUiState(isLoading = false, unavailable = DetailUnavailable.NotAvailableOffline),
-            {}, {}, {},
-        )
+        WorkoutDetailsScreen(WorkoutDetailsUiState(workout = PreviewWorkout, error = UiError.Server), {}, {}, {}, {})
     }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun WorkoutDetailsNotFoundPreview() {
+    ExamenTP3Theme { WorkoutDetailsScreen(WorkoutDetailsUiState(error = UiError.NotFound), {}, {}, {}, {}) }
 }

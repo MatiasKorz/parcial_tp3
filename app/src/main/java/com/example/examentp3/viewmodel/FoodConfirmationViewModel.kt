@@ -10,6 +10,7 @@ import com.example.examentp3.model.MealEstimate
 import com.example.examentp3.model.MealType
 import com.example.examentp3.ui.navigation.FoodConfirmationMode
 import com.example.examentp3.ui.navigation.NavArgs
+import com.example.examentp3.ui.navigation.mealTypeFromRouteValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject
@@ -28,7 +29,10 @@ data class FoodConfirmationUiState(
     val mode: FoodConfirmationMode,
     /** Only in Estimate mode. */
     val estimate: MealEstimate? = null,
-    /** Manual form. In Estimate mode only its date (today) and type (Lunch, as drawn) are used to save. */
+    /**
+     * Manual form. In Estimate mode only its date (today) and type are used to save. The type is the
+     * one chosen on the way here (NAV04), or Lunch, as drawn, when none was chosen.
+     */
     val draft: MealFormDraft,
     /** Empty until the first attempt to save; editing a field clears its error. */
     val errors: MealFormErrors = MealFormErrors(),
@@ -44,12 +48,19 @@ data class FoodConfirmationUiState(
 }
 
 /** Pure initial state, so tests do not depend on the system clock. */
-internal fun foodConfirmationInitialState(mode: FoodConfirmationMode, today: LocalDate): FoodConfirmationUiState =
-    FoodConfirmationUiState(
+internal fun foodConfirmationInitialState(
+    mode: FoodConfirmationMode,
+    today: LocalDate,
+    chosenType: MealType? = null,
+): FoodConfirmationUiState {
+    val draft = MealFormDraft(date = today)
+    return FoodConfirmationUiState(
         mode = mode,
         estimate = if (mode == FoodConfirmationMode.Estimate) DemoMealEstimate else null,
-        draft = MealFormDraft(date = today),
+        // Without a chosen type (e.g. Home "Log breakfast", D16) the draft keeps its default.
+        draft = chosenType?.let { draft.copy(type = it) } ?: draft,
     )
+}
 
 /** Meal saved from the simulated estimate (D5): the ingredient names joined, with the Figma totals. */
 internal fun MealEstimate.toMeal(date: LocalDate, type: MealType): Meal = Meal(
@@ -73,6 +84,7 @@ class FoodConfirmationViewModel @Inject constructor(
         foodConfirmationInitialState(
             mode = FoodConfirmationMode.fromRouteValue(savedStateHandle.get<String>(NavArgs.FOOD_CONFIRMATION_MODE)),
             today = LocalDate.now(),
+            chosenType = mealTypeFromRouteValue(savedStateHandle.get<String>(NavArgs.MEAL_TYPE)),
         ),
     )
     val uiState: StateFlow<FoodConfirmationUiState> = _uiState.asStateFlow()

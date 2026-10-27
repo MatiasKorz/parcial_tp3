@@ -23,6 +23,11 @@ class UiErrorTest {
     }
 
     @Test
+    fun http404_isNotFound() {
+        assertEquals(UiError.NotFound, httpError(404).toUiError())
+    }
+
+    @Test
     fun malformedJson_isInvalidResponse_notNoConnection() {
         assertEquals(UiError.InvalidResponse, MalformedJsonException("INVALID_JSON").toUiError())
     }

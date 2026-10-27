@@ -259,9 +259,12 @@
     <!-- 1: sets, 2: reps, 3: rest seconds -->
     <string name="workout_details_prescription">%1$d × %2$d • Rest %3$ds</string>
     <string name="workout_details_number">%1$02d</string>
-    <!-- Not designed in Figma; language agreed with the team (REF-05) -->
-    <string name="workout_details_offline">This workout isn\'t available offline yet. Open it again once you\'re connected.</string>
-    <string name="workout_details_not_found">This workout could not be found.</string>
+    <!-- NUC-03: detail states (RF05). Not designed in Figma; language agreed with the team (REF-05) -->
+    <string name="workout_details_loading">Loading workout…</string>
+    <string name="workout_details_error_title">Couldn\'t load this workout</string>
+    <string name="workout_details_not_found_title">Workout not found</string>
+    <!-- 1: error message -->
+    <string name="workout_details_cached">%1$s Showing the saved workout.</string>
     <string name="workout_details_start">Start Workout</string>
     <string name="workout_details_edit">Edit workout</string>
     <string name="workout_details_demo_title">Demonstration</string>
@@ -528,9 +531,22 @@
     <string name="state_retry">Retry</string>
     <string name="error_no_connection">Can\'t reach the server. Check your connection and try again.</string>
     <string name="error_timeout">The server took too long to respond.</string>
+    <string name="error_not_found">The server doesn\'t have this content.</string>
     <string name="error_server">The service isn\'t available right now.</string>
     <string name="error_invalid_response">The server sent a response that couldn\'t be read.</string>
     <string name="error_unknown">Something went wrong.</string>
+
+    <!-- EXT-01: Sign In and Sign Up messages with Firebase Authentication (not drawn in Figma) -->
+    <string name="auth_error_name_required">Enter your full name.</string>
+    <string name="auth_error_email_required">Enter your email address.</string>
+    <string name="auth_error_invalid_email">Enter a valid email address.</string>
+    <string name="auth_error_password_required">Enter your password.</string>
+    <string name="auth_error_password_too_short">The password needs at least 8 characters.</string>
+    <string name="auth_error_invalid_credentials">Incorrect email or password.</string>
+    <string name="auth_error_email_in_use">An account with this email already exists. Sign in instead.</string>
+    <string name="auth_error_weak_password">Choose a stronger password.</string>
+    <string name="auth_error_network">Can\'t connect. Check your internet connection and try again.</string>
+    <string name="auth_error_too_many_requests">Too many attempts. Wait a moment and try again.</string>
 
     <!-- PAN-4.5: Active Workout demonstration -->
     <string name="active_workout_exercise_position">EXERCISE 2 OF 5</string>

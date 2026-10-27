@@ -44,13 +44,15 @@ import com.example.examentp3.ui.theme.Spacing
 import com.example.examentp3.ui.theme.VoraPillShape
 import com.example.examentp3.ui.theme.VoraRadius18
 import com.example.examentp3.ui.theme.voraColors
+import com.example.examentp3.viewmodel.ProfileDashboardUiState
 
 /**
- * Profile / 01 — Dashboard. Demo screen: the profile is local sample data from strings.xml,
- * so there is no ViewModel; every control just reports the click to the NavHost.
+ * Profile / 01 — Dashboard. The name comes from the saved profile (EXT-02); the rest of the
+ * cards are sample data from strings.xml. Every control just reports the click to the NavHost.
  */
 @Composable
 fun ProfileDashboardScreen(
+    uiState: ProfileDashboardUiState,
     onSettingsClick: () -> Unit,
     onEditProfileClick: () -> Unit,
     onReviewPreferencesClick: () -> Unit,
@@ -72,7 +74,7 @@ fun ProfileDashboardScreen(
         ProfileHeader(onSettingsClick = onSettingsClick)
         Spacer(modifier = Modifier.height(Spacing.s12))
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.s20)) {
-            PersonalCard(onEditProfileClick = onEditProfileClick)
+            PersonalCard(fullName = uiState.fullName, onEditProfileClick = onEditProfileClick)
             SnapshotCard()
             PersonalisationPanel(onReviewPreferencesClick = onReviewPreferencesClick)
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.s8)) {
@@ -141,7 +143,7 @@ private fun ProfileHeader(onSettingsClick: () -> Unit) {
 }
 
 @Composable
-private fun PersonalCard(onEditProfileClick: () -> Unit) {
+private fun PersonalCard(fullName: String, onEditProfileClick: () -> Unit) {
     VoraCard {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -161,7 +163,7 @@ private fun PersonalCard(onEditProfileClick: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(Spacing.s4),
             ) {
                 Text(
-                    text = stringResource(R.string.profile_dashboard_name),
+                    text = fullName,
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -358,6 +360,7 @@ private fun SyncedTag(text: String) {
 private fun ProfileDashboardScreenPreview() {
     ExamenTP3Theme {
         ProfileDashboardScreen(
+            uiState = ProfileDashboardUiState(fullName = stringResource(R.string.profile_dashboard_name)),
             onSettingsClick = {},
             onEditProfileClick = {},
             onReviewPreferencesClick = {},

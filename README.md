@@ -14,8 +14,8 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 
 | Cód. | Frame de Figma | Destino en la app | Se llega desde | Estado | Maqueta | Qué se simula |
 |---|---|---|---|---|---|---|
-| 1.1 | Login - 01 — SignIn | `sign_in` | Inicio de la app | demostración | Hecha (validación visual pendiente) | Acceso de demostración sin Firebase; los controles opcionales (contraseña olvidada, proveedores, biometría) informan modo demostración |
-| 1.2 | Login - 02 — SignUp | `sign_up` | SignIn ("Sign up here") | demostración | Hecha (validación visual pendiente) | Aviso de registro de demostración sin crear cuenta; permanece en SignUp; regreso a SignIn |
+| 1.1 | Login - 01 — SignIn | `sign_in` | Inicio de la app | funcional con Firebase / demostración sin él (EXT-01) | Hecha (validación visual pendiente) | Con `google-services.json`, "Sign In" inicia sesión en Firebase Authentication y muestra los errores de credenciales o de red; sin él, acceso de demostración. Los controles opcionales (contraseña olvidada, proveedores, biometría) informan modo demostración |
+| 1.2 | Login - 02 — SignUp | `sign_up` | SignIn ("Sign up here") | funcional con Firebase / demostración sin él (EXT-01) | Hecha (validación visual pendiente) | Con `google-services.json`, "Sign Up" crea la cuenta (Full Name como nombre visible) y abre Home; sin él, aviso de registro de demostración sin crear cuenta. Regreso a SignIn |
 | 2.1 | Home / 01 — Dashboard | `home` | SignIn; pestaña Home | demostración | Hecha | Datos de ejemplo |
 | 2.2 | Home / 02 — Notifications | `notifications` | Home | demostración | Hecha | Notificaciones de ejemplo |
 | 3.1 | Voice / 01 — Idle | `voice_idle` | Home ("Start voice session") | demostración | Hecha | Estado del coach simulado; sin micrófono; los chips y "LAST CONVERSATION" llevan a destinos de ejemplo |
@@ -25,8 +25,8 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 3.5 | Voice / 05 — Conversation | `voice_conversation` | Voice / 01 (Type instead, LAST CONVERSATION y sugerencias) | demostración / simulado | UI hecha (validación manual pendiente) | Hilo inicial fijo del Figma; mensajes nuevos locales, sin historial persistido ni servicios del coach. Micrófono y audio simulados; + informa modo demostración. [Recursos y navegación](docs/design/PAN-3.5-recursos.md) |
 | 3.6 | Voice / 06 — Error | `voice_error` | Mantener presionado el micrófono activo de Voice / 02 — Listening | demostración / simulado | UI hecha (validación manual pendiente) | Error y permisos simulados; Allow Access solo muestra un aviso. Try again vuelve a Listening; Type instead a Conversation; Not Now y Atrás a Idle. El toque normal del micrófono sigue hacia Processing. [Recursos y navegación](docs/design/PAN-3.6-recursos.md) |
 | 4.1 | Workout / 01 — Dashboard | `workout` | Pestaña Workout | demostración | Hecha (validación visual pendiente) | Datos del Figma; catálogo en Weekly Plan según NUC-01 (confirmación docente en REF-05); rutas existentes con id de demostración |
-| 4.2 | Workout / 02 — Weekly Plan | `weekly_plan` | Workout / 01 | mixta: plan de demostración y catálogo funcional | Integrada (validación manual pendiente) | Conserva PAN-4.2; catálogo GET /v1/workouts leído desde Room (NUC-01), con IDs reales hacia Details; estados pendientes de NUC-03 |
-| 4.3 | Workout / 03 — Workout Details | `workout_details/{workoutId}` | Workout / 01 y 02 | funcional | Hecha (validación manual pendiente) | Nombre, nivel, duración y ejercicios de GET /v1/workouts/{workoutId} guardados en Room (NUC-02): se muestra lo de Room y se refresca al abrir; sin servidor, un detalle ya visto sale de Room y uno nunca descargado avisa que no está disponible sin conexión. "VORA COACH NOTE", "Edit workout" y el menú siguen de demostración; carga y reintento pendientes de NUC-03; desde Workout / 01 abre un id de demostración (muestra "no encontrado") |
+| 4.2 | Workout / 02 — Weekly Plan | `weekly_plan` | Workout / 01 | mixta: plan de demostración y catálogo funcional | Integrada (validación manual pendiente) | Conserva PAN-4.2; catálogo GET /v1/workouts leído desde Room (NUC-01), con IDs reales hacia Details; carga, vacío y error con reintento (NUC-03) |
+| 4.3 | Workout / 03 — Workout Details | `workout_details/{workoutId}` | Workout / 01 y 02 | funcional | Hecha (validación manual pendiente) | Nombre, nivel, duración y ejercicios de GET /v1/workouts/{workoutId} guardados en Room (NUC-02): se muestra lo de Room y se refresca al abrir; sin servidor, un detalle ya visto sale de Room con un aviso y "Retry", y uno nunca descargado muestra el error con "Retry" (NUC-03). Carga mientras dura la consulta; un id inexistente (404) muestra "Workout not found" sin reintento. "VORA COACH NOTE", "Edit workout" y el menú siguen de demostración; desde Workout / 01 abre un id de demostración (muestra "Workout not found") |
 | 4.4 | Workout / 04 — Pre Workout | `pre_workout/{workoutId}` | Workout / 01 y 03 | demostración | Hecha (validación manual pendiente) | Preparación con textos del Figma; conserva workoutId hacia Active Workout; recomendación y micrófono con avisos; sin historial real |
 | 4.5 | Workout / 05 — Active Workout | `active_workout/{workoutId}` | Workout / 04 | demostración | Hecha (validación manual pendiente) | Series, carga y descanso simulados en Compose; sin cronómetro real ni persistencia; Finish Workout abre el destino existente PAN-4.7 |
 | 4.6 | Workout / 06 — Exercise Details | `exercise_details/{workoutId}/{exerciseId}` | Workout / 03 | funcional | UI hecha (validación manual pendiente) | Nombre, grupo muscular, instrucciones ("Performance Steps") y tip ("PRO FORM CUES") del ejercicio guardado en Room (NUC-02); la ruta lleva los dos ids porque los ids de ejercicio se repiten entre entrenamientos. La imagen original de Figma y "Ask Vora" siguen de demostración |
@@ -45,16 +45,18 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 6.4 | Progress / 04 — Nutrition Progress | `nutrition_progress` | Progress / 02 | demostración | Hecha | Datos de ejemplo |
 | 6.5 | Progress / 05 — Health Trends | `health_trends` | Progress / 02 | demostración | Hecha | Datos de ejemplo |
 | 6.6 | Progress / 06 — Weekly Review | `weekly_review` | Progress / 02 | demostración | Hecha | Datos de ejemplo; "Get dinner ideas" informa modo demostración |
-| 7.1 | Profile / 01 — Dashboard | `profile` | Pestaña Profile | demostración | Hecha | Datos de ejemplo |
-| 7.2 | Profile / 02 — Edit Profile | `edit_profile` | Profile / 01 ("Edit profile") | demostración (datos locales) | Hecha | Edición local de los seis campos; los valores guardados se mantienen durante la sesión; "Change photo" informa modo demostración sin cámara |
+| 7.1 | Profile / 01 — Dashboard | `profile` | Pestaña Profile | mixta: nombre del perfil (Firestore con sesión, EXT-02) y resto de ejemplo | Hecha | El nombre sale del perfil guardado; snapshot, personalización y filas son datos de ejemplo |
+| 7.2 | Profile / 02 — Edit Profile | `edit_profile` | Profile / 01 ("Edit profile") | funcional con sesión de Firebase / demostración sin ella (EXT-02) | Hecha | Con sesión, los seis campos se guardan en Firestore (`users/{uid}`) y se recuperan al reabrir; sin sesión, edición local durante la sesión. "Change photo" informa modo demostración sin cámara |
 | 7.3 | Profile / 03 — Goals & Preferences | `goals_preferences` | Profile / 01 ("Your Goals") | demostración (datos locales) | Hecha | Selección local de objetivos (varios), frecuencia y tipo de entrenamiento; "Balanced" fija; lo guardado se mantiene durante la sesión y volver sin guardar lo descarta |
 | 7.4 | Profile / 04 — Nutrition Preferences | `nutrition_preferences` | Profile / 01 ("Your Preferences") | demostración (datos locales) | Hecha | Selección local de tipo de alimentación (una), alimentos preferidos y prioridades (varios); los ingredientes a evitar se agregan con el campo y se quitan tocando el chip; "Meal Preferences" informa modo demostración; lo guardado se mantiene durante la sesión y volver sin guardar lo descarta |
 | 7.5 | Profile / 05 — Voice & AI Settings | `voice_ai_settings` | Profile / 01 ("Review preferences") | demostración (datos locales) | Hecha | Estilo de coaching, estilo de respuesta y cinco interruptores que se mantienen durante la sesión; "Preview" informa modo demostración sin audio ni micrófono; "Privacy & permissions" abre Settings |
-| 7.6 | Profile / 06 — Settings | `settings` | Profile / 01 (engranaje, "Connected Data", "Account") | demostración (datos locales) | Hecha | Notifications on/off se mantiene durante la sesión; Units, Appearance y el resto de las opciones informan modo demostración; "Alex Morgan" abre Edit Profile; "Log out" vuelve a SignIn y vacía la pila |
+| 7.6 | Profile / 06 — Settings | `settings` | Profile / 01 (engranaje, "Connected Data", "Account") | demostración (datos locales) | Hecha | Notifications on/off se mantiene durante la sesión; Units, Appearance y el resto de las opciones informan modo demostración; "Alex Morgan" abre Edit Profile; "Log out" cierra la sesión de Firebase (si hay), vuelve a SignIn y vacía la pila |
 
 ## Estados de las consultas remotas y escenarios del mock (RF05)
 
-El catálogo de entrenamientos (sección "Workout catalog" de Workout / 02 — Weekly Plan) muestra cuatro estados dentro del mismo frame, sin pantallas nuevas. Los mismos estados se suman a Workout / 03 — Workout Details cuando se integre su consulta real (NUC-02).
+El catálogo de entrenamientos (sección "Workout catalog" de Workout / 02 — Weekly Plan) y Workout / 03 — Workout Details muestran sus estados dentro del mismo frame, sin pantallas nuevas.
+
+**Catálogo** (`GET /v1/workouts`):
 
 | Estado | Cuándo | Qué se ve |
 |---|---|---|
@@ -63,7 +65,17 @@ El catálogo de entrenamientos (sección "Workout catalog" de Workout / 02 — W
 | Vacío | el servidor responde una lista vacía | "No workouts yet" |
 | Error con reintento | 503, JSON inválido, timeout o servidor detenido | si no hay catálogo guardado, un error con el botón "Retry"; si lo hay, la lista guardada con un aviso y "Retry" |
 
-**Política de caché:** el catálogo vive en Room y ninguna respuesta lo borra. Una respuesta vacía muestra el estado vacío pero no vacía la caché, así que si después se detiene el servidor vuelve a verse el catálogo guardado junto con el error. Un error nunca toca Room: el catálogo y las comidas registradas siguen disponibles.
+**Detalle** (`GET /v1/workouts/{workoutId}`):
+
+| Estado | Cuándo | Qué se ve |
+|---|---|---|
+| Carga | mientras dura la consulta | indicador "Loading workout…"; si el detalle ya está guardado, aparece encima del contenido |
+| Contenido | la consulta trae el entrenamiento, o ya estaba en Room | nombre, nivel, duración y ejercicios |
+| Vacío | no aplica: `empty` solo vacía listas, el detalle responde normal | — |
+| Error con reintento | 503, JSON inválido, timeout o servidor detenido | si el detalle no está guardado, "Couldn't load this workout" con "Retry"; si lo está, el detalle guardado con un aviso y "Retry" |
+| No encontrado | el servidor responde 404 (id inexistente) | "Workout not found", sin reintento porque repetir la consulta no lo cambia |
+
+**Política de caché:** el catálogo y los detalles viven en Room y ninguna respuesta los borra. Una respuesta vacía muestra el estado vacío pero no vacía la caché, así que si después se detiene el servidor vuelve a verse el catálogo guardado junto con el error. Un error nunca toca Room: el catálogo, los detalles guardados y las comidas registradas siguen disponibles.
 
 ### Cómo provocar los escenarios en la demo
 
@@ -79,7 +91,62 @@ adb shell am broadcast -n com.example.examentp3/.debug.MockScenarioReceiver --ei
 adb shell am broadcast -n com.example.examentp3/.debug.MockScenarioReceiver
 ```
 
-Después de cambiar el escenario, tocá "Retry" o volvé a abrir Weekly Plan. El escenario se mantiene hasta que se cambia o se cierra la app. Para el paso 4 (sin conexión), detené el mock con Ctrl+C y levantalo de nuevo antes de tocar "Retry".
+Después de cambiar el escenario, tocá "Retry" o volvé a abrir Weekly Plan o el detalle. El escenario se mantiene hasta que se cambia o se cierra la app. Para el paso 4 (sin conexión), detené el mock con Ctrl+C y levantalo de nuevo antes de tocar "Retry".
+
+## Firebase Authentication (extra EXT-01)
+
+Registro, inicio y cierre de sesión con email y contraseña. **Es opcional:** sin configurar Firebase, la app compila igual y el acceso funciona en modo demostración (SPEC p.1).
+
+### Cómo funciona sin y con Firebase
+
+- **Sin `app/google-services.json`** (un clon limpio): `app/build.gradle.kts` no aplica el plugin `com.google.gms.google-services`, no se crea ninguna `FirebaseApp` y `FirebaseModule` provee `FirebaseAuth` como `null`. "Sign In" abre Home como antes, "Sign Up" muestra el aviso de registro simulado y "Log out" solo vuelve a SignIn.
+- **Con `app/google-services.json`**: se aplica el plugin y la app usa Firebase Authentication. `AuthRepository` es la única clase que llama a `FirebaseAuth`; las pantallas y los ViewModels no lo conocen.
+- No hay endpoints de login en el mock ni en ningún servidor propio (SPEC p.3): la app habla solo con Firebase.
+
+### Configurarlo
+
+1. Entrá a la [consola de Firebase](https://console.firebase.google.com/) y creá un proyecto (Google Analytics no hace falta).
+2. **Build → Authentication → Comenzar → Sign-in method:** habilitá **Correo electrónico/contraseña**.
+3. **Configuración del proyecto → Tus apps → Agregar app → Android**, con el nombre de paquete `com.example.examentp3`. El SHA-1 no hace falta para email y contraseña.
+4. Descargá `google-services.json` y copialo en `app/google-services.json`.
+5. Compilá (`.\gradlew.bat :app:assembleDebug`) y corré la app.
+
+**`google-services.json` no se sube al repo** (está en `.gitignore`): el repo es público y cada integrante usa el archivo de su proyecto, o el que el equipo comparta por un canal privado. El archivo tiene la configuración del cliente (id del proyecto y una API key de cliente), no claves administrativas, pero igual queda fuera de git. Nunca subas una cuenta de servicio (`*-firebase-adminsdk-*.json`) ni contraseñas.
+
+### Reglas de acceso
+
+Firebase Authentication no tiene reglas propias: las reglas de seguridad se escriben para Firestore, que usa el perfil (EXT-02), y están en `firestore.rules` (EXT-03). En la consola conviene dejar habilitado **solo** el proveedor Correo electrónico/contraseña y, en **Authentication → Configuración**, mantener activada la protección contra la enumeración de correos (viene activada en los proyectos nuevos).
+
+### Probarlo (paso 5 de la demo)
+
+1. **Registro:** SignIn → "Sign up here". Completá Full Name, un email nuevo y una contraseña de 8 caracteres o más → "Sign Up". Abre Home, y la cuenta aparece en la consola en **Authentication → Usuarios**.
+2. **Cierre:** Profile → engranaje → "Log out". Vuelve a SignIn, y el botón atrás sale de la app en vez de volver a Home.
+3. **Inicio:** en SignIn, el mismo email y contraseña → "Sign In". Abre Home; atrás no vuelve a SignIn.
+4. **Errores:** una contraseña incorrecta muestra "Incorrect email or password."; registrar el mismo email otra vez muestra que la cuenta ya existe; con el emulador en modo avión, un mensaje de conexión. Ninguno cierra la app.
+
+## Perfil en Firestore (extra EXT-02)
+
+Los seis campos de **Profile / 02 — Edit Profile** (First Name, Last Name, Date of Birth, Height, Weight y Gender) se guardan en Firestore para la cuenta que inició sesión y se recuperan al volver a abrir la app. El nombre se ve en Edit Profile y en la tarjeta de **Profile / 01 — Dashboard**.
+
+### Cómo funciona
+
+- **Dónde se guarda:** en el documento `users/{uid}`, donde `{uid}` es el id de la cuenta en Firebase Authentication. Las reglas de EXT-03 (`firestore.rules`) solo dejan que cada cuenta lea y escriba su propio documento. Se guardan como texto, igual que en el formulario. Objetivos y preferencias (7.3 a 7.5) siguen siendo locales.
+- **Quién habla con Firestore:** solo `ProfileRepository`, que recibe `FirebaseFirestore` desde `FirebaseModule` y el `uid` desde `AuthRepository`. Las pantallas reciben estado y lambdas; los ViewModels piden el perfil al repositorio.
+- **Guardar:** "Save changes" actualiza la copia en memoria al instante y manda la escritura a Firestore sin esperar la respuesta. Sin conexión, Firestore la guarda en su caché local y la envía cuando vuelve la red, así que la pantalla nunca se bloquea.
+- **Recuperar:** Edit Profile y el dashboard piden el perfil a Firestore una vez por ViewModel (no se repite al rotar). Si la cuenta todavía no guardó nada o no hay conexión, se ve lo que hay en memoria.
+- **Sin sesión o sin `google-services.json`:** se usa el perfil de demostración en memoria (SPEC p.3), y las pantallas de Perfil siguen navegables. Al cerrar sesión o entrar con otra cuenta, los datos de la cuenta anterior se descartan.
+
+### Configurarlo
+
+Además de los pasos de Firebase Authentication: en la consola, **Firestore Database → Crear base de datos**, con la base `(default)`, edición estándar y **modo de producción**. Después, desplegá las reglas del repo (sección "Reglas de Firestore"). Sin las reglas, el modo producción rechaza todas las lecturas y escrituras.
+
+### Probarlo (paso 5 de la demo)
+
+1. Iniciá sesión con una cuenta (EXT-01) → Profile → "Edit profile". Cambiá los campos → "Save changes". El dashboard muestra el nombre nuevo.
+2. En la consola, **Firestore Database → Datos**: aparece `users/<uid>` con los seis campos. El `uid` es el que muestra **Authentication → Usuarios** para esa cuenta.
+3. Cerrá la app (desde Recientes), volvé a abrirla e iniciá sesión con la misma cuenta: Edit Profile y el dashboard muestran lo guardado.
+4. "Log out" y entrá con otra cuenta: no ve el perfil de la primera.
+5. Con el emulador en modo avión, Profile y Edit Profile siguen navegables y "Save changes" no bloquea la pantalla.
 
 ## Reglas de Firestore (extra EXT-03)
 

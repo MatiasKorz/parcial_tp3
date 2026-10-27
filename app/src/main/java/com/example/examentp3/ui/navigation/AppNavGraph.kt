@@ -18,6 +18,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.examentp3.model.DemoMealEstimate
+import com.example.examentp3.model.DemoWorkout
 import com.example.examentp3.ui.navigation.AppDestination.*
 import com.example.examentp3.ui.screens.home.HomeSampleUiState
 import com.example.examentp3.ui.screens.home.HomeScreen
@@ -70,22 +71,37 @@ import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
 import com.example.examentp3.viewmodel.NutritionDashboardViewModel
 import com.example.examentp3.viewmodel.MealDetailsUiState
 import com.example.examentp3.viewmodel.MealDetailsViewModel
+import com.example.examentp3.viewmodel.ProfileDashboardViewModel
 import com.example.examentp3.viewmodel.SettingsViewModel
+import com.example.examentp3.viewmodel.SignInViewModel
+import com.example.examentp3.viewmodel.SignUpViewModel
 import com.example.examentp3.viewmodel.VoiceAiSettingsViewModel
 import com.example.examentp3.viewmodel.TodaysMealsViewModel
 
 import kotlinx.coroutines.delay
 
-// Provisional ids until the real catalogs exist (REF-04).
+// Provisional ids until the real catalogs exist (REF-04). Pre Workout does not load its workout yet,
+// so this id never reaches the mock; Workout Details uses DemoWorkout instead.
 private const val DEMO_WORKOUT_ID = "demo-workout"
 private const val DEMO_MEAL_ID = "demo-meal"
 
 private val workoutArgs = listOf(navArgument(NavArgs.WORKOUT_ID) { type = NavType.StringType })
 private val exerciseArgs = workoutArgs + navArgument(NavArgs.EXERCISE_ID) { type = NavType.StringType }
 private val mealArgs = listOf(navArgument(NavArgs.MEAL_ID) { type = NavType.StringType })
+// Optional query argument: null means no meal type was chosen (Food Confirmation keeps its default).
+private val mealTypeArgs = listOf(
+    navArgument(NavArgs.MEAL_TYPE) {
+        type = NavType.StringType
+        nullable = true
+        defaultValue = null
+    },
+)
 private val foodConfirmationArgs = listOf(
     navArgument(NavArgs.FOOD_CONFIRMATION_MODE) { type = NavType.StringType },
-)
+) + mealTypeArgs
+
+/** Meal type chosen earlier in the Nutrition flow, to pass on to the next route (NAV04). */
+private fun NavBackStackEntry.mealType() = mealTypeFromRouteValue(arguments?.getString(NavArgs.MEAL_TYPE))
 
 // Optional query argument: null means today (resolved in TodaysMealsViewModel, not at graph build time).
 private val todaysMealsArgs = listOf(
@@ -133,23 +149,46 @@ private fun NavGraphBuilder.placeholder(
 internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     // Access
     composable(SignIn.route) { entry ->
-        SignInScreen(
-            onSignIn = {
-                if (entry.isResumed()) {
-                    navController.navigate(Home.route) {
-                        popUpTo(SignIn.route) { inclusive = true }
-                        launchSingleTop = true
-                    }
+        val viewModel: SignInViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        // Signing in is asynchronous with Firebase (EXT-01): open Home once it succeeds, without Sign In behind.
+        LaunchedEffect(uiState.isSignedIn) {
+            if (uiState.isSignedIn) {
+                navController.navigate(Home.route) {
+                    popUpTo(SignIn.route) { inclusive = true }
+                    launchSingleTop = true
                 }
-            },
+                viewModel.onSignedInHandled()
+            }
+        }
+        SignInScreen(
+            uiState = uiState,
+            onSignIn = { email, password -> if (entry.isResumed()) viewModel.onSignIn(email, password) },
             onSignUp = {
                 if (entry.isResumed()) navController.navigate(SignUp.route)
             },
+            onInputChange = viewModel::onInputChange,
         )
     }
     composable(SignUp.route) { entry ->
+        val viewModel: SignUpViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        // Inferred (EXT-01): Firebase signs the new account in, so it opens Home and clears the access screens.
+        LaunchedEffect(uiState.isSignedUp) {
+            if (uiState.isSignedUp) {
+                navController.navigate(Home.route) {
+                    popUpTo(navController.graph.id) { inclusive = true }
+                    launchSingleTop = true
+                }
+                viewModel.onSignedUpHandled()
+            }
+        }
         SignUpScreen(
+            uiState = uiState,
             onBack = { if (entry.isResumed()) navController.popBackStack() },
+            onSignUp = { name, email, password -> if (entry.isResumed()) viewModel.onSignUp(name, email, password) },
+            onInputChange = viewModel::onInputChange,
+            onDemoNoticeDismiss = viewModel::onDemoNoticeDismiss,
         )
     }
 
@@ -162,7 +201,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onStartMyWorkout = {
                 if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
             },
-            onLogBreakfast = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            onLogBreakfast = { if (entry.isResumed()) navController.navigate(AddFood.createRoute()) },
             onTodaysOverviewClick = { if (entry.isResumed()) navController.navigate(TodaysOverview.route) },
             onStartWorkout = {
                 if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
@@ -182,7 +221,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onStartMyWorkoutClick = {
                 if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
             },
-            onLogMyBreakfastClick = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            onLogMyBreakfastClick = { if (entry.isResumed()) navController.navigate(AddFood.createRoute()) },
             onWhatToEatClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
             onHowAmIDoingClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.route) },
         )
@@ -284,8 +323,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onStartWorkout = {
                 if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
             },
+            // The card shows Figma's "Upper Body Strength": open the mock workout mapped to it.
             onWorkoutDetails = {
-                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(DEMO_WORKOUT_ID))
+                if (entry.isResumed()) {
+                    navController.navigate(WorkoutDetails.createRoute(DemoWorkout.UpperBody.workoutId))
+                }
             },
             onViewProgress = { if (entry.isResumed()) navController.navigate(WorkoutProgress.route) },
         )
@@ -295,9 +337,6 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
         val uiState by viewModel.uiState.collectAsState()
         WeeklyPlanScreen(
             uiState = uiState,
-            onWorkoutDetails = {
-                if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(DEMO_WORKOUT_ID))
-            },
             onWorkoutClick = { workoutId ->
                 if (entry.isResumed()) navController.navigate(WorkoutDetails.createRoute(workoutId))
             },
@@ -317,6 +356,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onExerciseClick = { exerciseId ->
                 if (entry.isResumed()) navController.navigate(ExerciseDetails.createRoute(workoutId, exerciseId))
             },
+            onRetry = viewModel::retry,
         )
     }
     composable(PreWorkout.route, workoutArgs) { entry ->
@@ -377,10 +417,10 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onMealClick = { mealId ->
                 if (entry.isResumed()) navController.navigate(MealDetails.createRoute(mealId.toString()))
             },
-            // The type is not passed yet: AddFood has no type argument (NUC-04 D16).
-            onAddMeal = { if (entry.isResumed()) navController.navigate(AddFood.route) },
-            onVoice = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.route) },
-            onPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.route) },
+            // "+ Add" of a meal type carries that type to Food Confirmation (NAV04).
+            onAddMeal = { type -> if (entry.isResumed()) navController.navigate(AddFood.createRoute(type)) },
+            onVoice = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.createRoute()) },
+            onPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.createRoute()) },
         )
     }
     composable(TodaysMeals.route, todaysMealsArgs) { entry ->
@@ -394,45 +434,48 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onMealClick = { mealId ->
                 if (entry.isResumed()) navController.navigate(MealDetails.createRoute(mealId.toString()))
             },
-            // Inferred: "+ Add <type>" opens Add Food; its route (NUC-04) takes no meal type yet.
-            onAddMeal = { if (entry.isResumed()) navController.navigate(AddFood.route) },
+            // Inferred: "+ Add <type>" opens Add Food with that meal type (NAV04).
+            onAddMeal = { type -> if (entry.isResumed()) navController.navigate(AddFood.createRoute(type)) },
         )
     }
-    composable(AddFood.route) { entry ->
+    // From Add Food on, each step passes the chosen meal type (if any) to the next route.
+    composable(AddFood.route, mealTypeArgs) { entry ->
         AddFoodScreen(
             onBack = { if (entry.isResumed()) navController.popBackStack() },
-            onStartVoiceLogging = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.route) },
-            onSnapPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.route) },
+            onStartVoiceLogging = {
+                if (entry.isResumed()) navController.navigate(VoiceFoodLogging.createRoute(entry.mealType()))
+            },
+            onSnapPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.createRoute(entry.mealType())) },
             onLogManually = {
                 if (entry.isResumed()) {
-                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual))
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual, entry.mealType()))
                 }
             },
         )
     }
-    composable(VoiceFoodLogging.route) { entry ->
+    composable(VoiceFoodLogging.route, mealTypeArgs) { entry ->
         VoiceFoodLoggingScreen(
             onClose = { if (entry.isResumed()) navController.popBackStack() },
             // Stays in the stack: back from the analysis returns to listening.
-            onDoneSpeaking = { if (entry.isResumed()) navController.navigate(FoodAnalysis.route) },
+            onDoneSpeaking = { if (entry.isResumed()) navController.navigate(FoodAnalysis.createRoute(entry.mealType())) },
             // Typing replaces listening: back from the manual form returns to where voice was opened.
             onTypeInstead = {
                 if (entry.isResumed()) {
-                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual)) {
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual, entry.mealType())) {
                         popUpTo(VoiceFoodLogging.route) { inclusive = true }
                     }
                 }
             },
         )
     }
-    composable(FoodAnalysis.route) { entry ->
+    composable(FoodAnalysis.route, mealTypeArgs) { entry ->
         val viewModel: FoodAnalysisViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
         // The simulated analysis ends by itself: open the review and drop this screen from the back stack,
         // so going back from the review does not land on an analysis that would advance again.
         LaunchedEffect(uiState.isComplete) {
             if (uiState.isComplete) {
-                navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate)) {
+                navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate, entry.mealType())) {
                     popUpTo(FoodAnalysis.route) { inclusive = true }
                 }
             }
@@ -443,13 +486,13 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onCancel = { if (entry.isResumed()) navController.popBackStack() },
         )
     }
-    composable(PhotoAnalysis.route) { entry ->
+    composable(PhotoAnalysis.route, mealTypeArgs) { entry ->
         PhotoAnalysisScreen(
             estimate = DemoMealEstimate, // simulated analysis (SPEC p.10), same data that 5.7 reviews
             onBack = { if (entry.isResumed()) navController.popBackStack() },
             onReviewAndAdd = {
                 if (entry.isResumed()) {
-                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate))
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Estimate, entry.mealType()))
                 }
             },
         )
@@ -534,7 +577,10 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
 
     // Profile
     composable(ProfileDashboard.route) { entry ->
+        val viewModel: ProfileDashboardViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
         ProfileDashboardScreen(
+            uiState = uiState,
             onSettingsClick = { if (entry.isResumed()) navController.navigate(Settings.route) },
             onEditProfileClick = { if (entry.isResumed()) navController.navigate(EditProfile.route) },
             onReviewPreferencesClick = { if (entry.isResumed()) navController.navigate(VoiceAiSettings.route) },
@@ -625,6 +671,7 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onLogOut = {
                 // Inferred: not drawn as a connection in Figma. Clears the back stack.
                 if (entry.isResumed()) {
+                    viewModel.onLogOut() // closes the Firebase session (EXT-01); synchronous
                     navController.navigate(SignIn.route) {
                         popUpTo(navController.graph.id) { inclusive = true }
                         launchSingleTop = true
