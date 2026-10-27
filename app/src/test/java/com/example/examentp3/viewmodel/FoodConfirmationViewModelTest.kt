@@ -20,10 +20,50 @@ class FoodConfirmationViewModelTest {
 
     private val today = LocalDate.of(2026, 10, 23)
 
-    private fun viewModel(mode: String?, dao: FakeMealDao = FakeMealDao()) = FoodConfirmationViewModel(
-        savedStateHandle = SavedStateHandle(mode?.let { mapOf(NavArgs.FOOD_CONFIRMATION_MODE to it) } ?: emptyMap()),
-        repository = MealRepository(dao),
-    )
+    private fun viewModel(mode: String?, dao: FakeMealDao = FakeMealDao(), mealType: String? = null) =
+        FoodConfirmationViewModel(
+            savedStateHandle = SavedStateHandle(
+                buildMap {
+                    mode?.let { put(NavArgs.FOOD_CONFIRMATION_MODE, it) }
+                    mealType?.let { put(NavArgs.MEAL_TYPE, it) }
+                },
+            ),
+            repository = MealRepository(dao),
+        )
+
+    @Test
+    fun manualMode_withChosenType_preselectsIt() {
+        val state = viewModel("manual", mealType = "DINNER").uiState.value
+
+        assertEquals(MealType.DINNER, state.draft.type)
+    }
+
+    @Test
+    fun estimateMode_withChosenType_savesWithThatType() {
+        val state = viewModel("estimate", mealType = "BREAKFAST").uiState.value
+
+        // onAddToMeal builds the estimate meal from the draft type; the insert itself needs Dispatchers.Main.
+        assertEquals(MealType.BREAKFAST, state.draft.type)
+        assertEquals(MealType.BREAKFAST, checkNotNull(state.estimate).toMeal(today, state.draft.type).type)
+    }
+
+    @Test
+    fun withoutChosenType_keepsLunchDefault() {
+        assertEquals(MealType.LUNCH, viewModel("manual").uiState.value.draft.type)
+        assertEquals(MealType.LUNCH, viewModel("estimate").uiState.value.draft.type)
+    }
+
+    @Test
+    fun unknownChosenType_keepsLunchDefault() {
+        assertEquals(MealType.LUNCH, viewModel("manual", mealType = "BRUNCH").uiState.value.draft.type)
+    }
+
+    @Test
+    fun chosenType_isKeptInInitialStateForEveryMode() {
+        FoodConfirmationMode.entries.forEach { mode ->
+            assertEquals(MealType.SNACK, foodConfirmationInitialState(mode, today, MealType.SNACK).draft.type)
+        }
+    }
 
     @Test
     fun manualMode_startsWithEmptyFormAndToday() {
