@@ -28,7 +28,7 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 4.2 | Workout / 02 — Weekly Plan | `weekly_plan` | Workout / 01 | mixta: plan de demostración y catálogo funcional | Integrada (validación manual pendiente) | Conserva PAN-4.2; catálogo GET /v1/workouts leído desde Room (NUC-01), con IDs reales hacia Details; carga, vacío y error con reintento (NUC-03) |
 | 4.3 | Workout / 03 — Workout Details | `workout_details/{workoutId}` | Workout / 01 y 02 | funcional | Hecha (validación manual pendiente) | Nombre, nivel, duración y ejercicios de GET /v1/workouts/{workoutId} guardados en Room (NUC-02): se muestra lo de Room y se refresca al abrir; sin servidor, un detalle ya visto sale de Room con un aviso y "Retry", y uno nunca descargado muestra el error con "Retry" (NUC-03). Carga mientras dura la consulta; un id inexistente (404) muestra "Workout not found" sin reintento. "VORA COACH NOTE", "Edit workout" y el menú siguen de demostración; desde Workout / 01 abre un id de demostración (muestra "Workout not found") |
 | 4.4 | Workout / 04 — Pre Workout | `pre_workout/{workoutId}` | Workout / 01 y 03 | demostración | Hecha (validación manual pendiente) | Preparación con textos del Figma; conserva workoutId hacia Active Workout; recomendación y micrófono con avisos; sin historial real |
-| 4.5 | Workout / 05 — Active Workout | `active_workout/{workoutId}` | Workout / 04 | demostración | Hecha (validación manual pendiente) | Series, carga y descanso simulados en Compose; sin cronómetro real ni persistencia; Finish Workout abre el destino existente PAN-4.7 |
+| 4.5 | Workout / 05 — Active Workout | `active_workout/{workoutId}` | Workout / 04 | mixta: seguimiento de series real (EXT-06), "LAST SESSION" y coach de ejemplo | Hecha (validación manual pendiente) | Ejercicios, series, repeticiones y descanso del entrenamiento elegido; "Complete Set" registra la serie con su carga; descanso con cuenta regresiva, "+30s" y "Skip"; el progreso sobrevive a la rotación. Finish Workout abre PAN-4.7. Ver [EXT-06](#seguimiento-de-series-extra-ext-06) |
 | 4.6 | Workout / 06 — Exercise Details | `exercise_details/{workoutId}/{exerciseId}` | Workout / 03 | funcional | UI hecha (validación manual pendiente) | Nombre, grupo muscular, instrucciones ("Performance Steps") y tip ("PRO FORM CUES") del ejercicio guardado en Room (NUC-02); la ruta lleva los dos ids porque los ids de ejercicio se repiten entre entrenamientos. La imagen original de Figma y "Ask Vora" siguen de demostración |
 | 4.7 | Workout / 07 — Workout Complete | `workout_complete` | Workout / 05 | demostración | UI hecha (validación manual pendiente) | Métricas Figma fijas y valoración local no persistida; Done/Atrás vuelven a Dashboard y limpian el flujo terminado |
 | 5.1 | Nutrition / 01 — Dashboard | `nutrition` | Pestaña Nutrition | funcional | UI hecha (validación visual pendiente) | Calorías y macros consumidas y comidas de hoy desde Room (una fila por comida; tipo vacío con "+ Add"); objetivos (2,100 kcal, 140/220/65 g), porcentaje sobre esos objetivos y consejo son de ejemplo del Figma; calendario → DatePicker → 5.2 en esa fecha; "View History" → 5.2; fila → 5.8; "+ Add" → 5.3; "Voice" → 5.4 y "Photo" → 5.6 sin pedir permisos; "Search" informa modo demostración (EXT-05) |
@@ -186,4 +186,22 @@ firebase deploy --only firestore:rules
 Sube `firestore.rules` al proyecto de `.firebaserc`. Para comprobar que lo desplegado es lo mismo que el repo, abrí en la consola **Firestore Database → Reglas** y comparalo con `firestore.rules`. Cada despliegue queda en el historial de esa pestaña.
 
 No cambies las reglas desde la consola: el cambio no queda en el repo y la próxima vez que alguien despliegue se pierde. Se cambia `firestore.rules`, se corren los tests y se despliega.
+
+## Seguimiento de series (extra EXT-06)
+
+En `Workout / 05 — Active Workout` el seguimiento de series ya no es simulado. Lo maneja `ActiveWorkoutViewModel` con los datos del entrenamiento de la ruta (`active_workout/{workoutId}`), leídos de Room. Si el detalle todavía no estaba guardado, lo descarga de `GET /v1/workouts/{workoutId}`, con carga y error con reintento como en NUC-03.
+
+| Parte | Real o simulada |
+|---|---|
+| Ejercicio actual ("EXERCISE n OF m"), nombre, "REPS TARGET" y "SET MATRIX" | Real: salen de `sets` y `reps` de cada ejercicio |
+| Cantidad de series ("Set 1", "Set 2"…) | Real: una por cada serie del ejercicio |
+| "Complete Set" | Real: registra la serie actual con la carga elegida y la repetición objetivo, y pasa a la siguiente. Después de la última serie de un ejercicio, pasa al ejercicio siguiente |
+| "−" y "+" | Real: ajustan la carga de a 2,5 kg (arranca en 45 kg, como el Figma), y cada serie registrada muestra la suya |
+| Descanso ("Resting • mm:ss") | Real: aparece al completar una serie, dura los `restSeconds` del ejercicio y descuenta de a un segundo. "+30s" suma 30 segundos y "Skip" lo termina |
+| Rotación | El progreso vive en el ViewModel: rotar no pierde series, carga ni descanso |
+| "LAST SESSION" | Simulado: texto fijo del Figma. Las series no se guardan entre sesiones (la sincronización del historial es otra ampliación) |
+| Volumen de `Workout / 07 — Workout Complete` | Simulado: no se calcula de las series (SPEC p.3 lo permite) |
+| "VORA COACH" y "Voice On" | Simulado: consejo fijo del Figma, sin micrófono (NAV05) |
+
+Los accesos directos "Start workout" de Home, Workout Dashboard y Today's Overview abren `w02`, el entrenamiento del mock que corresponde a "Upper Body Strength" (ver `DemoWorkout`).
 

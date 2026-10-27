@@ -548,14 +548,14 @@
     <string name="auth_error_network">Can\'t connect. Check your internet connection and try again.</string>
     <string name="auth_error_too_many_requests">Too many attempts. Wait a moment and try again.</string>
 
-    <!-- PAN-4.5: Active Workout demonstration -->
-    <string name="active_workout_exercise_position">EXERCISE 2 OF 5</string>
-    <string name="active_workout_exercise">Seated Cable Row</string>
+    <!-- PAN-4.5: Active Workout; EXT-06: set tracking with the chosen workout -->
+    <!-- 1: current exercise, 2: exercises in the workout -->
+    <string name="active_workout_exercise_position">EXERCISE %1$d OF %2$d</string>
     <string name="active_workout_finish">Finish Workout</string>
     <string name="active_workout_volume">CURRENT VOLUME WORK</string>
-    <string name="active_workout_reps_value">10</string>
     <string name="active_workout_reps">REPS TARGET</string>
-    <string name="active_workout_matrix_value">3 × 12</string>
+    <!-- 1: sets, 2: reps -->
+    <string name="active_workout_matrix_value">%1$d × %2$d</string>
     <string name="active_workout_matrix">SET MATRIX</string>
     <string name="active_workout_last_session">LAST SESSION</string>
     <string name="active_workout_last_volume">45 kg × 12 reps</string>
@@ -567,11 +567,11 @@
     <string name="active_workout_number">%1$d</string>
     <string name="active_workout_set">Set %1$d</string>
     <string name="active_workout_set_description">Set %1$d: %2$s</string>
-    <string name="active_workout_status_complete">completed</string>
+    <!-- 1: load of the logged set -->
+    <string name="active_workout_status_logged">completed at %1$s kg</string>
     <string name="active_workout_status_current">current</string>
     <string name="active_workout_status_pending">pending</string>
     <string name="active_workout_rest_time">Resting • %1$02d:%2$02d</string>
-    <string name="active_workout_rest_finished">Rest complete</string>
     <string name="active_workout_add_rest">+30s</string>
     <string name="active_workout_skip">Skip</string>
     <string name="active_workout_coach">VORA COACH</string>
@@ -580,8 +580,13 @@
     <string name="active_workout_complete_set">Complete Set</string>
     <string name="active_workout_demo_title">Demonstration</string>
     <string name="active_workout_voice_notice">Voice coaching is a demonstration. No microphone is used.</string>
-    <string name="active_workout_sets_complete">All three sets in this demonstration are complete. Use Finish Workout to continue.</string>
+    <string name="active_workout_sets_complete_title">All sets complete</string>
+    <string name="active_workout_sets_complete">Every set of this workout is logged. Use Finish Workout to continue.</string>
     <string name="active_workout_ok">OK</string>
+    <!-- EXT-06: loading the chosen workout. Not designed in Figma, same language as NUC-03 -->
+    <string name="active_workout_loading">Loading workout…</string>
+    <string name="active_workout_error_title">Couldn\'t load this workout</string>
+    <string name="active_workout_not_found_title">Workout not found</string>
 
 
     <!-- PAN-4.6: Figma-only Seated Cable Row demonstration; NUC-02 pending -->
