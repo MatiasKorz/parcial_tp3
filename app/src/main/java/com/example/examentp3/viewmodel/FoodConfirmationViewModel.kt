@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.examentp3.data.repository.MealRepository
 import com.example.examentp3.model.DemoMealEstimate
+import com.example.examentp3.model.Food
+import com.example.examentp3.model.FoodPortion
+import com.example.examentp3.model.PORTION_DEFAULT_GRAMS
 import com.example.examentp3.model.Meal
 import com.example.examentp3.model.MealEstimate
 import com.example.examentp3.model.MealType
@@ -14,6 +17,7 @@ import com.example.examentp3.ui.navigation.mealTypeFromRouteValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject
+import kotlin.math.roundToInt
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,12 +27,17 @@ import kotlinx.coroutines.launch
 
 /**
  * Review of a meal before logging it (Nutrition / 07). In [FoodConfirmationMode.Manual] it is the
- * RF03 form; in [FoodConfirmationMode.Estimate] it shows the simulated analysis from Figma.
+ * RF03 form; in [FoodConfirmationMode.Estimate] it shows the simulated analysis from Figma; in
+ * [FoodConfirmationMode.Search] it reviews the foods found in the mock (EXT-05).
  */
 data class FoodConfirmationUiState(
     val mode: FoodConfirmationMode,
     /** Only in Estimate mode. */
     val estimate: MealEstimate? = null,
+    /** Only in Search mode: the chosen foods and their quantities. */
+    val portions: List<FoodPortion> = emptyList(),
+    /** Search mode tried to save without foods. */
+    val missingFood: Boolean = false,
     /**
      * Manual form. In Estimate mode only its date (today) and type are used to save. The type is the
      * one chosen on the way here (NAV04), or Lunch, as drawn, when none was chosen.
@@ -43,8 +52,44 @@ data class FoodConfirmationUiState(
     val savedDate: LocalDate? = null,
 ) {
     val totals: MealTotals
-        get() = estimate?.let { MealTotals(it.calories, it.proteinGrams, it.carbsGrams, it.fatGrams) }
-            ?: draft.previewTotals()
+        get() = when (mode) {
+            FoodConfirmationMode.Search -> portions.totals()
+            else -> estimate?.let { MealTotals(it.calories, it.proteinGrams, it.carbsGrams, it.fatGrams) }
+                ?: draft.previewTotals()
+        }
+}
+
+/** MEAL TOTALS of the chosen portions; macros keep one decimal like each portion. */
+internal fun List<FoodPortion>.totals(): MealTotals = MealTotals(
+    calories = sumOf { it.calories },
+    proteinGrams = sumOf { it.proteinGrams }.roundToOneDecimal(),
+    carbsGrams = sumOf { it.carbsGrams }.roundToOneDecimal(),
+    fatGrams = sumOf { it.fatGrams }.roundToOneDecimal(),
+)
+
+// Adding values of one decimal can leave float noise (0.1 + 0.2), which would reach Room.
+private fun Double.roundToOneDecimal(): Double = (this * 10).roundToInt() / 10.0
+
+/** Choosing a food already in the list adds a default portion to it instead of repeating the card. */
+internal fun List<FoodPortion>.add(food: Food): List<FoodPortion> =
+    if (any { it.food.id == food.id }) {
+        map { if (it.food.id == food.id) it.copy(grams = it.grams + PORTION_DEFAULT_GRAMS) else it }
+    } else {
+        this + FoodPortion(food)
+    }
+
+/** Meal saved from the search (EXT-05): the food names joined, with the computed totals (RF03). */
+internal fun List<FoodPortion>.toMeal(date: LocalDate, type: MealType): Meal {
+    val totals = totals()
+    return Meal(
+        name = joinToString(" · ") { it.food.name },
+        date = date,
+        type = type,
+        calories = totals.calories,
+        proteinGrams = totals.proteinGrams,
+        carbsGrams = totals.carbsGrams,
+        fatGrams = totals.fatGrams,
+    )
 }
 
 /** Pure initial state, so tests do not depend on the system clock. */
@@ -108,6 +153,21 @@ class FoodConfirmationViewModel @Inject constructor(
     fun onFatChange(value: String) =
         _uiState.update { it.copy(draft = it.draft.copy(fat = value), errors = it.errors.copy(fat = null)) }
 
+    fun onFoodSelect(food: Food) =
+        _uiState.update { it.copy(portions = it.portions.add(food), missingFood = false) }
+
+    fun onPortionIncrease(foodId: String) = updatePortion(foodId) { it.increase() }
+
+    fun onPortionDecrease(foodId: String) = updatePortion(foodId) { it.decrease() }
+
+    fun onPortionRemove(foodId: String) =
+        _uiState.update { state -> state.copy(portions = state.portions.filterNot { it.food.id == foodId }) }
+
+    private fun updatePortion(foodId: String, transform: (FoodPortion) -> FoodPortion) =
+        _uiState.update { state ->
+            state.copy(portions = state.portions.map { if (it.food.id == foodId) transform(it) else it })
+        }
+
     /** "Add to …": validates synchronously and only launches the insert when the form is valid. */
     fun onAddToMeal() {
         val state = _uiState.value
@@ -117,6 +177,13 @@ class FoodConfirmationViewModel @Inject constructor(
         val meal = when (state.mode) {
             FoodConfirmationMode.Estimate ->
                 checkNotNull(state.estimate).toMeal(state.draft.date, state.draft.type)
+            FoodConfirmationMode.Search -> {
+                if (state.portions.isEmpty()) {
+                    _uiState.update { it.copy(missingFood = true, saveFailed = false) }
+                    return
+                }
+                state.portions.toMeal(state.draft.date, state.draft.type)
+            }
             FoodConfirmationMode.Manual -> when (val result = validateMealForm(state.draft)) {
                 is MealFormResult.Valid -> result.meal
                 is MealFormResult.Invalid -> {

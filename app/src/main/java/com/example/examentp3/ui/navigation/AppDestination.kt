@@ -38,12 +38,14 @@ private fun withMealType(base: String, type: MealType?) =
     if (type == null) base else "$base?${NavArgs.MEAL_TYPE}=${type.name}"
 
 /**
- * Food Confirmation serves two flows on one route: the RF03 manual form ("Log Manually") and the
- * review of the simulated estimate (Food Analysis / Photo Analysis).
+ * Food Confirmation serves three flows on one route: the RF03 manual form ("Log Manually"), the
+ * review of the simulated estimate (Food Analysis / Photo Analysis) and the foods found with
+ * "Search Database" or "Search" (EXT-05).
  */
 enum class FoodConfirmationMode(val routeValue: String) {
     Manual("manual"),
-    Estimate("estimate");
+    Estimate("estimate"),
+    Search("search");
 
     companion object {
         /** Unknown or missing values fall back to [Estimate], the screen as drawn in Figma. */

@@ -60,11 +60,13 @@ import com.example.examentp3.ui.screens.voice.VoiceSpeakingScreen
 import com.example.examentp3.ui.screens.voice.VoiceProcessingScreen
 import com.example.examentp3.ui.screens.voice.VoiceListeningScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
+import com.example.examentp3.viewmodel.ActiveWorkoutViewModel
 import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.ExerciseDetailsViewModel
 import com.example.examentp3.viewmodel.WorkoutDetailsViewModel
 import com.example.examentp3.viewmodel.FoodAnalysisViewModel
 import com.example.examentp3.viewmodel.FoodConfirmationViewModel
+import com.example.examentp3.viewmodel.FoodSearchViewModel
 import com.example.examentp3.viewmodel.GoalsPreferencesViewModel
 import com.example.examentp3.viewmodel.NutritionPreferencesViewModel
 import com.example.examentp3.viewmodel.WorkoutCatalogViewModel
@@ -82,9 +84,9 @@ import com.example.examentp3.viewmodel.TodaysMealsViewModel
 
 import kotlinx.coroutines.delay
 
-// Provisional ids until the real catalogs exist (REF-04). Pre Workout does not load its workout yet,
-// so this id never reaches the mock; Workout Details uses DemoWorkout instead.
-private const val DEMO_WORKOUT_ID = "demo-workout"
+// "Start workout" shortcuts open Figma's "Upper Body Strength": Active Workout tracks the sets of that
+// mock workout (EXT-06), so the id has to exist in REF-04.
+private val DEMO_WORKOUT_ID = DemoWorkout.UpperBody.workoutId
 private const val DEMO_MEAL_ID = "demo-meal"
 
 private val workoutArgs = listOf(navArgument(NavArgs.WORKOUT_ID) { type = NavType.StringType })
@@ -387,7 +389,10 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
         )
     }
     composable(ActiveWorkout.route, workoutArgs) { entry ->
+        val viewModel: ActiveWorkoutViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
         ActiveWorkoutScreen(
+            uiState = uiState,
             onFinishWorkout = {
                 if (entry.isResumed()) {
                     navController.navigate(WorkoutComplete.route) {
@@ -395,6 +400,12 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
                     }
                 }
             },
+            onCompleteSet = viewModel::onCompleteSet,
+            onDecreaseWeight = viewModel::onDecreaseWeight,
+            onIncreaseWeight = viewModel::onIncreaseWeight,
+            onAddRest = viewModel::onAddRest,
+            onSkipRest = viewModel::onSkipRest,
+            onRetry = viewModel::retry,
         )
     }
     composable(ExerciseDetails.route, exerciseArgs) { entry ->
@@ -439,6 +450,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onAddMeal = { type -> if (entry.isResumed()) navController.navigate(AddFood.createRoute(type)) },
             onVoice = { if (entry.isResumed()) navController.navigate(VoiceFoodLogging.createRoute()) },
             onPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.createRoute()) },
+            onSearch = {
+                if (entry.isResumed()) {
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Search))
+                }
+            },
         )
     }
     composable(TodaysMeals.route, todaysMealsArgs) { entry ->
@@ -464,6 +480,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
                 if (entry.isResumed()) navController.navigate(VoiceFoodLogging.createRoute(entry.mealType()))
             },
             onSnapPhoto = { if (entry.isResumed()) navController.navigate(PhotoAnalysis.createRoute(entry.mealType())) },
+            onSearchDatabase = {
+                if (entry.isResumed()) {
+                    navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Search, entry.mealType()))
+                }
+            },
             onLogManually = {
                 if (entry.isResumed()) {
                     navController.navigate(FoodConfirmation.createRoute(FoodConfirmationMode.Manual, entry.mealType()))
@@ -518,6 +539,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
     composable(FoodConfirmation.route, foodConfirmationArgs) { entry ->
         val viewModel: FoodConfirmationViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
+        // The food search (EXT-05) has its own ViewModel, only created in Search mode so the other
+        // modes never call GET /v1/foods. The mode of an entry never changes.
+        val searchViewModel: FoodSearchViewModel? =
+            if (uiState.mode == FoodConfirmationMode.Search) hiltViewModel() else null
+        val searchState = searchViewModel?.uiState?.collectAsState()?.value
         // Saving is asynchronous: once Room confirms, open the list on the meal's date (D12).
         LaunchedEffect(uiState.savedDate) {
             uiState.savedDate?.let { date ->
@@ -536,6 +562,14 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onCarbsChange = viewModel::onCarbsChange,
             onFatChange = viewModel::onFatChange,
             onAddToMeal = { if (entry.isResumed()) viewModel.onAddToMeal() },
+            searchState = searchState,
+            onSearchQueryChange = { query -> searchViewModel?.onQueryChange(query) },
+            onSearchLoadMore = { searchViewModel?.onLoadMore() },
+            onSearchRetry = { searchViewModel?.retry() },
+            onFoodSelect = viewModel::onFoodSelect,
+            onPortionIncrease = viewModel::onPortionIncrease,
+            onPortionDecrease = viewModel::onPortionDecrease,
+            onPortionRemove = viewModel::onPortionRemove,
         )
     }
     composable(MealDetails.route, mealArgs) { entry ->

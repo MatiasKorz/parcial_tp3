@@ -549,14 +549,14 @@
     <string name="auth_error_network">Can\'t connect. Check your internet connection and try again.</string>
     <string name="auth_error_too_many_requests">Too many attempts. Wait a moment and try again.</string>
 
-    <!-- PAN-4.5: Active Workout demonstration -->
-    <string name="active_workout_exercise_position">EXERCISE 2 OF 5</string>
-    <string name="active_workout_exercise">Seated Cable Row</string>
+    <!-- PAN-4.5: Active Workout; EXT-06: set tracking with the chosen workout -->
+    <!-- 1: current exercise, 2: exercises in the workout -->
+    <string name="active_workout_exercise_position">EXERCISE %1$d OF %2$d</string>
     <string name="active_workout_finish">Finish Workout</string>
     <string name="active_workout_volume">CURRENT VOLUME WORK</string>
-    <string name="active_workout_reps_value">10</string>
     <string name="active_workout_reps">REPS TARGET</string>
-    <string name="active_workout_matrix_value">3 × 12</string>
+    <!-- 1: sets, 2: reps -->
+    <string name="active_workout_matrix_value">%1$d × %2$d</string>
     <string name="active_workout_matrix">SET MATRIX</string>
     <string name="active_workout_last_session">LAST SESSION</string>
     <string name="active_workout_last_volume">45 kg × 12 reps</string>
@@ -568,11 +568,11 @@
     <string name="active_workout_number">%1$d</string>
     <string name="active_workout_set">Set %1$d</string>
     <string name="active_workout_set_description">Set %1$d: %2$s</string>
-    <string name="active_workout_status_complete">completed</string>
+    <!-- 1: load of the logged set -->
+    <string name="active_workout_status_logged">completed at %1$s kg</string>
     <string name="active_workout_status_current">current</string>
     <string name="active_workout_status_pending">pending</string>
     <string name="active_workout_rest_time">Resting • %1$02d:%2$02d</string>
-    <string name="active_workout_rest_finished">Rest complete</string>
     <string name="active_workout_add_rest">+30s</string>
     <string name="active_workout_skip">Skip</string>
     <string name="active_workout_coach">VORA COACH</string>
@@ -581,8 +581,13 @@
     <string name="active_workout_complete_set">Complete Set</string>
     <string name="active_workout_demo_title">Demonstration</string>
     <string name="active_workout_voice_notice">Voice coaching is a demonstration. No microphone is used.</string>
-    <string name="active_workout_sets_complete">All three sets in this demonstration are complete. Use Finish Workout to continue.</string>
+    <string name="active_workout_sets_complete_title">All sets complete</string>
+    <string name="active_workout_sets_complete">Every set of this workout is logged. Use Finish Workout to continue.</string>
     <string name="active_workout_ok">OK</string>
+    <!-- EXT-06: loading the chosen workout. Not designed in Figma, same language as NUC-03 -->
+    <string name="active_workout_loading">Loading workout…</string>
+    <string name="active_workout_error_title">Couldn\'t load this workout</string>
+    <string name="active_workout_not_found_title">Workout not found</string>
 
 
     <!-- PAN-4.6: Figma-only Seated Cable Row demonstration; NUC-02 pending -->
@@ -792,10 +797,6 @@
     <string name="add_food_search_description">Search millions of local &amp; global food items.</string>
     <string name="add_food_manual_title">Log Manually</string>
     <string name="add_food_manual_description">Input weight, calories and macros yourself.</string>
-    <!-- PAN-5.3: not in Figma, demo notice for "Search Database" (NAV03; the search is EXT-05) -->
-    <string name="add_food_demo_title">Demonstration</string>
-    <string name="add_food_demo_search">Food search is not available in this demonstration.</string>
-    <string name="add_food_demo_ok">OK</string>
     <!-- NUC-04: RF03 manual form in Food Confirmation; labels and messages are not in Figma, pending approval -->
     <string name="food_confirmation_name_label">Meal name</string>
     <string name="food_confirmation_date_label">Date</string>
@@ -815,6 +816,19 @@
     <string name="food_confirmation_save_error">The meal could not be saved. Try again.</string>
     <!-- NUC-04: macro totals with up to one decimal ("38g", "12.5g") -->
     <string name="food_confirmation_macro_grams">%1$sg</string>
+    <!-- EXT-05: food search inside Food Confirmation. Not designed in Figma, same language as NUC-03 -->
+    <string name="food_confirmation_missing_food">Add at least one food from the search.</string>
+    <string name="food_search_title">Search foods</string>
+    <string name="food_search_label">Food name</string>
+    <string name="food_search_loading">Searching foods…</string>
+    <string name="food_search_error_title">Couldn\'t search foods</string>
+    <string name="food_search_empty_title">No foods found</string>
+    <string name="food_search_empty_message">Try another name, or use Log Manually.</string>
+    <string name="food_search_load_more">Load more</string>
+    <!-- 1: kcal per 100 g -->
+    <string name="food_search_kcal_per_100g">%1$d kcal / 100 g</string>
+    <!-- 1: protein, 2: carbs, 3: fat, per 100 g -->
+    <string name="food_search_macros">P %1$sg · C %2$sg · F %3$sg</string>
     <!-- PAN-5.1 Nutrition / 01 — Dashboard (goals and tip are sample values from Figma) -->
     <string name="nutrition_dashboard_title">Nutrition</string>
     <string name="nutrition_dashboard_calories_consumed">Calories Consumed</string>
@@ -836,13 +850,10 @@
     <string name="nutrition_dashboard_voice">Voice</string>
     <string name="nutrition_dashboard_photo">Photo</string>
     <string name="nutrition_dashboard_search">Search</string>
-    <!-- PAN-5.1: not in Figma, date picker and demo notice for "Search" (NAV03; the search is EXT-05) -->
+    <!-- PAN-5.1: not in Figma, date picker -->
     <string name="nutrition_dashboard_choose_date">Choose date</string>
     <string name="nutrition_dashboard_date_picker_ok">OK</string>
     <string name="nutrition_dashboard_date_picker_cancel">Cancel</string>
-    <string name="nutrition_dashboard_demo_title">Demonstration</string>
-    <string name="nutrition_dashboard_demo_search">Food search is not available in this demonstration.</string>
-    <string name="nutrition_dashboard_demo_ok">OK</string>
 
     <!-- PAN-5.4 Nutrition / 04 — Voice Food Logging (demo: fixed sample transcript) -->
     <string name="voice_food_logging_title">Voice Logging</string>
