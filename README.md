@@ -273,12 +273,7 @@ El equipo usó agentes de IA generativa en el desarrollo. Cada PR declara en su 
 | Codex (con el MCP de Figma) | Consultar el frame y obtener los recursos originales; implementar las pantallas en Compose y su navegación; tests unitarios; documentar decisiones; build y tests | PAN-1.1, 1.2, 3.2-3.6, 4.1-4.7 (#13, #14, #19, #20, #22, #23, #30-#32, #49-#53) | El integrante probó manualmente cada pantalla en Android Studio y confirmó el resultado |
 | Claude Code | Redactar y revisar la documentación de onboarding, las convenciones, la skill `tp3-guidelines` y el script de Trello | GIT-01 (#1) | Revisión del autor |
 | Claude Code | Armar este README a partir de las tarjetas ENT-01 y ENT-04, el código de `main` y las declaraciones de los PRs | ENT-01, ENT-04 | **Pendiente:** revisión de los tres integrantes |
-| Claude Code | Planificar los extras de Firebase a partir de la consigna y REF-05; escribir `AuthRepository`, `ProfileRepository`, `FirebaseModule`        
-(proveedores nulos sin `google-services.json`), `awaitTask`, los ViewModels de acceso y perfil, el mapeo del documento `users/{uid}`, las reglas de         
-Firestore y sus tests con dos cuentas; guiar la configuración del proyecto de Firebase y desplegar las reglas con la Firebase CLI; redactar las secciones   
-del README, los comentarios en REF-05 y las descripciones de los PRs | EXT-01, EXT-02, EXT-03 (#56-#58) | El integrante aprobó la dependencia               
-`firebase-firestore` y el despliegue de las reglas, revisó el diff, compiló con y sin `google-services.json`, corrió los tests unitarios y los de reglas    
-sobre el emulador de Firestore.
+| Claude Code | Planificar los extras de Firebase a partir de la consigna y REF-05; escribir `AuthRepository`, `ProfileRepository`, `FirebaseModule` (proveedores nulos sin `google-services.json`), `awaitTask`, los ViewModels de acceso y perfil, el mapeo del documento `users/{uid}`, las reglas de Firestore y sus tests con dos cuentas; guiar la configuración del proyecto de Firebase y desplegar las reglas con la Firebase CLI; redactar las secciones del README, los comentarios en REF-05 y las descripciones de los PRs | EXT-01, EXT-02, EXT-03 (#56-#58) | El integrante aprobó la dependencia `firebase-firestore` y el despliegue de las reglas, revisó el diff, compiló con y sin `google-services.json`, corrió los tests unitarios y los de reglas sobre el emulador de Firestore. |
 
 Ningún commit lleva coautoría de herramientas de IA: el autor de cada commit es el integrante. Cada integrante revisó el código generado con ayuda de IA en sus PRs, lo entiende y puede explicarlo y ubicar sus commits en la defensa oral.
 
