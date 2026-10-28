@@ -21,16 +21,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,20 +58,18 @@ private val OptionIconSize = 24.dp
 private val OptionArrowSize = 20.dp
 
 /**
- * Demo screen with no data (no ViewModel): the four ways to add food.
- * "Search Database" is an optional service (EXT-05), so it only shows a demonstration notice (NAV03).
+ * Screen with no data (no ViewModel): the four ways to add food. "Search Database" opens the food
+ * search of EXT-05 in Food Confirmation.
  */
 @Composable
 fun AddFoodScreen(
     onBack: () -> Unit,
     onStartVoiceLogging: () -> Unit,
     onSnapPhoto: () -> Unit,
+    onSearchDatabase: () -> Unit,
     onLogManually: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Ephemeral UI state: the ViewModel does not need to know the notice is open.
-    var showSearchNotice by rememberSaveable { mutableStateOf(false) }
-
     // The bottom bar Scaffold already applies the navigation bar inset, so only the status bar is added.
     Column(
         modifier = modifier
@@ -104,7 +96,7 @@ fun AddFoodScreen(
                 iconBackground = MaterialTheme.colorScheme.background,
                 title = R.string.add_food_search_title,
                 description = R.string.add_food_search_description,
-                onClick = { showSearchNotice = true },
+                onClick = onSearchDatabase,
             )
             AddFoodOption(
                 icon = R.drawable.ic_add_food_pen,
@@ -114,19 +106,6 @@ fun AddFoodScreen(
                 onClick = onLogManually,
             )
         }
-    }
-
-    if (showSearchNotice) {
-        AlertDialog(
-            onDismissRequest = { showSearchNotice = false },
-            title = { Text(stringResource(R.string.add_food_demo_title)) },
-            text = { Text(stringResource(R.string.add_food_demo_search)) },
-            confirmButton = {
-                TextButton(onClick = { showSearchNotice = false }) {
-                    Text(stringResource(R.string.add_food_demo_ok))
-                }
-            },
-        )
     }
 }
 
@@ -279,7 +258,7 @@ private fun AddFoodOption(
 @Composable
 private fun AddFoodScreenPreview() {
     ExamenTP3Theme {
-        AddFoodScreen(onBack = {}, onStartVoiceLogging = {}, onSnapPhoto = {}, onLogManually = {})
+        AddFoodScreen(onBack = {}, onStartVoiceLogging = {}, onSnapPhoto = {}, onSearchDatabase = {}, onLogManually = {})
     }
 }
 
@@ -287,6 +266,6 @@ private fun AddFoodScreenPreview() {
 @Composable
 private fun AddFoodScreenCompactPreview() {
     ExamenTP3Theme {
-        AddFoodScreen(onBack = {}, onStartVoiceLogging = {}, onSnapPhoto = {}, onLogManually = {})
+        AddFoodScreen(onBack = {}, onStartVoiceLogging = {}, onSnapPhoto = {}, onSearchDatabase = {}, onLogManually = {})
     }
 }

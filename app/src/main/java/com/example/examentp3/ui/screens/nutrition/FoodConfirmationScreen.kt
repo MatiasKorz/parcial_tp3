@@ -47,7 +47,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.examentp3.R
-import com.example.examentp3.model.EstimatedIngredient
+import com.example.examentp3.model.Food
+import com.example.examentp3.model.FoodPortion
 import com.example.examentp3.model.MealType
 import com.example.examentp3.ui.components.VoraButtonSize
 import com.example.examentp3.ui.components.VoraPrimaryButton
@@ -59,6 +60,7 @@ import com.example.examentp3.ui.theme.Spacing
 import com.example.examentp3.ui.theme.VoraPillShape
 import com.example.examentp3.ui.theme.voraColors
 import com.example.examentp3.viewmodel.FoodConfirmationUiState
+import com.example.examentp3.viewmodel.FoodSearchUiState
 import com.example.examentp3.viewmodel.MealFieldError
 import com.example.examentp3.viewmodel.MealFormDraft
 import com.example.examentp3.viewmodel.MealFormErrors
@@ -74,7 +76,8 @@ private val formDateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy",
 /**
  * "Nutrition / 07 — Food Confirmation". Manual mode: RF03 form (no Figma frame, it reuses the look
  * of the ingredient card). Estimate mode: the simulated analysis as drawn; adjusting ingredients
- * and "Save without logging" only show a demonstration notice (REF-05).
+ * and "Save without logging" only show a demonstration notice (REF-05). Search mode (EXT-05): the
+ * foods found in the mock, with working "-", "+", "Remove" and "+ Add Ingredient" (food search).
  */
 @Composable
 fun FoodConfirmationScreen(
@@ -88,11 +91,24 @@ fun FoodConfirmationScreen(
     onCarbsChange: (String) -> Unit,
     onFatChange: (String) -> Unit,
     onAddToMeal: () -> Unit,
+    /** Only in Search mode; null otherwise. */
+    searchState: FoodSearchUiState?,
+    onSearchQueryChange: (String) -> Unit,
+    onSearchLoadMore: () -> Unit,
+    onSearchRetry: () -> Unit,
+    onFoodSelect: (Food) -> Unit,
+    onPortionIncrease: (String) -> Unit,
+    onPortionDecrease: (String) -> Unit,
+    onPortionRemove: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Ephemeral UI state: which demonstration notice is open, if any, and the date picker.
+    // Ephemeral UI state: which demonstration notice is open, if any, the date picker and the search.
     var notice by rememberSaveable { mutableStateOf<Int?>(null) }
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
+    // Coming from "Search Database" there is nothing to review yet, so the search opens by itself.
+    var showSearch by rememberSaveable {
+        mutableStateOf(uiState.mode == FoodConfirmationMode.Search && uiState.portions.isEmpty())
+    }
     val showAdjustNotice = { notice = R.string.food_confirmation_demo_adjust }
     val totals = uiState.totals
 
@@ -126,11 +142,30 @@ fun FoodConfirmationScreen(
             verticalArrangement = Arrangement.spacedBy(Spacing.s20),
         ) {
             val estimate = uiState.estimate
-            if (estimate != null) {
+            if (uiState.mode == FoodConfirmationMode.Search) {
+                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s12)) {
+                    uiState.portions.forEach { portion ->
+                        IngredientCard(
+                            name = portion.food.name,
+                            grams = portion.grams,
+                            calories = portion.calories,
+                            onDecrease = { onPortionDecrease(portion.food.id) },
+                            onIncrease = { onPortionIncrease(portion.food.id) },
+                            onRemove = { onPortionRemove(portion.food.id) },
+                        )
+                    }
+                }
+                VoraTextAction(
+                    text = stringResource(R.string.food_confirmation_add_ingredient),
+                    onClick = { showSearch = true },
+                )
+            } else if (estimate != null) {
                 Column(verticalArrangement = Arrangement.spacedBy(Spacing.s12)) {
                     estimate.ingredients.forEach { ingredient ->
                         IngredientCard(
-                            ingredient = ingredient,
+                            name = ingredient.name,
+                            grams = ingredient.grams,
+                            calories = ingredient.calories,
                             onDecrease = showAdjustNotice,
                             onIncrease = showAdjustNotice,
                             onRemove = showAdjustNotice,
@@ -164,6 +199,13 @@ fun FoodConfirmationScreen(
                         color = MaterialTheme.colorScheme.error,
                     )
                 }
+                if (uiState.missingFood) {
+                    Text(
+                        text = stringResource(R.string.food_confirmation_missing_food),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
                 // Figma: 15 SemiBold; VoraPrimaryButton Large is 15 Bold (deviation, BASE-03).
                 // While saving, the ViewModel ignores further taps.
                 VoraPrimaryButton(
@@ -192,6 +234,20 @@ fun FoodConfirmationScreen(
                     Text(stringResource(R.string.food_confirmation_demo_ok))
                 }
             },
+        )
+    }
+
+    if (showSearch && searchState != null) {
+        FoodSearchSheet(
+            uiState = searchState,
+            onQueryChange = onSearchQueryChange,
+            onFoodSelect = { food ->
+                onFoodSelect(food)
+                showSearch = false
+            },
+            onLoadMore = onSearchLoadMore,
+            onRetry = onSearchRetry,
+            onDismiss = { showSearch = false },
         )
     }
 
@@ -234,7 +290,9 @@ private fun FoodConfirmationHeader(onBack: () -> Unit, modifier: Modifier = Modi
 
 @Composable
 private fun IngredientCard(
-    ingredient: EstimatedIngredient,
+    name: String,
+    grams: Int,
+    calories: Int,
     onDecrease: () -> Unit,
     onIncrease: () -> Unit,
     onRemove: () -> Unit,
@@ -254,14 +312,14 @@ private fun IngredientCard(
             horizontalArrangement = Arrangement.spacedBy(Spacing.s8),
         ) {
             Text(
-                text = ingredient.name,
+                text = name,
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
             )
             // Figma: 14 Bold, no token.
             Text(
-                text = stringResource(R.string.food_confirmation_kcal, ingredient.calories),
+                text = stringResource(R.string.food_confirmation_kcal, calories),
                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -280,7 +338,7 @@ private fun IngredientCard(
                     onClick = onDecrease,
                 )
                 Text(
-                    text = stringResource(R.string.food_confirmation_grams, ingredient.grams),
+                    text = stringResource(R.string.food_confirmation_grams, grams),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -612,11 +670,30 @@ private fun FoodConfirmationPreviewContent(uiState: FoodConfirmationUiState) {
             onCarbsChange = {},
             onFatChange = {},
             onAddToMeal = {},
+            searchState = null,
+            onSearchQueryChange = {},
+            onSearchLoadMore = {},
+            onSearchRetry = {},
+            onFoodSelect = {},
+            onPortionIncrease = {},
+            onPortionDecrease = {},
+            onPortionRemove = {},
         )
     }
 }
 
 private val previewDate = LocalDate.of(2026, 10, 23)
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun FoodConfirmationSearchPreview() {
+    val chicken = Food("f01", "Grilled chicken breast", 165.0, 31.0, 0.0, 3.6)
+    val rice = Food("f02", "Basmati rice", 130.0, 2.7, 28.0, 0.3)
+    FoodConfirmationPreviewContent(
+        foodConfirmationInitialState(FoodConfirmationMode.Search, previewDate)
+            .copy(portions = listOf(FoodPortion(chicken, 180), FoodPortion(rice, 150))),
+    )
+}
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
