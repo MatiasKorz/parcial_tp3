@@ -113,8 +113,8 @@ Lo que la consigna permite simular está documentado fila por fila en la columna
 
 - **Acceso (1.1, 1.2):** sin `app/google-services.json`, acceso y perfil de demostración, sin endpoints de login; con Firebase configurado, registro, inicio y cierre de sesión reales ([EXT-01](#extras-con-firebase)).
 - **Home, Progress y Profile (2.x, 6.x, 7.x):** datos de ejemplo del Figma; los ajustes de Profile se guardan en memoria durante la sesión, y el perfil en Firestore si Firebase está configurado (EXT-02).
-- **Coach (3.1-3.6):** estados y conversación simulados, sin micrófono, audio ni servicios del coach.
-- **Entrenamiento activo (4.4-4.7):** series, cronómetro y descanso simulados (SPEC p.3).
+- **Coach (3.1-3.6):** la voz está simulada (escucha, procesamiento y respuesta hablada, sin micrófono ni audio). Las sugerencias y las respuestas escritas vienen del mock por Retrofit y quedan en Room ([EXT-04](#coach-por-retrofit-con-historial-en-room-extra-ext-04)); el mock las marca como simuladas.
+- **Entrenamiento activo (4.4-4.7):** las series, la carga y el descanso se registran con los datos reales del entrenamiento ([EXT-06](#seguimiento-de-series-extra-ext-06)); "LAST SESSION", el consejo del coach y el volumen del resumen final siguen siendo de demostración (SPEC p.3).
 - **Nutrition por voz y foto (5.4-5.6, 5.7 `estimate`):** transcripción, análisis y estimación fijos del Figma, sin cámara, micrófono ni `POST /v1/nutrition/analyses`; lo que se confirma sí se guarda en Room.
 - Los controles sin destino en el diseño informan "modo demostración" en lugar de quedar muertos (NAV03).
 
@@ -125,10 +125,10 @@ Lo que la consigna permite simular está documentado fila por fila en la columna
 | EXT-01 · Firebase Authentication | Hecho (#56). Se activa con `app/google-services.json`; sin él, acceso de demostración |
 | EXT-02 · Perfil en Firestore | Hecho (#58). Requiere EXT-01 configurado; sin Firebase, perfil de demostración en memoria |
 | EXT-03 · Reglas de Firestore | Hecho (#57). `firestore.rules` con tests sobre el emulador de Firestore |
-| EXT-04 · Coach por Retrofit con historial en Room | No realizado |
-| EXT-05 · Búsqueda de alimentos y cálculo nutricional | No realizado ("Search" informa modo demostración) |
-| EXT-06 · Seguimiento de series | No realizado (simulado) |
-| EXT-07 · Práctica aislada de Dagger puro | No realizado |
+| EXT-04 · Coach por Retrofit con historial en Room | Hecho (#64, #66). Sugerencias y respuestas del mock por Retrofit; la conversación queda en Room ([detalle](#coach-por-retrofit-con-historial-en-room-extra-ext-04)) |
+| EXT-05 · Búsqueda de alimentos y cálculo nutricional | Hecho (#65). "Search" busca en `GET /v1/foods` y calcula calorías y macros según la porción antes de guardar en Room ([detalle](#búsqueda-de-alimentos-y-cálculo-nutricional-extra-ext-05)) |
+| EXT-06 · Seguimiento de series | Hecho (#63). El entrenamiento activo registra series, carga y descanso con los datos reales del entrenamiento ([detalle](#seguimiento-de-series-extra-ext-06)) |
+| EXT-07 · Práctica aislada de Dagger puro | Hecho (#62). Build aparte en `dagger-practice/`, sin Hilt y fuera de la app ([detalle](#práctica-de-dagger-puro-extra-ext-07)) |
 
 Las instrucciones y reglas de acceso de Firebase están en [Extras con Firebase](#extras-con-firebase).
 

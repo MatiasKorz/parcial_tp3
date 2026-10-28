@@ -56,7 +56,7 @@ Los ViewModels de las pantallas de perfil y de demostración no aparecen: no usa
 
 - **Dagger** es el framework de inyección de dependencias que, en tiempo de compilación, genera el código que crea los objetos y verifica el grafo. Si falta una dependencia, el error aparece al compilar y no en la app ya corriendo.
 - **Hilt está construido sobre Dagger** y le agrega lo específico de Android: componentes ya definidos atados al ciclo de vida (`SingletonComponent`, `ActivityComponent`, `ViewModelComponent`…), las anotaciones `@HiltAndroidApp`, `@AndroidEntryPoint` y `@HiltViewModel`, y la integración con ViewModel y Navigation. Con Dagger puro habría que escribir esos componentes a mano y conectarlos con la Application y las Activities.
-- **Por qué no hay un grafo de Dagger puro:** Hilt ya genera el grafo de Dagger de la app. La consigna lo aclara: "no se exige un segundo grafo de Dagger puro" (SPEC p.1). Eso sería el extra EXT-07.
+- **Por qué no hay un grafo de Dagger puro:** Hilt ya genera el grafo de Dagger de la app. La consigna lo aclara: "no se exige un segundo grafo de Dagger puro" (SPEC p.1). Igual lo hicimos como extra (EXT-07): está en [`dagger-practice/`](../../dagger-practice/), un build aparte sin Hilt, y la app no lo usa.
 - **Al compilar**, KSP corre el compilador de Hilt (`ksp(libs.hilt.compiler)`): genera `Hilt_ExamenTP3Application`, `Hilt_MainActivity`, las fábricas de cada `@Provides` y `@Inject` y los componentes, y valida el grafo. Esas son las tareas `hiltJavaCompileDebug` y `hiltAggregateDepsDebug` del build.
 
 ## Cómo llega un ViewModel a una pantalla de Compose
