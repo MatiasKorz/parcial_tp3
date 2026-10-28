@@ -252,7 +252,7 @@ Cinco pantallas comparadas contra su frame de Figma. Las capturas de la app se t
 
 ## Video de demostración (ENT-03)
 
-**Pendiente:** enlace al video.
+Link al drive: https://drive.google.com/file/d/1SupBhIzXsO7t9ZcLfsVhp4v4UzurX1eQ/view?usp=sharing
 
 El video sigue el recorrido mínimo de la demo final (PPTX s.15):
 
