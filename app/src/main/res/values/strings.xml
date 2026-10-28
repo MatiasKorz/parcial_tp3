@@ -348,15 +348,12 @@
     <string name="voice_idle_heading">How can I help?</string>
     <string name="voice_idle_subtitle">Talk naturally about your workout, nutrition or progress.</string>
     <string name="voice_idle_suggestions_title">Suggested Questions</string>
-    <string name="voice_idle_suggestion_start_workout">Start my workout</string>
-    <string name="voice_idle_suggestion_log_breakfast">Log my breakfast</string>
-    <string name="voice_idle_suggestion_what_to_eat">What should I eat tonight?</string>
-    <string name="voice_idle_suggestion_how_am_i_doing">How am I doing?</string>
     <!-- EXT-04: suggestion states (RF05). Not designed in Figma, same language as NUC-03 -->
+    <string name="voice_idle_suggestions_loading">Loading suggestions…</string>
+    <string name="voice_idle_suggestions_error_title">Couldn\'t load suggestions</string>
+    <string name="voice_idle_suggestions_empty_title">No suggestions right now</string>
+    <string name="voice_idle_suggestions_empty_message">Use \"Type instead\" to ask your own question.</string>
     <string name="voice_idle_last_conversation_label">LAST CONVERSATION</string>
-    <!-- EXT-04: Figma example shown while the history is empty -->
-    <string name="voice_idle_last_conversation_time">2 hours ago</string>
-    <string name="voice_idle_last_conversation_example">Create a 30-minute workout for me.</string>
     <!-- 1: last question in the history -->
     <string name="voice_idle_last_conversation_text">“%1$s”</string>
     <string name="voice_idle_tap_to_talk">TAP TO TALK</string>
@@ -961,21 +958,14 @@
     <string name="voice_conversation_title">VORA Coach</string>
     <!-- 1: time the conversation started ("12:40 PM") -->
     <string name="voice_conversation_date_today">TODAY AT %1$s</string>
-    <!-- EXT-04: Figma thread shown while the history is empty -->
-    <string name="voice_conversation_example_date">TODAY AT 12:40 PM</string>
-    <string name="voice_conversation_user_dinner">What should I eat for dinner?</string>
-    <string name="voice_conversation_coach_dinner">You\'re currently 36g short of your protein target today. I\'d highly recommend grilled chicken breast with roasted seasonal vegetables and a side of Greek yoghurt.</string>
-    <string name="voice_conversation_user_vegetarian">Can you make that vegetarian?</string>
-    <string name="voice_conversation_coach_vegetarian">Absolutely. Try grilled organic tofu with roasted vegetables, quinoa and Greek yoghurt.</string>
-    <string name="voice_conversation_time_1241">12:41</string>
-    <string name="voice_conversation_time_1242">12:42</string>
-    <string name="voice_conversation_time_1243">12:43</string>
     <!-- 1: date ("Oct 20"), 2: time -->
     <string name="voice_conversation_date">%1$s at %2$s</string>
     <string name="voice_conversation_listen">Listen to response (0:14)</string>
     <!-- EXT-04 states and the isSimulated mark (SPEC p.4). Not designed in Figma -->
     <string name="voice_conversation_simulated">Simulated response</string>
     <string name="voice_conversation_sending">VORA is replying…</string>
+    <string name="voice_conversation_empty_title">No messages yet</string>
+    <string name="voice_conversation_empty_message">Ask VORA anything about your workout, nutrition or progress.</string>
     <string name="voice_conversation_placeholder">Ask VORA anything...</string>
     <!-- Accessibility labels and requested demonstration notice, outside the Figma copy. -->
     <string name="voice_conversation_add">Add attachment</string>
