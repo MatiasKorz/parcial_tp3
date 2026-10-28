@@ -10,7 +10,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -52,6 +51,7 @@ import com.example.examentp3.R
 import com.example.examentp3.data.repository.COACH_MESSAGE_MAX_LENGTH
 import com.example.examentp3.model.CoachMessage
 import com.example.examentp3.model.CoachRole
+import com.example.examentp3.ui.components.VoraEmptyState
 import com.example.examentp3.ui.components.VoraErrorBanner
 import com.example.examentp3.ui.components.VoraLoadingState
 import com.example.examentp3.ui.theme.ExamenTP3Theme
@@ -118,9 +118,14 @@ fun VoiceConversationScreen(
                     )
                 }
             }
-            // Without history the screen keeps the Figma thread as an example; the first message sent
-            // replaces it with the real conversation saved in Room (EXT-04).
-            if (uiState.isEmpty) figmaThread(onListen)
+            if (uiState.isEmpty) {
+                item(key = "empty") {
+                    VoraEmptyState(
+                        stringResource(R.string.voice_conversation_empty_title),
+                        stringResource(R.string.voice_conversation_empty_message),
+                    )
+                }
+            }
             items(uiState.messages, key = { it.id }) { message ->
                 val time = messageTime(message.sentAtMillis)
                 when (message.role) {
@@ -157,38 +162,6 @@ fun VoiceConversationScreen(
                     Text(stringResource(R.string.voice_conversation_ok))
                 }
             },
-        )
-    }
-}
-
-private fun LazyListScope.figmaThread(onListen: () -> Unit) {
-    item(key = "example_date") {
-        Text(
-            stringResource(R.string.voice_conversation_example_date),
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-            color = MaterialTheme.voraColors.textMuted, textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
-    item(key = "example_user_dinner") {
-        UserBubble(
-            stringResource(R.string.voice_conversation_user_dinner),
-            stringResource(R.string.voice_conversation_time_1241),
-        )
-    }
-    item(key = "example_coach_dinner") {
-        CoachBubble(stringResource(R.string.voice_conversation_coach_dinner), onListen = onListen)
-    }
-    item(key = "example_user_vegetarian") {
-        UserBubble(
-            stringResource(R.string.voice_conversation_user_vegetarian),
-            stringResource(R.string.voice_conversation_time_1242),
-        )
-    }
-    item(key = "example_coach_vegetarian") {
-        CoachBubble(
-            stringResource(R.string.voice_conversation_coach_vegetarian),
-            time = stringResource(R.string.voice_conversation_time_1243),
         )
     }
 }

@@ -234,14 +234,11 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
             onTapToTalk = { if (entry.isResumed()) navController.navigate(VoiceListening.route) },
             onTypeInstead = { if (entry.isResumed()) navController.navigate(VoiceConversation.createRoute()) },
             onLastConversationClick = { if (entry.isResumed()) navController.navigate(VoiceConversation.createRoute()) },
-            onStartMyWorkoutClick = {
-                if (entry.isResumed()) navController.navigate(PreWorkout.createRoute(DEMO_WORKOUT_ID))
-            },
-            onLogMyBreakfastClick = { if (entry.isResumed()) navController.navigate(AddFood.createRoute()) },
-            // Inferred (EXT-04): a question opens the conversation and asks it to the coach.
-            onAskCoach = { text ->
+            // Inferred (EXT-04): a suggested question opens the conversation and asks it.
+            onSuggestionClick = { text ->
                 if (entry.isResumed()) navController.navigate(VoiceConversation.createRoute(text))
             },
+            onRetrySuggestions = viewModel::retry,
         )
     }
     composable(VoiceListening.route) { entry ->
