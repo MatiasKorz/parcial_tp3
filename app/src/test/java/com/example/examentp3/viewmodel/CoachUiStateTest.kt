@@ -4,7 +4,6 @@ import com.example.examentp3.data.local.CoachMessageEntity
 import com.example.examentp3.data.local.toModel
 import com.example.examentp3.model.CoachMessage
 import com.example.examentp3.model.CoachRole
-import com.example.examentp3.model.CoachSuggestion
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -33,38 +32,19 @@ class CoachUiStateTest {
 
     @Test
     fun idle_lastQuestion_isTheLastUserMessage() {
-        val state = voiceIdleUiState(SuggestionsResult(isLoading = false), listOf(question, reply))
-        assertEquals(question, state.lastQuestion)
+        assertEquals(question, voiceIdleUiState(listOf(question, reply)).lastQuestion)
     }
 
     @Test
     fun idle_withoutHistory_hasNoLastQuestion() {
-        assertNull(voiceIdleUiState(SuggestionsResult(isLoading = false), emptyList()).lastQuestion)
+        // The screen then shows the Figma example card.
+        assertNull(voiceIdleUiState(emptyList()).lastQuestion)
     }
 
     @Test
-    fun idle_validEmptyAnswer_isEmptyNotError() {
-        val state = voiceIdleUiState(SuggestionsResult(isLoading = false), emptyList())
-        assertTrue(state.hasNoSuggestions)
-        assertNull(state.suggestionsError)
-    }
-
-    @Test
-    fun idle_failure_isErrorNotEmpty() {
-        val state = voiceIdleUiState(SuggestionsResult(isLoading = false, error = UiError.Server), emptyList())
-        assertFalse(state.hasNoSuggestions)
-        assertEquals(UiError.Server, state.suggestionsError)
-    }
-
-    @Test
-    fun idle_failedRetry_keepsTheSuggestionsShown() {
-        val suggestions = listOf(CoachSuggestion("s1", "How am I doing?"))
-        val state = voiceIdleUiState(
-            SuggestionsResult(isLoading = false, suggestions = suggestions, error = UiError.NoConnection),
-            emptyList(),
-        )
-        assertEquals(suggestions, state.suggestions)
-        assertEquals(UiError.NoConnection, state.suggestionsError)
+    fun conversation_withoutHistory_isEmpty() {
+        // The screen then shows the Figma thread as an example.
+        assertTrue(VoiceConversationUiState().isEmpty)
     }
 
     @Test

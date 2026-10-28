@@ -36,25 +36,19 @@ import androidx.compose.ui.unit.dp
 import com.example.examentp3.R
 import com.example.examentp3.model.CoachMessage
 import com.example.examentp3.model.CoachRole
-import com.example.examentp3.model.CoachSuggestion
 import com.example.examentp3.ui.components.VoraCard
-import com.example.examentp3.ui.components.VoraEmptyState
-import com.example.examentp3.ui.components.VoraErrorBanner
-import com.example.examentp3.ui.components.VoraErrorState
-import com.example.examentp3.ui.components.VoraLoadingState
 import com.example.examentp3.ui.components.VoraPromptChip
 import com.example.examentp3.ui.components.VoraStatusTag
 import com.example.examentp3.ui.components.VoraTextAction
 import com.example.examentp3.ui.theme.ExamenTP3Theme
 import com.example.examentp3.ui.theme.Spacing
 import com.example.examentp3.ui.theme.voraColors
-import com.example.examentp3.viewmodel.UiError
 import com.example.examentp3.viewmodel.VoiceIdleUiState
 
 /**
- * Voice / 01 — Idle. The suggested questions come from GET /v1/coach/suggestions and "LAST CONVERSATION"
- * from the Room history (EXT-04). Voice is still simulated: nothing is recorded and no microphone
- * permission is requested.
+ * Voice / 01 — Idle. The suggested questions are the Figma's: two navigate and two are asked to the coach by
+ * Retrofit; "LAST CONVERSATION" comes from the Room history (EXT-04). Voice is still simulated: nothing is
+ * recorded and no microphone permission is requested.
  */
 @Composable
 fun VoiceIdleScreen(
@@ -63,8 +57,9 @@ fun VoiceIdleScreen(
     onTapToTalk: () -> Unit,
     onTypeInstead: () -> Unit,
     onLastConversationClick: () -> Unit,
-    onSuggestionClick: (String) -> Unit,
-    onRetrySuggestions: () -> Unit,
+    onStartMyWorkoutClick: () -> Unit,
+    onLogMyBreakfastClick: () -> Unit,
+    onAskCoach: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // Not a tab destination: there is no Scaffold padding here, so the screen handles the system bars itself.
@@ -104,11 +99,8 @@ fun VoiceIdleScreen(
                     textAlign = TextAlign.Center,
                 )
             }
-            SuggestedQuestions(uiState, onSuggestionClick, onRetrySuggestions)
-            // Inferred (EXT-04): the card shows the last question in the history, so it waits for one.
-            uiState.lastQuestion?.let { last ->
-                LastConversationCard(last.text, last.sentAtMillis, onClick = onLastConversationClick)
-            }
+            SuggestedQuestions(onStartMyWorkoutClick, onLogMyBreakfastClick, onAskCoach)
+            LastConversationCard(uiState.lastQuestion, onClick = onLastConversationClick)
         }
         VoiceIdleMicBlock(onTapToTalk = onTapToTalk, onTypeInstead = onTypeInstead)
     }
@@ -171,9 +163,9 @@ private fun VoiceIdleOrb() {
 
 @Composable
 private fun SuggestedQuestions(
-    uiState: VoiceIdleUiState,
-    onSuggestionClick: (String) -> Unit,
-    onRetry: () -> Unit,
+    onStartMyWorkoutClick: () -> Unit,
+    onLogMyBreakfastClick: () -> Unit,
+    onAskCoach: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -186,41 +178,28 @@ private fun SuggestedQuestions(
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.voraColors.textMuted,
         )
-        // Suggestions already shown stay visible; an error then goes in a banner next to them (RF05).
-        if (uiState.suggestions.isNotEmpty()) {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.s8, Alignment.CenterHorizontally),
-                verticalArrangement = Arrangement.spacedBy(Spacing.s8),
-            ) {
-                uiState.suggestions.forEach { suggestion ->
-                    VoraPromptChip(text = suggestion.text, onClick = { onSuggestionClick(suggestion.text) })
-                }
-            }
-            uiState.suggestionsError?.let { error ->
-                VoraErrorBanner(stringResource(error.message), stringResource(R.string.state_retry), onRetry)
-            }
-            return@Column
-        }
-        when {
-            uiState.isLoadingSuggestions ->
-                VoraLoadingState(stringResource(R.string.voice_idle_suggestions_loading))
-            uiState.suggestionsError != null -> VoraErrorState(
-                stringResource(R.string.voice_idle_suggestions_error_title),
-                stringResource(uiState.suggestionsError.message),
-                stringResource(R.string.state_retry),
-                onRetry,
-            )
-            uiState.hasNoSuggestions -> VoraEmptyState(
-                stringResource(R.string.voice_idle_suggestions_empty_title),
-                stringResource(R.string.voice_idle_suggestions_empty_message),
-            )
+        val whatToEat = stringResource(R.string.voice_idle_suggestion_what_to_eat)
+        val howAmIDoing = stringResource(R.string.voice_idle_suggestion_how_am_i_doing)
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.s8, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(Spacing.s8),
+        ) {
+            VoraPromptChip(text = stringResource(R.string.voice_idle_suggestion_start_workout), onClick = onStartMyWorkoutClick)
+            VoraPromptChip(text = stringResource(R.string.voice_idle_suggestion_log_breakfast), onClick = onLogMyBreakfastClick)
+            // The two questions are asked to the coach (POST /v1/coach/messages, EXT-04).
+            VoraPromptChip(text = whatToEat, onClick = { onAskCoach(whatToEat) })
+            VoraPromptChip(text = howAmIDoing, onClick = { onAskCoach(howAmIDoing) })
         }
     }
 }
 
 @Composable
-private fun LastConversationCard(text: String, sentAtMillis: Long, onClick: () -> Unit) {
+private fun LastConversationCard(lastQuestion: CoachMessage?, onClick: () -> Unit) {
+    // Without history the card keeps the Figma example; then it shows the last question saved in Room.
+    val text = lastQuestion?.text ?: stringResource(R.string.voice_idle_last_conversation_example)
+    val time = lastQuestion?.let { DateUtils.getRelativeTimeSpanString(it.sentAtMillis).toString() }
+        ?: stringResource(R.string.voice_idle_last_conversation_time)
     // Clip before clickable so the ripple follows the card's rounded corners.
     VoraCard(
         modifier = Modifier
@@ -237,8 +216,7 @@ private fun LastConversationCard(text: String, sentAtMillis: Long, onClick: () -
                 color = MaterialTheme.voraColors.textMuted,
             )
             Text(
-                // "2 hours ago" in Figma: relative to now, in the device language.
-                text = DateUtils.getRelativeTimeSpanString(sentAtMillis).toString(),
+                text = time,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.voraColors.textMuted,
             )
@@ -296,10 +274,8 @@ private fun VoiceIdleMicBlock(onTapToTalk: () -> Unit, onTypeInstead: () -> Unit
     }
 }
 
-// Figma content: the four suggestions and the last question.
+// Figma content: the last question of the history.
 private val PreviewState = VoiceIdleUiState(
-    suggestions = listOf("Start my workout", "Log my breakfast", "What should I eat tonight?", "How am I doing?")
-        .mapIndexed { index, text -> CoachSuggestion("s$index", text) },
     lastQuestion = CoachMessage(
         role = CoachRole.User,
         text = "Create a 30-minute workout for me.",
@@ -316,8 +292,9 @@ private fun VoiceIdlePreviewContent(uiState: VoiceIdleUiState) {
             onTapToTalk = {},
             onTypeInstead = {},
             onLastConversationClick = {},
-            onSuggestionClick = {},
-            onRetrySuggestions = {},
+            onStartMyWorkoutClick = {},
+            onLogMyBreakfastClick = {},
+            onAskCoach = {},
         )
     }
 }
@@ -332,9 +309,4 @@ private fun VoiceIdleScreenSmallPreview() = VoiceIdlePreviewContent(PreviewState
 
 @Preview(showBackground = true)
 @Composable
-private fun VoiceIdleScreenErrorPreview() =
-    VoiceIdlePreviewContent(VoiceIdleUiState(suggestionsError = UiError.Server))
-
-@Preview(showBackground = true)
-@Composable
-private fun VoiceIdleScreenEmptyPreview() = VoiceIdlePreviewContent(VoiceIdleUiState())
+private fun VoiceIdleScreenNoHistoryPreview() = VoiceIdlePreviewContent(VoiceIdleUiState())
