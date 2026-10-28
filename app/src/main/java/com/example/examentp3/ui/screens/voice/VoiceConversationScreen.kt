@@ -10,7 +10,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,12 +49,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import com.example.examentp3.R
+import com.example.examentp3.data.repository.COACH_MESSAGE_MAX_LENGTH
+import com.example.examentp3.model.CoachMessage
+import com.example.examentp3.model.CoachRole
+import com.example.examentp3.ui.components.VoraErrorBanner
+import com.example.examentp3.ui.components.VoraLoadingState
 import com.example.examentp3.ui.theme.ExamenTP3Theme
 import com.example.examentp3.ui.theme.voraColors
+import com.example.examentp3.viewmodel.UiError
+import com.example.examentp3.viewmodel.VoiceConversationUiState
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
-/** The initial thread is from Figma; only the user's new messages are appended locally. */
+/**
+ * Voice / 05 — Conversation (EXT-04): the history saved in Room, with the coach's replies from
+ * POST /v1/coach/messages. Voice ("Listen to response", microphone) is still simulated.
+ */
 @Composable
 fun VoiceConversationScreen(
+    uiState: VoiceConversationUiState,
+    onSend: (String) -> Unit,
+    onRetry: () -> Unit,
     onBack: () -> Unit,
     onMicrophone: () -> Unit,
     onListen: () -> Unit,
@@ -61,18 +81,21 @@ fun VoiceConversationScreen(
 ) {
     BackHandler(onBack = onBack)
     ConversationSystemBars()
+    // The draft is ephemeral UI state; what is sent lives in Room.
     var draft by rememberSaveable { mutableStateOf("") }
-    var messages by rememberSaveable { mutableStateOf(arrayListOf<String>()) }
     var showAttachmentNotice by rememberSaveable { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val send = {
-        if (draft.isNotBlank()) {
-            messages = ArrayList(messages).apply { add(draft.trim()) }
+        if (draft.isNotBlank() && !uiState.isSending) {
+            onSend(draft)
             draft = ""
         }
     }
-    LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty()) listState.animateScrollToItem(4 + messages.size)
+    val lastReplyId = uiState.messages.lastOrNull { it.role == CoachRole.Assistant }?.id
+    // Keep the newest message, the reply in progress or the error in view.
+    LaunchedEffect(uiState.messages.size, uiState.isSending, uiState.error) {
+        val lastIndex = listState.layoutInfo.totalItemsCount - 1
+        if (lastIndex > 0) listState.animateScrollToItem(lastIndex)
     }
     Column(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
@@ -85,41 +108,42 @@ fun VoiceConversationScreen(
             contentPadding = PaddingValues(20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            item(key = "date") {
-                Text(
-                    stringResource(R.string.voice_conversation_date),
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.voraColors.textMuted, textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+            uiState.messages.firstOrNull()?.let { first ->
+                item(key = "date") {
+                    Text(
+                        conversationStart(first.sentAtMillis),
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.voraColors.textMuted, textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
-            item(key = "initial_user_dinner") {
-                UserBubble(
-                    stringResource(R.string.voice_conversation_user_dinner),
-                    stringResource(R.string.voice_conversation_time_1241),
-                )
+            // Without history the screen keeps the Figma thread as an example; the first message sent
+            // replaces it with the real conversation saved in Room (EXT-04).
+            if (uiState.isEmpty) figmaThread(onListen)
+            items(uiState.messages, key = { it.id }) { message ->
+                val time = messageTime(message.sentAtMillis)
+                when (message.role) {
+                    CoachRole.User -> UserBubble(message.text, time)
+                    CoachRole.Assistant -> CoachBubble(
+                        message.text, time = time, isSimulated = message.isSimulated,
+                        // The simulated audio (PAN-3.4) is offered for the latest reply only.
+                        onListen = if (message.id == lastReplyId) onListen else null,
+                    )
+                }
             }
-            item(key = "initial_coach_dinner") {
-                CoachBubble(stringResource(R.string.voice_conversation_coach_dinner), onListen = onListen)
+            if (uiState.isSending) {
+                item(key = "sending") { VoraLoadingState(stringResource(R.string.voice_conversation_sending)) }
             }
-            item(key = "initial_user_vegetarian") {
-                UserBubble(
-                    stringResource(R.string.voice_conversation_user_vegetarian),
-                    stringResource(R.string.voice_conversation_time_1242),
-                )
-            }
-            item(key = "initial_coach_vegetarian") {
-                CoachBubble(
-                    stringResource(R.string.voice_conversation_coach_vegetarian),
-                    time = stringResource(R.string.voice_conversation_time_1243),
-                )
-            }
-            itemsIndexed(messages, key = { index, _ -> "local_user_$index" }) { _, message ->
-                UserBubble(message)
+            // The error does not cover the history (RF05): it goes after it, with retry.
+            uiState.error?.let { error ->
+                item(key = "error") {
+                    VoraErrorBanner(stringResource(error.message), stringResource(R.string.state_retry), onRetry)
+                }
             }
         }
         ConversationInput(
-            value = draft, onValueChange = { draft = it }, onSend = send,
+            value = draft, onValueChange = { draft = it.take(COACH_MESSAGE_MAX_LENGTH) }, onSend = send,
             onMicrophone = onMicrophone, onAdd = { showAttachmentNotice = true },
         )
     }
@@ -133,6 +157,38 @@ fun VoiceConversationScreen(
                     Text(stringResource(R.string.voice_conversation_ok))
                 }
             },
+        )
+    }
+}
+
+private fun LazyListScope.figmaThread(onListen: () -> Unit) {
+    item(key = "example_date") {
+        Text(
+            stringResource(R.string.voice_conversation_example_date),
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+            color = MaterialTheme.voraColors.textMuted, textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+    item(key = "example_user_dinner") {
+        UserBubble(
+            stringResource(R.string.voice_conversation_user_dinner),
+            stringResource(R.string.voice_conversation_time_1241),
+        )
+    }
+    item(key = "example_coach_dinner") {
+        CoachBubble(stringResource(R.string.voice_conversation_coach_dinner), onListen = onListen)
+    }
+    item(key = "example_user_vegetarian") {
+        UserBubble(
+            stringResource(R.string.voice_conversation_user_vegetarian),
+            stringResource(R.string.voice_conversation_time_1242),
+        )
+    }
+    item(key = "example_coach_vegetarian") {
+        CoachBubble(
+            stringResource(R.string.voice_conversation_coach_vegetarian),
+            time = stringResource(R.string.voice_conversation_time_1243),
         )
     }
 }
@@ -203,8 +259,35 @@ private fun UserBubble(text: String, time: String? = null) {
     }
 }
 
+private val BubbleTime = DateTimeFormatter.ofPattern("h:mm", Locale.US)
+private val StartTime = DateTimeFormatter.ofPattern("h:mm a", Locale.US)
+private val StartDate = DateTimeFormatter.ofPattern("MMM d", Locale.US)
+
+private fun Long.toLocalDateTime(): LocalDateTime =
+    LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
+
+/** "12:41" in Figma. */
+private fun messageTime(millis: Long): String = millis.toLocalDateTime().format(BubbleTime)
+
+/** "TODAY AT 12:40 PM" in Figma; older conversations show their date instead of "today". */
 @Composable
-private fun CoachBubble(text: String, time: String? = null, onListen: (() -> Unit)? = null) {
+private fun conversationStart(millis: Long): String {
+    val start = millis.toLocalDateTime()
+    val time = start.format(StartTime)
+    return if (start.toLocalDate() == LocalDate.now()) {
+        stringResource(R.string.voice_conversation_date_today, time)
+    } else {
+        stringResource(R.string.voice_conversation_date, start.format(StartDate), time).uppercase()
+    }
+}
+
+@Composable
+private fun CoachBubble(
+    text: String,
+    time: String? = null,
+    isSimulated: Boolean = false,
+    onListen: (() -> Unit)? = null,
+) {
     val shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 4.dp, bottomEnd = 16.dp)
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         ConversationOrb()
@@ -241,8 +324,13 @@ private fun CoachBubble(text: String, time: String? = null, onListen: (() -> Uni
                     )
                 }
             }
-            if (time != null) Text(
-                time, style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+            // isSimulated from the mock (SPEC p.4): the reply says it is not real coaching.
+            val footer = listOfNotNull(
+                time,
+                if (isSimulated) stringResource(R.string.voice_conversation_simulated) else null,
+            )
+            if (footer.isNotEmpty()) Text(
+                footer.joinToString(" · "), style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
                 color = MaterialTheme.voraColors.textMuted,
             )
         }
@@ -347,14 +435,44 @@ private fun ConversationSystemBars() {
     }
 }
 
+// Figma thread, as it would come from Room.
+private val PreviewMessages = listOf(
+    CoachMessage(1, CoachRole.User, "What should I eat for dinner?", 0),
+    CoachMessage(
+        2, CoachRole.Assistant,
+        "You're currently 36g short of your protein target today. I'd highly recommend grilled chicken " +
+            "breast with roasted seasonal vegetables and a side of Greek yoghurt.",
+        60_000, isSimulated = true,
+    ),
+    CoachMessage(3, CoachRole.User, "Can you make that vegetarian?", 120_000),
+    CoachMessage(
+        4, CoachRole.Assistant,
+        "Absolutely. Try grilled organic tofu with roasted vegetables, quinoa and Greek yoghurt.",
+        180_000, isSimulated = true,
+    ),
+)
+
+@Composable
+private fun ConversationPreviewContent(uiState: VoiceConversationUiState) {
+    ExamenTP3Theme { VoiceConversationScreen(uiState, {}, {}, {}, {}, {}) }
+}
+
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
-private fun ConversationPreview() {
-    ExamenTP3Theme { VoiceConversationScreen({}, {}, {}) }
-}
+private fun ConversationPreview() =
+    ConversationPreviewContent(VoiceConversationUiState(messages = PreviewMessages))
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 640, fontScale = 1.3f)
 @Composable
-private fun ConversationCompactPreview() {
-    ExamenTP3Theme { VoiceConversationScreen({}, {}, {}) }
-}
+private fun ConversationCompactPreview() =
+    ConversationPreviewContent(VoiceConversationUiState(messages = PreviewMessages, isSending = true))
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun ConversationErrorPreview() = ConversationPreviewContent(
+    VoiceConversationUiState(messages = PreviewMessages.take(3), error = UiError.NoConnection),
+)
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 640)
+@Composable
+private fun ConversationEmptyPreview() = ConversationPreviewContent(VoiceConversationUiState())

@@ -3,6 +3,7 @@ package com.example.examentp3.di
 
 import android.content.Context
 import com.example.examentp3.R
+import com.example.examentp3.data.remote.CoachApi
 import com.example.examentp3.data.remote.FoodApi
 import com.example.examentp3.data.remote.WorkoutApi
 import dagger.Module
@@ -42,5 +43,11 @@ object RetrofitModule {
     @Singleton
     fun provideFoodApi(retrofit: Retrofit): FoodApi {
         return retrofit.create(FoodApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCoachApi(retrofit: Retrofit): CoachApi {
+        return retrofit.create(CoachApi::class.java)
     }
 }

@@ -157,11 +157,11 @@ El inventario toma los nombres reales de los 37 frames de Figma (SPEC p.1, PPTX 
 | 1.2 | Login - 02 — SignUp | `sign_up` | SignIn ("Sign up here") | funcional con Firebase / demostración sin él (EXT-01) | Hecha (validación visual pendiente) | Con `google-services.json`, "Sign Up" crea la cuenta (Full Name como nombre visible) y abre Home; sin él, aviso de registro de demostración sin crear cuenta. Regreso a SignIn |
 | 2.1 | Home / 01 — Dashboard | `home` | SignIn; pestaña Home | demostración | Hecha | Datos de ejemplo |
 | 2.2 | Home / 02 — Notifications | `notifications` | Home | demostración | Hecha | Notificaciones de ejemplo |
-| 3.1 | Voice / 01 — Idle | `voice_idle` | Home ("Start voice session") | demostración | Hecha | Estado del coach simulado; sin micrófono; los chips y "LAST CONVERSATION" llevan a destinos de ejemplo |
+| 3.1 | Voice / 01 — Idle | `voice_idle` | Home ("Start voice session") | funcional (EXT-04) / voz simulada | Hecha | Las cuatro preguntas sugeridas son las del Figma: "Start my workout" lleva a Pre Workout, "Log my breakfast" a Add Food, y las otras dos abren la conversación y se envían al coach por `POST /v1/coach/messages`. "LAST CONVERSATION" muestra la última pregunta del historial de Room y, sin historial, el ejemplo del Figma. "TAP TO TALK" sigue simulado |
 | 3.2 | Voice / 02 — Listening | `voice_listening` | Voice / 01 ("TAP TO TALK") | demostración / simulado | Hecha | Transcripción fija del Figma; sin micrófono real; micrófono activo abre Processing; Cancel y Atrás vuelven a Idle. [Recursos y navegación](docs/design/PAN-3.2-recursos.md) |
 | 3.3 | Voice / 03 — Processing | `voice_processing` | Voice / 02 | demostración / simulado | UI hecha (validación manual pendiente) | Transcripción fija; sin consultas a servicios; avance simulado a Speaking tras 3 s activos; Cancel vuelve a Idle y Atrás a Listening. [Recursos y navegación](docs/design/PAN-3.3-recursos.md) |
 | 3.4 | Voice / 04 — Speaking | `voice_speaking` | Voice / 03 | demostración / simulado | UI hecha (validación manual pendiente) | Respuesta fija; barra y controles de reproducción estáticos; sin audio real. Interrupt vuelve a Listening; chevron y Atrás a Idle. [Recursos y navegación](docs/design/PAN-3.4-recursos.md) |
-| 3.5 | Voice / 05 — Conversation | `voice_conversation` | Voice / 01 (Type instead, LAST CONVERSATION y sugerencias) | demostración / simulado | UI hecha (validación manual pendiente) | Hilo inicial fijo del Figma; mensajes nuevos locales, sin historial persistido ni servicios del coach. Micrófono y audio simulados; + informa modo demostración. [Recursos y navegación](docs/design/PAN-3.5-recursos.md) |
+| 3.5 | Voice / 05 — Conversation | `voice_conversation?prompt={prompt}` | Voice / 01 (Type instead, LAST CONVERSATION y sugerencias) | funcional (EXT-04) / voz simulada | UI hecha (validación manual pendiente) | Sin historial muestra la conversación de ejemplo del Figma; el primer mensaje enviado la reemplaza por el historial real guardado en Room. Enviar un texto llama a `POST /v1/coach/messages` y la respuesta se marca como simulada (`isSimulated`). Carga mientras responde y error con reintento sin duplicar la pregunta |
 | 3.6 | Voice / 06 — Error | `voice_error` | Mantener presionado el micrófono activo de Voice / 02 — Listening | demostración / simulado | UI hecha (validación manual pendiente) | Error y permisos simulados; Allow Access solo muestra un aviso. Try again vuelve a Listening; Type instead a Conversation; Not Now y Atrás a Idle. El toque normal del micrófono sigue hacia Processing. [Recursos y navegación](docs/design/PAN-3.6-recursos.md) |
 | 4.1 | Workout / 01 — Dashboard | `workout` | Pestaña Workout | demostración | Hecha (validación visual pendiente) | Datos del Figma; catálogo en Weekly Plan según NUC-01 (confirmación docente en REF-05); "Details" de la tarjeta "Upper Body Strength" abre el entrenamiento real `w02` del mock; "Start Workout" sigue con id de demostración |
 | 4.2 | Workout / 02 — Weekly Plan | `weekly_plan` | Workout / 01 | mixta: plan de demostración y catálogo funcional | Integrada (validación manual pendiente) | Conserva PAN-4.2; las tarjetas del plan de demostración abren entrenamientos reales del mock (Upper Body → `w02`, Active Recovery → `w01`, Lower Body → `w03`); catálogo GET /v1/workouts leído desde Room (NUC-01), con IDs reales hacia Details; carga, vacío y error con reintento (NUC-03) |
@@ -377,23 +377,41 @@ Sube `firestore.rules` al proyecto de `.firebaserc`. Para comprobar que lo despl
 No cambies las reglas desde la consola: el cambio no queda en el repo y la próxima vez que alguien despliegue se pierde. Se cambia `firestore.rules`, se corren los tests y se despliega.
 
 
-## Búsqueda de alimentos y cálculo nutricional (extra EXT-05)
+## Coach por Retrofit con historial en Room (extra EXT-04)
 
-"Search Database" de `Nutrition / 03 — Add Food` y "Search" de `Nutrition / 01 — Dashboard` abren `Nutrition / 07 — Food Confirmation` en el modo `search`. El Figma no tiene un frame de búsqueda, así que el buscador es una hoja dentro de Food Confirmation que se abre con "+ Add Ingredient". Al entrar sin alimentos se abre sola.
+El coach de `Voice / 01 — Idle` y `Voice / 05 — Conversation` usa el mock con Retrofit, y la conversación queda guardada en Room: sigue ahí al cerrar y volver a abrir la app. El mock no guarda mensajes (SPEC p.4), así que el historial es solo el de Room. No es IA real: el mock devuelve respuestas simuladas, y la app lo indica con "Simulated response" en cada respuesta marcada con `isSimulated`.
 
-| Paso | Qué pasa |
+| Pieza | Qué hace |
 |---|---|
+| `CoachApi` | `POST v1/coach/messages` (cuerpo `{"text": …}`, de 1 a 2000 caracteres; no se manda `context`). También declara `GET v1/coach/suggestions`, que la UI no usa: el mock devuelve las sugerencias en castellano y la pantalla mantiene las del Figma |
+| `CoachMessageEntity` y `CoachMessageDao` | La tabla `coach_messages` (Room versión 4, con `MIGRATION_3_4`, que no toca las comidas ni la caché de entrenamientos) |
+| `CoachRepository` | Única puerta a los datos: guarda la pregunta en Room, pide la respuesta al mock y la guarda |
+| `VoiceIdleViewModel` y `VoiceConversationViewModel` | Inyectados con Hilt. Exponen el estado; la UI no ve Retrofit ni el DAO |
+
+**Estados** (los mismos que NUC-03):
+
+| Estado | Conversation (respuesta) |
+|---|---|
+| Carga | "VORA is replying…" debajo del último mensaje |
+| Sin historial | la conversación de ejemplo del Figma, hasta que se envía el primer mensaje |
+| Error con reintento | `error`, `malformed` o mock detenido: el mensaje enviado queda en el historial y aparece un aviso con "Retry", que vuelve a pedir la respuesta sin duplicar la pregunta |
+
+**Decisiones inferidas** (preguntas abiertas de la tarjeta): para respetar el Figma (UI01), las sugerencias de Idle son las del diseño y no las del mock, que vienen en castellano; "What should I eat tonight?" y "How am I doing?" abren la conversación y se envían al coach; "LAST CONVERSATION" muestra la última pregunta guardada o, sin historial, el ejemplo del Figma; la conversación muestra el hilo del Figma hasta el primer mensaje; no se manda `context.coachingStyle`. La voz ("TAP TO TALK", "Listen to response") sigue simulada y no se pide permiso de micrófono (NAV05).
+
+**Probarlo:** con el mock levantado, abrí el coach desde Home → tocá "What should I eat tonight?" o "Type instead" y escribí un mensaje. Cerrá la app del todo, volvé a abrirla y entrá al coach: la conversación sigue y "LAST CONVERSATION" muestra tu última pregunta. Para el error, detené el mock o usá `--es scenario error` (ver [cómo provocar los escenarios](#cómo-provocar-los-escenarios-en-la-demo)), enviá un mensaje y tocá "Retry" con el mock de nuevo en normal.
+
+**Al actualizar la app instalada:** la base pasa de la versión 3 a la 4 con una migración, así que no hace falta desinstalar.
+## Búsqueda de alimentos y cálculo nutricional (extra EXT-05)
+"Search Database" de `Nutrition / 03 — Add Food` y "Search" de `Nutrition / 01 — Dashboard` abren `Nutrition / 07 — Food Confirmation` en el modo `search`. El Figma no tiene un frame de búsqueda, así que el buscador es una hoja dentro de Food Confirmation que se abre con "+ Add Ingredient". Al entrar sin alimentos se abre sola.
+| Paso | Qué pasa |
 | Buscar | `GET /v1/foods` con `q` (se omite si está vacío, así la hoja arranca con todos los alimentos), `page` y `pageSize=10`. Espera 300 ms después de la última tecla |
 | Más resultados | "Load more" pide la página siguiente mientras `page * pageSize < total` (`meta`) |
 | Elegir | Cada alimento elegido aparece como tarjeta de ingrediente con 100 g. Elegir de nuevo el mismo suma 100 g |
 | Cantidad | "-" y "+" mueven de a 10 g (mínimo 10 g). Calorías, proteínas, carbohidratos y grasas se calculan desde `nutritionPer100g`: valor × gramos / 100 (calorías enteras, macros con un decimal) |
 | Revisar | MEAL TOTALS suma las porciones; "Remove" quita un alimento. Nada se guarda hasta tocar "Add to …" (SPEC p.10) |
 | Guardar | "Add to …" guarda una comida en Room (RF03): nombre con los alimentos unidos por " · ", fecha de hoy, el tipo elegido (o Lunch) y los totales. Aparece en Today's Meals y en el total diario (RF04). Nada se manda al mock (SPEC p.4) |
-
 **Estados** (los mismos que NUC-03): "Searching foods…" mientras carga; "No foods found" con una respuesta vacía o `X-Mock-Scenario: empty`; con `error`, `malformed` o el mock detenido, "Couldn't search foods" con "Retry", o un aviso con "Retry" debajo de los resultados que ya se veían. Guardar sin alimentos muestra "Add at least one food from the search.".
-
 **Sin cambios:** el registro manual (`food_confirmation/manual`, NUC-04) y la estimación simulada (`estimate`) funcionan igual. "Save without logging" sigue informando modo demostración.
-
 **Decisiones del equipo** (preguntas abiertas de la tarjeta): la búsqueda va dentro de Food Confirmation y no en una pantalla nueva; la cantidad arranca en 100 g y se ajusta de a 10 g.
 ## Seguimiento de series (extra EXT-06)
 En `Workout / 05 — Active Workout` el seguimiento de series ya no es simulado. Lo maneja `ActiveWorkoutViewModel` con los datos del entrenamiento de la ruta (`active_workout/{workoutId}`), leídos de Room. Si el detalle todavía no estaba guardado, lo descarga de `GET /v1/workouts/{workoutId}`, con carga y error con reintento como en NUC-03.

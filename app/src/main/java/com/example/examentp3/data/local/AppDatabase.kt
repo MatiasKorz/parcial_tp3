@@ -6,18 +6,22 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
- * Version 2 adds the workout cache and version 3 the workout detail cache (NUC-02),
- * both preserving all existing meal data.
+ * Version 2 adds the workout cache, version 3 the workout detail cache (NUC-02) and version 4 the
+ * coach conversation (EXT-04), all preserving the existing data.
  */
 @Database(
-    entities = [MealEntity::class, WorkoutSummaryEntity::class, WorkoutDetailEntity::class, ExerciseEntity::class],
-    version = 3,
+    entities = [
+        MealEntity::class, WorkoutSummaryEntity::class, WorkoutDetailEntity::class, ExerciseEntity::class,
+        CoachMessageEntity::class,
+    ],
+    version = 4,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun mealDao(): MealDao
     abstract fun workoutDao(): WorkoutDao
     abstract fun workoutDetailDao(): WorkoutDetailDao
+    abstract fun coachMessageDao(): CoachMessageDao
 
     companion object {
         // IF NOT EXISTS also supports development installs that already cached workouts at v1.
@@ -66,6 +70,22 @@ abstract class AppDatabase : RoomDatabase() {
                         `instructions` TEXT NOT NULL,
                         `tip` TEXT NOT NULL,
                         PRIMARY KEY(`workout_id`, `exercise_id`)
+                    )
+                    """.trimIndent(),
+                )
+            }
+        }
+
+        val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `coach_messages` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `role` TEXT NOT NULL,
+                        `text` TEXT NOT NULL,
+                        `sent_at_millis` INTEGER NOT NULL,
+                        `is_simulated` INTEGER NOT NULL
                     )
                     """.trimIndent(),
                 )
