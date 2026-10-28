@@ -60,6 +60,7 @@ import com.example.examentp3.ui.screens.voice.VoiceSpeakingScreen
 import com.example.examentp3.ui.screens.voice.VoiceProcessingScreen
 import com.example.examentp3.ui.screens.voice.VoiceListeningScreen
 import com.example.examentp3.ui.screens.voice.VoiceIdleScreen
+import com.example.examentp3.viewmodel.ActiveWorkoutViewModel
 import com.example.examentp3.viewmodel.EditProfileViewModel
 import com.example.examentp3.viewmodel.ExerciseDetailsViewModel
 import com.example.examentp3.viewmodel.WorkoutDetailsViewModel
@@ -80,9 +81,9 @@ import com.example.examentp3.viewmodel.TodaysMealsViewModel
 
 import kotlinx.coroutines.delay
 
-// Provisional ids until the real catalogs exist (REF-04). Pre Workout does not load its workout yet,
-// so this id never reaches the mock; Workout Details uses DemoWorkout instead.
-private const val DEMO_WORKOUT_ID = "demo-workout"
+// "Start workout" shortcuts open Figma's "Upper Body Strength": Active Workout tracks the sets of that
+// mock workout (EXT-06), so the id has to exist in REF-04.
+private val DEMO_WORKOUT_ID = DemoWorkout.UpperBody.workoutId
 private const val DEMO_MEAL_ID = "demo-meal"
 
 private val workoutArgs = listOf(navArgument(NavArgs.WORKOUT_ID) { type = NavType.StringType })
@@ -369,7 +370,10 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
         )
     }
     composable(ActiveWorkout.route, workoutArgs) { entry ->
+        val viewModel: ActiveWorkoutViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
         ActiveWorkoutScreen(
+            uiState = uiState,
             onFinishWorkout = {
                 if (entry.isResumed()) {
                     navController.navigate(WorkoutComplete.route) {
@@ -377,6 +381,12 @@ internal fun NavGraphBuilder.appGraph(navController: NavHostController) {
                     }
                 }
             },
+            onCompleteSet = viewModel::onCompleteSet,
+            onDecreaseWeight = viewModel::onDecreaseWeight,
+            onIncreaseWeight = viewModel::onIncreaseWeight,
+            onAddRest = viewModel::onAddRest,
+            onSkipRest = viewModel::onSkipRest,
+            onRetry = viewModel::retry,
         )
     }
     composable(ExerciseDetails.route, exerciseArgs) { entry ->
